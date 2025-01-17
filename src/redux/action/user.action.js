@@ -123,7 +123,7 @@ export const getToken = createAsyncThunk(
         refreshToken,
       };
       const response = await axios.post(
-        'https://securetoken.googleapis.com/v1/token',
+        'https://securetoken.googleapis.com/v1/token?key=AIzaSyCQngaaXQIfJaH0aS2l7REgIjD7nL431So',
         body,
         {headers: loginHeader},
       );
