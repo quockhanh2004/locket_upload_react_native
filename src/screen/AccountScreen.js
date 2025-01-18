@@ -18,7 +18,7 @@ const AccountScreen = () => {
           {dataUser?.email}
         </Text>
         <Text text70BL color={Colors.white} marginT-10>
-          Tham gia vào {converTime(dataUser?.createdAt)}
+          Tham gia vào Locket {converTime(dataUser?.createdAt)}
         </Text>
       </View>
     </View>
