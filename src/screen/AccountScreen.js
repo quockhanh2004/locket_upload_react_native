@@ -6,7 +6,7 @@ import {converTime} from '../util/convertTime';
 const AccountScreen = () => {
   const {userInfo} = useSelector(state => state.user);
 
-  const dataUser = userInfo.users[0];
+  const dataUser = userInfo?.users[0];
   return (
     <View flex bg-black center>
       <View center>
