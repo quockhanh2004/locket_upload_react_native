@@ -55,7 +55,7 @@ export const getAccessToken = async data => {
       refreshToken,
     };
     const response = await axios.post(
-      'https://securetoken.googleapis.com/v1/token?key=AIzaSyCQngaaXQIfJaH0aS2l7REgIjD7nL431So',
+      `https://securetoken.googleapis.com/v1/token?key=${process.env.GOOGLE_API_KEY}`,
       body,
       {headers: loginHeader},
     );

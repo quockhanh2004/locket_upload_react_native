@@ -8,27 +8,54 @@ import {
   LoaderScreen,
 } from 'react-native-ui-lib';
 import React, {useEffect, useState} from 'react';
-import InputView from '../component/InputView';
-import {useNavigation} from '@react-navigation/native';
-import {nav} from '../navigation/navName';
 import {useDispatch, useSelector} from 'react-redux';
-import {login} from '../redux/action/user.action';
+
+import InputView from '../component/InputView';
+import {login, resetPassword} from '../redux/action/user.action';
+import {setMessage} from '../redux/slice/message.slice';
+import {checkEmail} from '../util/regex';
 
 const LoginScreen = () => {
-  const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  const {isLoading} = useSelector(state => state.user);
+  const {isLoading, resetPasswordLoading} = useSelector(state => state.user);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    dispatch(login({email, password}));
+    if (checkValue()) {
+      dispatch(login({email, password}));
+    }
   };
 
   const handleResetPassword = () => {
-    navigation.navigate(nav.resetPassword);
+    if (checkValue(true)) {
+      dispatch(resetPassword({email}));
+    }
+  };
+
+  const checkValue = isResetPassword => {
+    if (!checkEmail(email.trim())) {
+      dispatch(
+        setMessage({
+          message: 'Email not accepted',
+          type: 'Error',
+        }),
+      );
+      return false;
+    }
+    if (!isResetPassword && password.trim().length < 8) {
+      dispatch(
+        setMessage({
+          message: 'Password must be at least 8 characters long',
+          type: 'Error',
+        }),
+      );
+      return false;
+    }
+
+    return true;
   };
 
   useEffect(() => {});
@@ -90,13 +117,20 @@ const LoginScreen = () => {
             )}
           </Button>
           <Button
-            label="Reset Password"
+            label={!resetPasswordLoading && 'Reset Password'}
             backgroundColor={Colors.grey20}
             white
             onPress={handleResetPassword}
             borderRadius={8}
             text70BL
-          />
+            disabled={resetPasswordLoading}>
+            {resetPasswordLoading && (
+              <View row center>
+                <Text />
+                <LoaderScreen color={Colors.white} size={'small'} />
+              </View>
+            )}
+          </Button>
         </View>
       </View>
     </View>

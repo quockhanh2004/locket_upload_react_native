@@ -1,5 +1,11 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {getAccountInfo, getToken, login} from '../action/user.action';
+import {
+  getAccountInfo,
+  getToken,
+  login,
+  resetPassword,
+} from '../action/user.action';
+import {setMessage} from './message.slice';
 
 const userSlice = createSlice({
   name: 'user',
@@ -8,6 +14,7 @@ const userSlice = createSlice({
     userInfo: null,
     resetPassword: null,
     isLoading: false,
+    resetPasswordLoading: false,
   },
 
   reducers: {
@@ -63,6 +70,16 @@ const userSlice = createSlice({
       })
       .addCase(getToken.rejected, state => {
         state.isLoading = false;
+      })
+
+      .addCase(resetPassword.pending, state => {
+        state.resetPasswordLoading = true;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.resetPasswordLoading = false;
+      })
+      .addCase(resetPassword.rejected, state => {
+        state.resetPasswordLoading = false;
       });
   },
 });

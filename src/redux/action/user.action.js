@@ -16,7 +16,7 @@ export const login = createAsyncThunk('login', async (data, thunkApi) => {
       returnSecureToken: true,
     };
     const response = await instanceFirebase.post(
-      'verifyPassword?key=AIzaSyCQngaaXQIfJaH0aS2l7REgIjD7nL431So',
+      `verifyPassword?key=${process.env.GOOGLE_API_KEY}`,
       body,
       {headers: loginHeader},
     );
@@ -42,8 +42,8 @@ export const login = createAsyncThunk('login', async (data, thunkApi) => {
   }
 });
 
-export const resetPassword =
-  ('resetPassword',
+export const resetPassword = createAsyncThunk(
+  'resetPassword',
   async (data, thunkApi) => {
     try {
       const {email} = data;
@@ -57,7 +57,13 @@ export const resetPassword =
       const statusCode = response.data.result.status;
       const res = statusCode === 200;
       if (res) {
-        return 'Reset Password Email Sent Successfully.';
+        thunkApi.dispatch(
+          setMessage({
+            message: 'Password reset email has been sent',
+            type: 'Success',
+          }),
+        );
+        return '';
       } else {
         thunkApi.dispatch(
           setMessage({
@@ -70,13 +76,14 @@ export const resetPassword =
     } catch (error) {
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${error?.response?.statusMessage}`,
+          message: `Error: ${error?.response?.data?.error}`,
           type: 'Error',
         }),
       );
       thunkApi.rejectWithValue();
     }
-  });
+  },
+);
 
 export const getAccountInfo = createAsyncThunk(
   'getAccountInfo',
@@ -89,7 +96,7 @@ export const getAccountInfo = createAsyncThunk(
       };
 
       const response = await instanceFirebase.post(
-        'getAccountInfo?key=AIzaSyCQngaaXQIfJaH0aS2l7REgIjD7nL431So',
+        `getAccountInfo?key=${process.env.GOOGLE_API_KEY}`,
         body,
         {
           headers: {...loginHeader},
@@ -123,7 +130,7 @@ export const getToken = createAsyncThunk(
         refreshToken,
       };
       const response = await axios.post(
-        'https://securetoken.googleapis.com/v1/token?key=AIzaSyCQngaaXQIfJaH0aS2l7REgIjD7nL431So',
+        `https://securetoken.googleapis.com/v1/token?key=${process.env.GOOGLE_API_KEY}`,
         body,
         {headers: loginHeader},
       );

@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Text, Button, Colors, Typography} from 'react-native-ui-lib';
+import {Text, Button, Colors, Typography, Dialog} from 'react-native-ui-lib';
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {clearMessage} from '../redux/slice/message.slice';
@@ -19,7 +19,7 @@ const MessageDialog = () => {
       visible={message}
       onDismiss={handleClearMessage}
       title={type}
-      panDirection={Directions.DOWN}
+      panDirection={Dialog.directions.DOWN}
       titleStyle={{
         color: 'white',
         ...Typography.text60BL,
@@ -27,11 +27,14 @@ const MessageDialog = () => {
         width: '100%',
       }}
       bottom
-      width={'100%'}
+      width={'98%'}
       maxHeight={'100%'}
       containerStyle={{
         backgroundColor: 'black',
         borderWidth: 1,
+        borderBottomWidth: 0,
+        borderRadiusBottomLeft: 0,
+        borderRadiusBottomRight: 0,
         borderColor: Colors.grey20,
         gap: 4,
         padding: 12,

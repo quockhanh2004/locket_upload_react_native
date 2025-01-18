@@ -1,6 +1,6 @@
 {
   "name": "locket_upload",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -19,6 +19,7 @@
     "axios": "^1.7.9",
     "react": "18.2.0",
     "react-native": "0.73.8",
+    "react-native-dotenv": "^3.4.11",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "2.18.0",
     "react-native-image-picker": "^7.2.3",
