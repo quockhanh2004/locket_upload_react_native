@@ -317,3 +317,43 @@ export const updateAvatar = createAsyncThunk(
     }
   },
 );
+
+export const enableLocketGold = createAsyncThunk(
+  'enableLocketGold',
+  async (data, thunkApi) => {
+    const {idToken, refreshToken, enable} = data;
+    const body = {
+      data: {
+        badge: enable ? 'locket_gold' : null,
+      },
+    };
+
+    try {
+      const response = await instanceLocket.post('changeProfileInfo', body, {
+        headers: {
+          ...loginHeader,
+          Authorization: 'Bearer ' + idToken,
+        },
+      });
+
+      thunkApi.dispatch(
+        setMessage({
+          message: JSON.stringify(response?.data?.result),
+          type: 'Success',
+        }),
+      );
+      thunkApi.dispatch(getAccountInfo({idToken, refreshToken}));
+      return response.data;
+    } catch (error) {
+      console.log(error.response.data);
+
+      thunkApi.dispatch(
+        setMessage({
+          message: `Error: ${error?.response?.data?.error?.message}`,
+          type: 'Error',
+        }),
+      );
+      thunkApi.rejectWithValue();
+    }
+  },
+);

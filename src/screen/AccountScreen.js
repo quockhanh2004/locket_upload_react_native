@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
   Icon,
   LoaderScreen,
+  Switch,
 } from 'react-native-ui-lib';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {converTime} from '../util/convertTime';
 import {Dimensions, RefreshControl, ScrollView} from 'react-native';
 import {
+  enableLocketGold,
   getAccountInfo,
   updateAvatar,
   updateDisplayName,
@@ -90,7 +92,7 @@ const AccountScreen = () => {
       }),
     );
   };
-  console.log(user);
+  console.log(JSON.stringify(userInfo));
 
   const handleUpdateAvatar = async () => {
     // const result = await selectMedia();
@@ -109,6 +111,16 @@ const AccountScreen = () => {
     //     refreshToken: user?.refreshToken,
     //   }),
     // );
+  };
+
+  const handleEnableGold = val => {
+    dispatch(
+      enableLocketGold({
+        idToken: user?.idToken,
+        refreshToken: user?.refreshToken,
+        enable: val,
+      }),
+    );
   };
   return (
     <ScrollView
@@ -151,6 +163,17 @@ const AccountScreen = () => {
             <Text text70BL color={Colors.white} marginT-10>
               Tham gia vào Locket {converTime(dataUser?.createdAt)}
             </Text>
+
+            <View row gap-12 marginT-20>
+              <Text text70BL white>
+                Locket Gold icon
+              </Text>
+              <Switch
+                onColor={Colors.primary}
+                onValueChange={handleEnableGold}
+                disabled={isLoading}
+              />
+            </View>
           </View>
         ) : (
           <View center>

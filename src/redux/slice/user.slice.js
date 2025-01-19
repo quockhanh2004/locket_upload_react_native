@@ -1,5 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {
+  enableLocketGold,
   getAccountInfo,
   getToken,
   login,
@@ -106,6 +107,17 @@ const userSlice = createSlice({
       })
       .addCase(updateAvatar.rejected, (state, action) => {
         state.updateAvatarLoading = false;
+      })
+
+      //change badge type
+      .addCase(enableLocketGold.pending, state => {
+        state.isLoading = true;
+      })
+      .addCase(enableLocketGold.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(enableLocketGold.rejected, state => {
+        state.isLoading = false;
       });
   },
 });
