@@ -4,7 +4,15 @@ import {setMessage} from '../slice/message.slice';
 import instanceFirebase from '../../util/axios_firebase';
 import instanceLocket from '../../util/axios_locketcamera';
 import axios from 'axios';
-import {logout} from '../slice/user.slice';
+import {logout, setToken} from '../slice/user.slice';
+import {
+  createImageBlob,
+  getDownloadUrl,
+  initiateUpload,
+  uploadImage,
+  validateImageInfo,
+} from '../../util/uploadImage';
+import {getAccessToken} from '../../api/user.api';
 
 export const login = createAsyncThunk('login', async (data, thunkApi) => {
   try {
@@ -202,6 +210,110 @@ export const updateDisplayName = createAsyncThunk(
         }),
       );
       thunkApi.rejectWithValue();
+    }
+  },
+);
+
+export const updateAvatar = createAsyncThunk(
+  'updateAvatar',
+  async (data, thunkApi) => {
+    const {imageInfo, idUser, idToken, refreshToken} = data;
+    let currentToken = idToken;
+
+    try {
+      // Validate image information
+      if (!validateImageInfo(imageInfo, thunkApi)) {
+        return thunkApi.rejectWithValue();
+      }
+
+      // Prepare image for upload
+      const {image, fileSize} = await createImageBlob(imageInfo, thunkApi);
+      const imageName = `${Date.now()}_vtd182.webp`;
+
+      // Upload logic
+      const uploadAvatar = async token => {
+        const uploadUrl = await initiateUpload(
+          idUser,
+          token,
+          fileSize,
+          imageName,
+        );
+        await uploadImage(uploadUrl, image);
+        return await getDownloadUrl(idUser, token, imageName);
+      };
+
+      // Update avatar on server
+      const updateAvatarOnServer = async (downloadUrl, token) => {
+        const body = {
+          data: {
+            profile_picture_url: downloadUrl,
+          },
+        };
+
+        const response = await instanceLocket.post('changeProfileInfo', body, {
+          headers: {
+            ...loginHeader,
+            Authorization: 'Bearer ' + token,
+          },
+        });
+
+        if (response.status !== 200) {
+          throw new Error(response.data?.error?.message || 'Update failed');
+        }
+
+        return response;
+      };
+
+      // Handle token and retry logic
+      const handleUpload = async () => {
+        try {
+          const downloadUrl = await uploadAvatar(currentToken);
+          await updateAvatarOnServer(downloadUrl, currentToken);
+
+          // Dispatch success actions
+          thunkApi.dispatch(getAccountInfo({idToken, refreshToken}));
+          thunkApi.dispatch(
+            setMessage({
+              message: 'Avatar updated successfully',
+              type: 'Success',
+            }),
+          );
+          return true;
+        } catch (error) {
+          if (error.message.includes('403')) {
+            console.log(JSON.stringify(error));
+
+            throw new Error('Retry with new token');
+          }
+          throw error;
+        }
+      };
+
+      // Attempt upload and handle retries
+      try {
+        await handleUpload();
+      } catch (error) {
+        if (error.message === 'Retry with new token') {
+          try {
+            await handleUpload();
+          } catch (retryError) {
+            throw retryError;
+          }
+        } else {
+          throw error;
+        }
+      }
+    } catch (error) {
+      // Dispatch error messages
+      thunkApi.dispatch(
+        setMessage({
+          message: `Error: ${
+            error?.response?.data?.error?.message || error.message
+          }`,
+          type: 'Error',
+        }),
+      );
+      return thunkApi.rejectWithValue();
     }
   },
 );

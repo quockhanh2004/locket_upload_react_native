@@ -4,6 +4,7 @@ import {
   getToken,
   login,
   resetPassword,
+  updateAvatar,
   updateDisplayName,
 } from '../action/user.action';
 
@@ -15,6 +16,7 @@ const userSlice = createSlice({
     resetPassword: null,
     isLoading: false,
     resetPasswordLoading: false,
+    updateAvatarLoading: false,
   },
 
   reducers: {
@@ -27,6 +29,7 @@ const userSlice = createSlice({
     clearStatus: state => {
       state.resetPassword = null;
       state.isLoading = false;
+      state.updateAvatarLoading = false;
     },
     setToken: (state, action) => {
       state.user.idToken = action.payload.access_token;
@@ -92,6 +95,17 @@ const userSlice = createSlice({
       })
       .addCase(updateDisplayName.rejected, (state, action) => {
         state.isLoading = false;
+      })
+
+      //update avatar
+      .addCase(updateAvatar.pending, state => {
+        state.updateAvatarLoading = true;
+      })
+      .addCase(updateAvatar.fulfilled, (state, action) => {
+        state.updateAvatarLoading = false;
+      })
+      .addCase(updateAvatar.rejected, (state, action) => {
+        state.updateAvatarLoading = false;
       });
   },
 });

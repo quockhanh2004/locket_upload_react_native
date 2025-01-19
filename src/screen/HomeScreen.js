@@ -25,7 +25,7 @@ import {clearPostMoment} from '../redux/slice/postMoment.slice';
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const {user} = useSelector(state => state.user);
+  const {user, userInfo} = useSelector(state => state.user);
   const {postMoment} = useSelector(state => state.postMoment);
 
   const [uriMedia, seturiMedia] = useState(null);
@@ -67,6 +67,7 @@ const HomeScreen = () => {
         idToken: user.idToken,
         imageInfo: uriMedia,
         caption,
+        refreshToken: user.refreshToken,
       }),
     );
   };
@@ -89,7 +90,7 @@ const HomeScreen = () => {
     <View flex bg-black padding-12>
       <View row spread centerV>
         <Avatar
-          source={{uri: user?.profilePicture}}
+          source={{uri: userInfo?.users[0]?.photoUrl}}
           size={36}
           onPress={handleViewProfile}
         />

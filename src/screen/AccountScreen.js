@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import {
   View,
@@ -6,19 +7,29 @@ import {
   Colors,
   TouchableOpacity,
   Icon,
+  LoaderScreen,
 } from 'react-native-ui-lib';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {converTime} from '../util/convertTime';
 import {Dimensions, RefreshControl, ScrollView} from 'react-native';
-import {getAccountInfo, updateDisplayName} from '../redux/action/user.action';
+import {
+  getAccountInfo,
+  updateAvatar,
+  updateDisplayName,
+} from '../redux/action/user.action';
 import {useNavigation} from '@react-navigation/native';
 import EditTextDialog from '../Dialog/EditTextDialog';
+import {splitName} from '../util/splitName';
+import {selectMedia} from '../util/selectImage';
+import {clearStatus} from '../redux/slice/user.slice';
 
 const AccountScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const {userInfo, isLoading, user} = useSelector(state => state.user);
+  const {userInfo, isLoading, user, updateAvatarLoading} = useSelector(
+    state => state.user,
+  );
   const [dataUser, setdataUser] = useState(userInfo?.users[0]);
 
   const [localFirstName, setlocalFirstName] = useState('');
@@ -37,46 +48,14 @@ const AccountScreen = () => {
       return;
     } else {
       // console.log(name.length / 2);
+      dispatch(clearStatus());
     }
 
-    if (name.length % 2 === 0) {
-      let first_name = '';
-      for (let i = 0; i <= name.length / 2 - 1; i++) {
-        first_name += name[i] + ' ';
-      }
-      // console.log('here');
+    const {first_name, last_name} = splitName(name);
 
-      setlocalFirstName(first_name.trim());
-
-      let last_name = '';
-      for (let i = name.length / 2; i <= name.length - 1; i++) {
-        last_name += name[i] + ' ';
-      }
-      setlocalLastName(last_name.trim());
-      setlocalFirstName(first_name.trim());
-    } else {
-      let first_name = '';
-      for (let i = 0; i < (name.length / 2).toFixed(0) - 1; i++) {
-        first_name += name[i] + ' ';
-      }
-      setlocalFirstName(first_name.trim());
-
-      let last_name = '';
-      for (
-        let i = (name.length / 2).toFixed(0) - 1;
-        i <= name.length - 1;
-        i++
-      ) {
-        last_name += name[i] + ' ';
-      }
-
-      setlocalLastName(last_name.trim());
-    }
+    setlocalFirstName(first_name);
+    setlocalLastName(last_name);
   }, [name]);
-
-  // useEffect(() => {
-  //   console.log(localFirstName);
-  // }, [localFirstName]);
 
   const [isEditName, setisEditName] = useState(false);
 
@@ -111,6 +90,26 @@ const AccountScreen = () => {
       }),
     );
   };
+  console.log(user);
+
+  const handleUpdateAvatar = async () => {
+    // const result = await selectMedia();
+    // let avatar;
+    // if (result?.length > 0) {
+    //   avatar = result[0];
+    // }
+    // if (!avatar) {
+    //   return;
+    // }
+    // dispatch(
+    //   updateAvatar({
+    //     imageInfo: avatar,
+    //     idUser: user?.localId,
+    //     idToken: user?.idToken,
+    //     refreshToken: user?.refreshToken,
+    //   }),
+    // );
+  };
   return (
     <ScrollView
       refreshControl={
@@ -119,7 +118,18 @@ const AccountScreen = () => {
       <View height={Dimensions.get('window').height} bg-black centerV>
         {dataUser ? (
           <View center>
-            <Avatar source={{uri: dataUser?.photoUrl}} size={100} />
+            {!updateAvatarLoading ? (
+              <Avatar
+                source={{uri: dataUser?.photoUrl}}
+                size={100}
+                onPress={handleUpdateAvatar}
+                animate
+              />
+            ) : (
+              <View>
+                <LoaderScreen color={Colors.white} size={'medium'} />
+              </View>
+            )}
             <View row centerV marginT-20>
               <Text text50BL color={Colors.white}>
                 {dataUser?.displayName}
