@@ -4,8 +4,8 @@ import {
   getToken,
   login,
   resetPassword,
+  updateDisplayName,
 } from '../action/user.action';
-import {setMessage} from './message.slice';
 
 const userSlice = createSlice({
   name: 'user',
@@ -72,6 +72,7 @@ const userSlice = createSlice({
         state.isLoading = false;
       })
 
+      //reset password
       .addCase(resetPassword.pending, state => {
         state.resetPasswordLoading = true;
       })
@@ -80,6 +81,17 @@ const userSlice = createSlice({
       })
       .addCase(resetPassword.rejected, state => {
         state.resetPasswordLoading = false;
+      })
+
+      //update display name
+      .addCase(updateDisplayName.pending, state => {
+        state.isLoading = true;
+      })
+      .addCase(updateDisplayName.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(updateDisplayName.rejected, (state, action) => {
+        state.isLoading = false;
       });
   },
 });

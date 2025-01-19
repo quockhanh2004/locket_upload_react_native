@@ -7,5 +7,7 @@ export const AssetsInit = () => {
     ic_cancel: require('../assets/icons/cancel.png'),
     ic_logout: require('../assets/icons/ic_logout.png'),
     ic_add: require('../assets/icons/ic_add.png'),
+    ic_back: require('../assets/icons/ic_back.png'),
+    ic_edit: require('../assets/icons/ic_edit.png'),
   });
 };

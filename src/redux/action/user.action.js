@@ -157,3 +157,51 @@ export const getToken = createAsyncThunk(
     }
   },
 );
+
+export const updateDisplayName = createAsyncThunk(
+  'updateDisplayName',
+  async (data, thunkApi) => {
+    const {last_name, first_name, idToken, refreshToken} = data;
+    const body = {
+      data: {
+        first_name,
+        last_name,
+      },
+    };
+    try {
+      const response = await instanceLocket.post('changeProfileInfo', body, {
+        headers: {
+          ...loginHeader,
+          Authorization: 'Bearer ' + idToken,
+        },
+      });
+
+      if (response.status === 200) {
+        thunkApi.dispatch(
+          setMessage({
+            message: 'Display Name updated successfully',
+            type: 'Success',
+          }),
+        );
+        thunkApi.dispatch(getAccountInfo({idToken, refreshToken}));
+        return response.data;
+      } else {
+        thunkApi.dispatch(
+          setMessage({
+            message: `Error: ${response.data?.error}`,
+            type: 'Error',
+          }),
+        );
+        thunkApi.rejectWithValue();
+      }
+    } catch (error) {
+      thunkApi.dispatch(
+        setMessage({
+          message: `Error: ${JSON.stringify(error?.response?.data?.error)}`,
+          type: 'Error',
+        }),
+      );
+      thunkApi.rejectWithValue();
+    }
+  },
+);
