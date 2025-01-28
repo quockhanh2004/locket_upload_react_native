@@ -34,7 +34,7 @@ const userSlice = createSlice({
     },
     setToken: (state, action) => {
       state.user.idToken = action.payload.access_token;
-      state.user.refreshToken = action.payload.refreshToken;
+      state.user.refreshToken = action.payload.refresh_token;
     },
   },
 

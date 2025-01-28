@@ -64,15 +64,14 @@ export const initiateUpload = async (idUser, idToken, fileSize, nameImg) => {
   return response.headers['x-goog-upload-url'];
 };
 
-export const uploadImage = async (uploadUrl, blobImage) => {
+export const uploadImage = async (uploadUrl, blobImage, token) => {
   const response = await axios.put(uploadUrl, blobImage, {
-    headers: uploadHeaders,
-    validateStatus: status => status < 500,
+    headers: {
+      ...uploadHeaders,
+      Authorization: 'Firebase ' + token,
+    },
   });
-
-  if (response.status >= 400) {
-    throw new Error(`Error: Upload failed - ${JSON.stringify(response.data)}`);
-  }
+  return response.data;
 };
 
 export const getDownloadUrl = async (idUser, idToken, nameImg) => {

@@ -30,7 +30,7 @@ export const store = configureStore({
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }).concat(apiMiddleware),
+    }).concat(),
 });
 
 export const persistor = persistStore(store);

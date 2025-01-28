@@ -59,15 +59,7 @@ export const getAccessToken = async data => {
       body,
       {headers: loginHeader},
     );
-    const statusCode = response.data?.result?.status;
-    const res =
-      response.statusCode === 200 && statusCode !== 401 && statusCode !== 500;
-    if (res) {
-      return response.data;
-    } else {
-      console.warn(response?.data?.error?.message);
-      return null;
-    }
+    return response.data;
   } catch (error) {
     console.warn(error?.response?.data?.error?.message);
     return null;

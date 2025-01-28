@@ -238,7 +238,7 @@ export const updateAvatar = createAsyncThunk(
           fileSize,
           imageName,
         );
-        await uploadImage(uploadUrl, image);
+        await uploadImage(uploadUrl, image, token);
         return await getDownloadUrl(idUser, token, imageName);
       };
 

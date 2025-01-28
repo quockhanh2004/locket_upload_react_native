@@ -10,6 +10,7 @@ import {
   uploadImage,
   validateImageInfo,
 } from '../../util/uploadImage';
+import {loginHeader} from '../../util/header';
 
 export const uploadImageToFirebaseStorage = createAsyncThunk(
   'uploadImage',
@@ -24,107 +25,60 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
       const {image, fileSize} = await createImageBlob(imageInfo, thunkApi);
       const nameImg = `${Date.now()}_vtd182.webp`;
 
-      const tryUpload = async token => {
-        try {
-          const uploadUrl = await initiateUpload(
-            idUser,
-            token,
-            fileSize,
-            nameImg,
-          );
+      const uploadUrl = await initiateUpload(
+        idUser,
+        currentToken,
+        fileSize,
+        nameImg,
+      );
 
-          await uploadImage(uploadUrl, image);
+      await uploadImage(uploadUrl, image, currentToken);
 
-          const downloadUrl = await getDownloadUrl(idUser, token, nameImg);
-          const bodyPostMoment = {
-            data: {
-              caption,
-              thumbnail_url: downloadUrl,
-              recipients: [],
-            },
-          };
-          const response = await axios.post(
-            'https://api.locketcamera.com/postMomentV2',
-            bodyPostMoment,
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-              },
-            },
-          );
-
-          if (response.status === 200) {
-            console.log(response.data);
-            return response.data;
-          } else {
-            thunkApi.dispatch(
-              setMessage({
-                message: `Error: ${response?.data?.error?.message}`,
-                type: 'Error',
-              }),
-            );
-            throw new Error('Post failed with status other than 200'); // Throw error to exit tryUpload
-          }
-        } catch (error) {
-          if (error.message.includes('403')) {
-            const newToken = await getAccessToken({
-              refreshToken,
-            });
-            thunkApi.dispatch(setToken(newToken));
-            currentToken = newToken.id_token;
-            //retry with new token
-            throw new Error('Retry with new token');
-          } else {
-            throw error; //rethrow
-          }
-        }
+      const downloadUrl = await getDownloadUrl(idUser, currentToken, nameImg);
+      const bodyPostMoment = {
+        data: {
+          caption,
+          thumbnail_url: downloadUrl,
+          recipients: [],
+        },
       };
 
-      let success = false;
-      let result;
-      try {
-        result = await tryUpload(currentToken);
-        success = true;
-      } catch (error) {
-        if (error.message === 'Retry with new token') {
-          try {
-            result = await tryUpload(currentToken);
-            success = true;
-          } catch (retryError) {
-            thunkApi.dispatch(
-              setMessage({
-                message: `Error: ${
-                  retryError?.response?.data?.error?.message ||
-                  retryError.message
-                }`,
-                type: 'Error',
-              }),
-            );
-            return thunkApi.rejectWithValue();
-          }
-        } else {
-          thunkApi.dispatch(
-            setMessage({
-              message: `Error: ${
-                error?.response?.data?.error?.message || error.message
-              }`,
-              type: 'Error',
-            }),
-          );
-          return thunkApi.rejectWithValue();
-        }
-      }
-
-      if (success) {
-        return result;
+      const response = await axios.post(
+        'https://api.locketcamera.com/postMomentV2',
+        bodyPostMoment,
+        {
+          headers: {
+            ...loginHeader,
+            Authorization: `Bearer ${currentToken}`,
+          },
+        },
+      );
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        thunkApi.dispatch(
+          setMessage({
+            message: `Error: ${response?.data?.error?.message}`,
+            type: 'Error',
+          }),
+        );
+        throw new Error('Post failed with status other than 200');
       }
     } catch (error) {
+      const refresh = await getAccessToken({
+        refreshToken: refreshToken,
+      });
+      thunkApi.dispatch(
+        setToken({
+          access_token: refresh.access_token,
+          refresh_token: refresh.refresh_token,
+        }),
+      );
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${
-            error?.response?.data?.error?.message || error.message
-          }`,
+          message: `Error: ${JSON.stringify(
+            error?.response?.data?.error || error.message,
+          )}`,
           type: 'Error',
         }),
       );

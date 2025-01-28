@@ -4,7 +4,6 @@ import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {clearMessage} from '../redux/slice/message.slice';
 import CustomDialog from './CustomDialog';
-import {Directions} from 'react-native-gesture-handler';
 import {ScrollView} from 'react-native';
 
 const MessageDialog = () => {

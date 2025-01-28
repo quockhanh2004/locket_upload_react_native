@@ -9,6 +9,8 @@ import {
   Image,
   Typography,
   Button,
+  LoaderScreen,
+  Text,
 } from 'react-native-ui-lib';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
@@ -26,7 +28,8 @@ const HomeScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const {user, userInfo} = useSelector(state => state.user);
-  const {postMoment} = useSelector(state => state.postMoment);
+  const {postMoment, isLoading} = useSelector(state => state.postMoment);
+  // console.log(user);
 
   const [uriMedia, seturiMedia] = useState(null);
   const [caption, setCaption] = useState('');
@@ -166,19 +169,19 @@ const HomeScreen = () => {
         </View>
 
         <Button
-          label={'Send!'}
+          label={!isLoading && 'Send!'}
           backgroundColor={Colors.primary}
           black
           onPress={handlePost}
           borderRadius={8}
-          // disabled={isLoading}
+          disabled={isLoading}
           text70BL>
-          {/* {isLoading && (
+          {isLoading && (
             <View row center>
               <Text />
               <LoaderScreen color={Colors.white} size={'small'} />
             </View>
-          )} */}
+          )}
         </Button>
       </View>
     </View>
