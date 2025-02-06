@@ -14,21 +14,19 @@ import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {converTime} from '../util/convertTime';
 import {Dimensions, RefreshControl, ScrollView} from 'react-native';
+
 import {
   enableLocketGold,
   getAccountInfo,
-  updateAvatar,
   updateDisplayName,
 } from '../redux/action/user.action';
-import {useNavigation} from '@react-navigation/native';
 import EditTextDialog from '../Dialog/EditTextDialog';
 import {splitName} from '../util/splitName';
-import {selectMedia} from '../util/selectImage';
 import {clearStatus} from '../redux/slice/user.slice';
+import Header from '../component/Header';
 
 const AccountScreen = () => {
   const dispatch = useDispatch();
-  const navigation = useNavigation();
   const {userInfo, isLoading, user, updateAvatarLoading} = useSelector(
     state => state.user,
   );
@@ -70,10 +68,6 @@ const AccountScreen = () => {
     );
   };
 
-  const handleBack = () => {
-    navigation.goBack();
-  };
-
   const handleEditName = () => {
     setisEditName(!isEditName);
   };
@@ -92,7 +86,7 @@ const AccountScreen = () => {
       }),
     );
   };
-  console.log(JSON.stringify(userInfo));
+  // console.log(JSON.stringify(userInfo));
 
   const handleUpdateAvatar = async () => {
     // const result = await selectMedia();
@@ -185,16 +179,7 @@ const AccountScreen = () => {
           </View>
         )}
       </View>
-      <View bg-black absT paddingH-20 paddingT-20>
-        <TouchableOpacity onPress={handleBack}>
-          <Icon
-            assetGroup="icons"
-            assetName="ic_back"
-            tintColor={Colors.grey40}
-            size={24}
-          />
-        </TouchableOpacity>
-      </View>
+      <Header />
       <EditTextDialog
         visible={isEditName}
         onDismiss={onDismissEditName}

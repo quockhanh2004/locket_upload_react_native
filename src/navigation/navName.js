@@ -3,4 +3,5 @@ export const nav = {
   home: 'home',
   resetPassword: 'resetPassword',
   accountInfo: 'accountInfo',
+  crop: 'crop',
 };

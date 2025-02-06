@@ -18,11 +18,9 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
     const {idUser, idToken, imageInfo, caption, refreshToken} = data;
     let currentToken = idToken;
     try {
-      if (!validateImageInfo(imageInfo, thunkApi)) {
-        return thunkApi.rejectWithValue();
-      }
+      validateImageInfo(imageInfo);
 
-      const {image, fileSize} = await createImageBlob(imageInfo, thunkApi);
+      const {image, fileSize} = await createImageBlob(imageInfo);
       const nameImg = `${Date.now()}_vtd182.webp`;
 
       const uploadUrl = await initiateUpload(

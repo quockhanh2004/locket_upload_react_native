@@ -227,7 +227,7 @@ export const updateAvatar = createAsyncThunk(
       }
 
       // Prepare image for upload
-      const {image, fileSize} = await createImageBlob(imageInfo, thunkApi);
+      const {image, fileSize} = await createImageBlob(imageInfo);
       const imageName = `${Date.now()}_vtd182.webp`;
 
       // Upload logic

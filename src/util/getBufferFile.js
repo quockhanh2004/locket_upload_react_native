@@ -3,6 +3,8 @@ import RNFS from 'react-native-fs';
 import {decode as atob} from 'base-64';
 
 export async function createBlobFromUri(fileInfo) {
+  console.log(fileInfo);
+  
   try {
     const {uri, type} = fileInfo;
 

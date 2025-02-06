@@ -14,35 +14,48 @@ import {
 } from 'react-native-ui-lib';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
+import {useNavigation, useRoute} from '@react-navigation/native';
+
 import {logout} from '../redux/slice/user.slice';
 import {selectMedia} from '../util/selectImage';
 import InputView from '../component/InputView';
 import {getAccountInfo} from '../redux/action/user.action';
-import {useNavigation} from '@react-navigation/native';
 import {nav} from '../navigation/navName';
 import {uploadImageToFirebaseStorage} from '../redux/action/postMoment.action';
 import {setMessage} from '../redux/slice/message.slice';
 import {clearPostMoment} from '../redux/slice/postMoment.slice';
+import { clearAppCache } from '../util/uploadImage';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const route = useRoute();
   const {user, userInfo} = useSelector(state => state.user);
   const {postMoment, isLoading} = useSelector(state => state.postMoment);
-  // console.log(user);
 
   const [uriMedia, seturiMedia] = useState(null);
   const [caption, setCaption] = useState('');
 
-  // console.log(user);
-
   useEffect(() => {
+    clearAppCache();
     dispatch(
       getAccountInfo({idToken: user.idToken, refreshToken: user.refreshToken}),
     );
   }, []);
 
-  // console.log(userInfo?);
+  // Lắng nghe sự kiện khi cắt ảnh xong
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (route.params?.uri) {
+        seturiMedia(route.params.uri);
+        console.log(route.params.uri);
+
+        navigation.setParams({uri: undefined});
+      }
+    });
+
+    return unsubscribe; // Hủy đăng ký listener khi component unmount
+  }, [navigation, route]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -51,7 +64,10 @@ const HomeScreen = () => {
   const handleSelectImage = async () => {
     const result = await selectMedia();
     if (result?.length > 0) {
-      seturiMedia(result[0]);
+      seturiMedia('');
+      navigation.navigate(nav.crop, {
+        imageUri: result[0].uri,
+      });
     }
   };
 
@@ -85,6 +101,8 @@ const HomeScreen = () => {
       );
       dispatch(clearPostMoment());
       seturiMedia(null);
+      //xóa cache của app sau khi upload thành công
+      clearAppCache();
       setCaption('');
     }
   }, [postMoment]);
