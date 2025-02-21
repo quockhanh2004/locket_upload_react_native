@@ -1,4 +1,4 @@
-import {View, Text, TouchableOpacity, Icon, Colors} from 'react-native-ui-lib';
+import {View, TouchableOpacity, Icon, Colors} from 'react-native-ui-lib';
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 

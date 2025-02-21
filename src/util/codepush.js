@@ -25,6 +25,6 @@ export const getStatusFromCodePush = status => {
     case codePush.SyncStatus.UNKNOWN_ERROR:
       return 'ERROR'; // Tổng hợp các trạng thái lỗi
     default:
-      return null; // Trạng thái không xác định
+      return 'CHECK_UPDATE'; // Trạng thái không xác định
   }
 };

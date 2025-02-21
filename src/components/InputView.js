@@ -3,8 +3,6 @@ import React, {useState, useRef} from 'react';
 import {TextInput, StyleSheet, Pressable} from 'react-native';
 import {Colors, View, Icon, Typography, Card, Image} from 'react-native-ui-lib';
 
-import WrapInput from './WrapInput';
-
 const InputView = ({
   bgColor,
   borderColor,
@@ -55,7 +53,7 @@ const InputView = ({
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(eyePassword);
-  const [isFocus, setIsFocus] = useState(false);
+  // const [isFocus, setIsFocus] = useState(false);
 
   const inputRef = useRef(null);
 
@@ -66,15 +64,15 @@ const InputView = ({
     onChangeText?.('');
   };
 
-  const handleFocus = () => {
-    setIsFocus(true);
-    onFocus?.(true);
-  };
+  // const handleFocus = () => {
+  //   setIsFocus(true);
+  //   onFocus?.(true);
+  // };
 
-  const handleBlur = () => {
-    setIsFocus(false);
-    onBlur?.();
-  };
+  // const handleBlur = () => {
+  //   setIsFocus(false);
+  //   onBlur?.();
+  // };
 
   const renderLeftComponent = () =>
     !!iconLeft && (
@@ -153,8 +151,8 @@ const InputView = ({
           maxLength={maxLength}
           placeholder={placeholder}
           placeholderTextColor={placeholderTextColor}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
+          // onFocus={handleFocus}
+          // onBlur={handleBlur}
           onPressIn={onPressIn}
           onSubmitEditing={onSubmitEditing}
           keyboardType={keyboardType}
