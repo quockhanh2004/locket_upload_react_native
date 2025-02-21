@@ -18,13 +18,13 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 
 import {logout} from '../redux/slice/user.slice';
 import {selectMedia} from '../util/selectImage';
-import InputView from '../component/InputView';
+import InputView from '../components/InputView';
 import {getAccountInfo} from '../redux/action/user.action';
 import {nav} from '../navigation/navName';
 import {uploadImageToFirebaseStorage} from '../redux/action/postMoment.action';
 import {setMessage} from '../redux/slice/message.slice';
 import {clearPostMoment} from '../redux/slice/postMoment.slice';
-import { clearAppCache } from '../util/uploadImage';
+import {clearAppCache} from '../util/uploadImage';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();

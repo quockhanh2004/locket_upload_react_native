@@ -1,6 +1,6 @@
 {
   "name": "locket_upload",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -9,6 +9,7 @@
     "start": "react-native start",
     "test": "jest",
     "build-android": "cd android && ./gradlew assembleRelease && adb install ./app/build/outputs/apk/release/app-release.apk && cd ..",
+    "deploy-with_codepush": "./build-deploy-codepush.sh",
     "deploy-android": "./build-deploy.sh"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
     "axios": "^1.7.9",
     "react": "18.2.0",
     "react-native": "0.73.8",
+    "react-native-code-push": "^9.0.1",
     "react-native-dotenv": "^3.4.11",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "2.18.0",

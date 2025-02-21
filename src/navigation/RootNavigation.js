@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 
 import {nav} from './navName';
 import ResetPasswordScreen from '../screen/ResetPasswordScreen';
@@ -37,9 +37,11 @@ const RootNavigation = () => {
   const isLoggedIn = useSelector(state => state.user?.user?.localId);
 
   return (
-    <NavigationContainer>
-      {isLoggedIn ? <HomeNavigator /> : <AuthNavigator />}
-    </NavigationContainer>
+    <>
+      <NavigationContainer>
+        {isLoggedIn ? <HomeNavigator /> : <AuthNavigator />}
+      </NavigationContainer>
+    </>
   );
 };
 

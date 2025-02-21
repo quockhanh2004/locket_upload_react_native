@@ -10,10 +10,11 @@ import {
   LoaderScreen,
   Switch,
 } from 'react-native-ui-lib';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {converTime} from '../util/convertTime';
 import {Dimensions, RefreshControl, ScrollView} from 'react-native';
+import codePush from 'react-native-code-push';
 
 import {
   enableLocketGold,
@@ -23,7 +24,11 @@ import {
 import EditTextDialog from '../Dialog/EditTextDialog';
 import {splitName} from '../util/splitName';
 import {clearStatus} from '../redux/slice/user.slice';
-import Header from '../component/Header';
+import Header from '../components/Header';
+import UpdatePopup from '../Dialog/UpdatePopup';
+import {CODEPUSH_DEPLOYMENTKEY, getStatusFromCodePush} from '../util/codepush';
+import MainButton from '../components/MainButton';
+import {setMessage} from '../redux/slice/message.slice';
 
 const AccountScreen = () => {
   const dispatch = useDispatch();
@@ -86,7 +91,6 @@ const AccountScreen = () => {
       }),
     );
   };
-  // console.log(JSON.stringify(userInfo));
 
   const handleUpdateAvatar = async () => {
     // const result = await selectMedia();
@@ -116,12 +120,77 @@ const AccountScreen = () => {
       }),
     );
   };
+
+  // State cập nhật CodePush
+  const [updateInfo, setUpdateInfo] = useState(null);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+
+  const handleCodePushUpdate = useCallback(async () => {
+    setUpdateInfo('CHECKING_FOR_UPDATE');
+    setIsPopupVisible(true);
+
+    try {
+      const update = await codePush.checkForUpdate(CODEPUSH_DEPLOYMENTKEY());
+      if (!update) {
+        setUpdateInfo('UP_TO_DATE');
+      } else {
+        setUpdateInfo('UPDATE_AVAILABLE');
+      }
+    } catch (error) {
+      dispatch(
+        setMessage({
+          message: JSON.stringify(error),
+          type: 'Error',
+        }),
+      );
+      setUpdateInfo('ERROR');
+    }
+  }, []);
+
+  const onUpdate = useCallback(() => {
+    setUpdateInfo('DOWNLOADING_PACKAGE');
+    codePush.sync(
+      {
+        updateDialog: false,
+        installMode: codePush.InstallMode.IMMEDIATE,
+        deploymentKey: CODEPUSH_DEPLOYMENTKEY(),
+      },
+      status => {
+        switch (status) {
+          case codePush.SyncStatus.UPDATE_INSTALLED:
+            setUpdateInfo('UPDATE_INSTALLED');
+            break;
+          case codePush.SyncStatus.UP_TO_DATE:
+            setUpdateInfo('UP_TO_DATE');
+            break;
+          case codePush.SyncStatus.UNKNOWN_ERROR:
+          case codePush.SyncStatus.UPDATE_IGNORED:
+            setUpdateInfo('ERROR');
+            break;
+          default:
+            setUpdateInfo(getStatusFromCodePush(status)); // Hàm helper để map status
+        }
+      },
+      progress => {
+        setDownloadProgress(progress.receivedBytes / progress.totalBytes);
+      },
+    );
+  }, []);
+
+  const onPostpone = useCallback(() => {
+    setIsPopupVisible(false);
+    setTimeout(() => {
+      setUpdateInfo(null);
+    }, 900);
+  }, []);
+
   return (
     <ScrollView
       refreshControl={
         <RefreshControl onRefresh={handleRefresh} refreshing={isLoading} />
       }>
-      <View height={Dimensions.get('window').height} bg-black centerV>
+      <View height={Dimensions.get('window').height} bg-black centerV gap-24>
         {dataUser ? (
           <View center>
             {!updateAvatarLoading ? (
@@ -178,6 +247,13 @@ const AccountScreen = () => {
             </Text>
           </View>
         )}
+
+        <View paddingH-23>
+          <MainButton
+            label={'Kiểm tra cập nhật ứng dụng'}
+            onPress={handleCodePushUpdate}
+          />
+        </View>
       </View>
       <Header />
       <EditTextDialog
@@ -191,6 +267,14 @@ const AccountScreen = () => {
         value={localFirstName}
         value2={localLastName}
         isLoading={isLoading}
+      />
+      <UpdatePopup
+        isVisible={isPopupVisible}
+        updateInfo={updateInfo}
+        progress={downloadProgress}
+        onUpdate={onUpdate}
+        onPostpone={onPostpone}
+        onCheckUpdate={handleCodePushUpdate}
       />
     </ScrollView>
   );

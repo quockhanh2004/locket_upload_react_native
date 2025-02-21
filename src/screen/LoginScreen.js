@@ -10,7 +10,7 @@ import {
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 
-import InputView from '../component/InputView';
+import InputView from '../components/InputView';
 import {login, resetPassword} from '../redux/action/user.action';
 import {setMessage} from '../redux/slice/message.slice';
 import {checkEmail} from '../util/regex';

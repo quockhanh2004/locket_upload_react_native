@@ -5,8 +5,8 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 
 import {nav} from '../navigation/navName';
 import {resizeImage} from '../util/uploadImage';
-import MainButton from '../component/MainButton';
-import Header from '../component/Header';
+import MainButton from '../components/MainButton';
+import Header from '../components/Header';
 
 const CropImageScreen = () => {
   const navigation = useNavigation();
@@ -42,7 +42,7 @@ const CropImageScreen = () => {
       <View marginB-100>
         <MainButton label="Cắt ảnh" onPress={handleCrop} />
       </View>
-      <Header/>
+      <Header />
     </View>
   );
 };

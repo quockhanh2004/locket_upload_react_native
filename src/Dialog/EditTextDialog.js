@@ -2,8 +2,8 @@
 import {Colors, Dialog, Typography, View} from 'react-native-ui-lib';
 import React, {useEffect, useState} from 'react';
 import CustomDialog from './CustomDialog';
-import MainButton from '../component/MainButton';
-import MainInput from '../component/MainInput';
+import MainButton from '../components/MainButton';
+import MainInput from '../components/MainInput';
 
 const EditTextDialog = ({
   value,
