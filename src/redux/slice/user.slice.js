@@ -46,6 +46,8 @@ const userSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
+        let now = new Date().getTime() + 3600 * 1000;
+        state.user.timeExpires = now;
       })
       .addCase(login.rejected, state => {
         state.isLoading = false;
@@ -71,6 +73,9 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.user.idToken = action.payload.access_token;
         state.user.refreshToken = action.payload.refresh_token;
+        state.user.expiresIn = action.payload.expiresIn;
+        let now = new Date().getTime() + 3600 * 1000;
+        state.user.timeExpires = now;
       })
       .addCase(getToken.rejected, state => {
         state.isLoading = false;

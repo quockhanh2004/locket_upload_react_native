@@ -31,6 +31,8 @@ export const login = createAsyncThunk('login', async (data, thunkApi) => {
     if (response.status === 200) {
       return response.data;
     } else {
+      console.log(response.status);
+
       thunkApi.dispatch(
         setMessage({
           message: `Error: ${response.statusMessage}`,
@@ -40,6 +42,8 @@ export const login = createAsyncThunk('login', async (data, thunkApi) => {
       thunkApi.rejectWithValue();
     }
   } catch (error) {
+    console.log(error.response);
+
     thunkApi.dispatch(
       setMessage({
         message: `Error: ${error?.response?.data?.error?.message}`,
@@ -290,19 +294,19 @@ export const updateAvatar = createAsyncThunk(
       };
 
       // Attempt upload and handle retries
-      try {
-        await handleUpload();
-      } catch (error) {
-        if (error.message === 'Retry with new token') {
-          try {
-            await handleUpload();
-          } catch (retryError) {
-            throw retryError;
-          }
-        } else {
-          throw error;
-        }
-      }
+      // try {
+      //   await handleUpload();
+      // } catch (error) {
+      //   if (error.message === 'Retry with new token') {
+      //     try {
+      //       await handleUpload();
+      //     } catch (retryError) {
+      //       throw retryError;
+      //     }
+      //   } else {
+      //     throw error;
+      //   }
+      // }
     } catch (error) {
       // Dispatch error messages
       thunkApi.dispatch(

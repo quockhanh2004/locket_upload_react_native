@@ -19,12 +19,13 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {logout} from '../redux/slice/user.slice';
 import {selectMedia} from '../util/selectImage';
 import InputView from '../components/InputView';
-import {getAccountInfo} from '../redux/action/user.action';
+import {getAccountInfo, getToken} from '../redux/action/user.action';
 import {nav} from '../navigation/navName';
 import {uploadImageToFirebaseStorage} from '../redux/action/postMoment.action';
 import {setMessage} from '../redux/slice/message.slice';
 import {clearPostMoment} from '../redux/slice/postMoment.slice';
 import {clearAppCache} from '../util/uploadImage';
+import {converTime} from '../util/convertTime';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -38,9 +39,21 @@ const HomeScreen = () => {
 
   useEffect(() => {
     clearAppCache();
-    dispatch(
-      getAccountInfo({idToken: user.idToken, refreshToken: user.refreshToken}),
-    );
+    if (user.timeExpires < new Date().getTime()) {
+      dispatch(
+        getToken({
+          refreshToken: user.refreshToken,
+        }),
+      );
+    }
+    setTimeout(() => {
+      dispatch(
+        getAccountInfo({
+          idToken: user.idToken,
+          refreshToken: user.refreshToken,
+        }),
+      );
+    }, 2500);
   }, []);
 
   // Lắng nghe sự kiện khi cắt ảnh xong

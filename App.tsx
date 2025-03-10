@@ -34,6 +34,6 @@ const App = () => {
 };
 
 const codePushOptions = {
-  checkFrequency: CodePush.CheckFrequency.ON_APP_START, // Kiểm tra cập nhật
+  checkFrequency: CodePush.CheckFrequency.MANUAL, // Kiểm tra cập nhật
 };
 export default CodePush(codePushOptions)(App);

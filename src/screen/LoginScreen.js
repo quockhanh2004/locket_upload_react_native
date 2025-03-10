@@ -58,7 +58,7 @@ const LoginScreen = () => {
     return true;
   };
 
-  useEffect(() => {});
+  // useEffect(() => {});
   return (
     <View flex centerV bg-black paddingH-20>
       <Text text20BL marginB-20 white center>
