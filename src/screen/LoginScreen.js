@@ -30,7 +30,7 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     if (checkValue()) {
-      dispatch(login({email, password}));
+      dispatch(login({email: email.trim(), password: password.trim()}));
     }
   };
 

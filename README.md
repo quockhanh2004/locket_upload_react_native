@@ -1,79 +1,75 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 📸 Locket Upload - React Native
 
-# Getting Started
+Ứng dụng **Locket Upload** giúp bạn tải ảnh lên **Locket Camera** một cách dễ dàng trên Android. 
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## ✨ Tính năng nổi bật
 
-## Step 1: Start the Metro Server
+- ✂️ **Cắt ảnh**: Đảm bảo ảnh có tỉ lệ 1:1 trước khi tải lên.
+- 📤 **Hiển thị tiến trình tải ảnh**: Dễ dàng theo dõi trạng thái upload.
+- 🔄 **Thay đổi tên người dùng**: Tùy chỉnh họ tên ngay trong app.
+- 🚀 **Cập nhật trong ứng dụng**: Không cần cài đặt lại bằng APK.
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+## 📷 Hình ảnh minh họa
 
-To start Metro, run the following command from the _root_ of your React Native project:
+![Screenshot](./images/screenshot1.png)
+![Screenshot](./images/screenshot2.png)
+![Screenshot](./images/screenshot3.png)
+![Screenshot](./images/screenshot4.png)
+![Screenshot](./images/screenshot5.png)
+![Screenshot](./images/screenshot6.png)
 
-```bash
-# using npm
-npm start
+## Bản dựng sẵn có thể tải [Tại đây](https://github.com/quockhanh2004/locket_upload_react_native/releases)
 
-# OR using Yarn
-yarn start
+## 🔧 Hướng dẫn build và custom
+
+Nếu bạn muốn tùy chỉnh ứng dụng theo nhu cầu của riêng mình, hãy làm theo các bước sau:
+
+### 1️⃣ Cài đặt môi trường
+
+Trước tiên, hãy đảm bảo bạn đã cài đặt:
+- **Node.js** (>= 16)
+- **Yarn** hoặc **npm**
+- **React Native CLI**
+- **Android Studio** (nếu build trên Android)
+
+### 2️⃣ Clone repo
+```sh
+git clone https://github.com/quockhanh2004/locket_upload_react_native.git
+cd locket_upload_react_native
 ```
 
-## Step 2: Start your Application
-
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
-
-```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
+### 3️⃣ Cài đặt dependencies
+```sh
+yarn install  # hoặc npm install
 ```
 
-### For iOS
-
-```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+### 4️⃣ Build ứng dụng
+#### Chạy trên thiết bị ảo hoặc thật
+```sh
+yarn start  # hoặc npm start sau đó nhấn a
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+#### Build APK trên Mac OS hoặc Linux
+```sh
+yarn run build-android  # hoặc npm run build-android
+```
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+#### Build APK trên Windows
+```sh
+yarn run build-android-windows  # hoặc npm run build-android-windows
+```
+#### Sau khi build xong sẽ tự động cài đặt apk bản release lên thiết bị
+APK sau khi build sẽ có trong thư mục `android/app/build/outputs/apk/release/`.
 
-## Step 3: Modifying your App
+### 5️⃣ Tuỳ chỉnh theo ý muốn
+Bạn có thể thay đổi các thành phần trong source code, chẳng hạn:
+- **Giao diện**: Sửa trong thư mục `src/components/`, `src/Dialog/`, `src/screen/`
+- **API Upload**: Kiểm tra trong `src/redux/action`
 
-Now that you have successfully run the app, let's modify it.
+## 🚀 Đóng góp
+Nếu bạn có ý tưởng hoặc muốn cải thiện ứng dụng, hãy tạo **Pull Request** trên GitHub!
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+📌 **Repo chính thức:** [GitHub - quockhanh2004/locket_upload_react_native](https://github.com/quockhanh2004/locket_upload_react_native)
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+---
+📢 Nếu thấy hữu ích, hãy ⭐ repo nhé! 😍
