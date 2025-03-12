@@ -31,7 +31,7 @@ new_apk_path="android/app/build/outputs/apk/release/app-release_${current_time}.
 mv "$apk_path" "$new_apk_path"
 
 # Cài đặt file APK lên thiết bị (tùy chọn)
-# adb install "$new_apk_path"
+adb install "$new_apk_path"
 
 # Commit và push thay đổi lên GitHub
 git add .

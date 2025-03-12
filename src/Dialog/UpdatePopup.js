@@ -1,7 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useMemo, useState} from 'react';
-import {ActivityIndicator} from 'react-native';
-import {View, Dialog, Typography, Colors} from 'react-native-ui-lib';
+import React, {useMemo} from 'react';
+import {
+  View,
+  Dialog,
+  Typography,
+  Colors,
+  ProgressBar,
+} from 'react-native-ui-lib';
 import CustomDialog from './CustomDialog';
 import MainButton from '../components/MainButton';
 
@@ -13,62 +18,57 @@ const UpdatePopup = ({
   onCheckUpdate,
   onPostpone,
 }) => {
-  const [updateMessage, setUpdateMessage] = useState(''); // State cho message
-  const [updateButtons, setUpdateButtons] = useState(null); // State cho buttons
-
-  let showProgress = false;
   const progressPercent = progress ? Math.floor(progress * 100) : 0;
 
-  const updateInfoCase = useMemo(
-    // Sử dụng useMemo để memoize object
+  // Xác định trạng thái hiển thị ProgressBar
+  const showProgress =
+    updateInfo === 'DOWNLOADING_PACKAGE' || updateInfo === 'INSTALLING_UPDATE';
+
+  const updateState = useMemo(
     () => ({
-      CHECKING_FOR_UPDATE: () => ({
+      CHECKING_FOR_UPDATE: {
         message: 'Đang kiểm tra cập nhật...',
-        buttons: null, // Không có button trong trạng thái này
-      }),
-      UPDATE_AVAILABLE: () => ({
+        buttons: null,
+      },
+      UPDATE_AVAILABLE: {
         message: 'Có bản cập nhật mới!',
-        buttons: <MainButton label={'Cập nhật'} onPress={onUpdate} />,
-      }),
-      DOWNLOADING_PACKAGE: () => ({
-        message: `${'Đang tải xuống bản cập nhật:'} ${progressPercent}%`,
-        buttons: null, // Không có button trong trạng thái này
-      }),
-      INSTALLING_UPDATE: () => ({
+        buttons: <MainButton label="Cập nhật" onPress={onUpdate} />,
+      },
+      DOWNLOADING_PACKAGE: {
+        message: `Đang tải xuống: ${progressPercent}%`,
+        buttons: null,
+      },
+      INSTALLING_UPDATE: {
         message: 'Đang cài đặt bản cập nhật...',
-        buttons: null, // Không có button trong trạng thái này
-      }),
-      UP_TO_DATE: () => ({
+        buttons: null,
+      },
+      UP_TO_DATE: {
         message: 'Bạn đã cập nhật phiên bản mới nhất',
-        buttons: <MainButton label={'Đóng'} onPress={onPostpone} />,
-      }),
-      UPDATE_INSTALLED: () => ({
+        buttons: <MainButton label="Đóng" onPress={onPostpone} />,
+      },
+      UPDATE_INSTALLED: {
         message: 'Cập nhật thành công! Ứng dụng sẽ khởi động lại.',
-        buttons: <MainButton label={'Đóng'} onPress={onPostpone} />,
-      }),
-      ERROR: () => ({
+        buttons: <MainButton label="Đóng" onPress={onPostpone} />,
+      },
+      ERROR: {
         message: 'Lỗi khi kiểm tra cập nhật.',
-        buttons: <MainButton label={'Đóng'} onPress={onPostpone} />,
-      }),
-      CHECK_UPDATE: () => ({
+        buttons: <MainButton label="Đóng" onPress={onPostpone} />,
+      },
+      CHECK_UPDATE: {
         message: 'Kiểm tra cập nhật...',
-        buttons: <MainButton label={'Kiểm tra'} onPress={onCheckUpdate} />,
-      }),
-      DEFAULT: () => ({
-        // Thêm default case
+        buttons: <MainButton label="Kiểm tra" onPress={onCheckUpdate} />,
+      },
+      DEFAULT: {
         message: 'Trạng thái cập nhật không xác định',
         buttons: null,
-      }),
+      },
     }),
-    [onPostpone, onUpdate, onCheckUpdate, progressPercent], // Thêm dependencies cần thiết
+    [onPostpone, onUpdate, onCheckUpdate, progressPercent],
   );
 
-  useEffect(() => {
-    const caseResult = updateInfoCase[updateInfo] || updateInfoCase.DEFAULT; // Lấy case tương ứng hoặc default
-    const {message, buttons} = caseResult(); // Gọi function và lấy message và buttons từ return object
-    setUpdateMessage(message); // Cập nhật state message
-    setUpdateButtons(buttons); // Cập nhật state buttons
-  }, [updateInfo, updateInfoCase]);
+  // Cập nhật UI khi updateInfo thay đổi
+  const {message, buttons} = updateState[updateInfo] || updateState.DEFAULT;
+
   return (
     <CustomDialog
       visible={isVisible}
@@ -95,17 +95,16 @@ const UpdatePopup = ({
         borderRadius: 10,
         paddingBottom: 24,
       }}
-      title={updateMessage}>
+      title={message}>
       <View bg-black padding-20>
+        {showProgress && (
+          <ProgressBar
+            progress={progressPercent}
+            progressColor={Colors.primary}
+          />
+        )}
         <View center gap-12>
-          {showProgress && (
-            <ActivityIndicator
-              size="large"
-              color="#007BFF"
-              style={{marginTop: 10, marginBottom: 15}}
-            />
-          )}
-          {updateButtons && <View center>{updateButtons}</View>}
+          {buttons && <View center>{buttons}</View>}
         </View>
       </View>
     </CustomDialog>
