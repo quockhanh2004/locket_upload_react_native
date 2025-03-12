@@ -109,6 +109,7 @@ const LoginScreen = () => {
               inputStyle={{color: Colors.grey40, ...Typography.text70BL}}
               style={{paddingLeft: 10}}
               ref={passwordRef}
+              onSubmitEditing={handleLogin}
             />
           </View>
         </View>
