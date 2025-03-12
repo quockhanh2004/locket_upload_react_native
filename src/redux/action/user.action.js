@@ -4,7 +4,7 @@ import {setMessage} from '../slice/message.slice';
 import instanceFirebase from '../../util/axios_firebase';
 import instanceLocket from '../../util/axios_locketcamera';
 import axios from 'axios';
-import {logout} from '../slice/user.slice';
+import {clearStatus, logout} from '../slice/user.slice';
 import {
   createImageBlob,
   getDownloadUrl,
@@ -30,8 +30,6 @@ export const login = createAsyncThunk('login', async (data, thunkApi) => {
     if (response.status === 200) {
       return response.data;
     } else {
-      console.log(response.status);
-
       thunkApi.dispatch(
         setMessage({
           message: `Error: ${response.statusMessage}`,
@@ -56,6 +54,8 @@ export const login = createAsyncThunk('login', async (data, thunkApi) => {
         }),
       );
     }
+
+    thunkApi.dispatch(clearStatus());
     thunkApi.rejectWithValue();
   }
 });

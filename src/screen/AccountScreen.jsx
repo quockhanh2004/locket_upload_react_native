@@ -1,23 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-native/no-inline-styles */
-import {
-  View,
-  Text,
-  Avatar,
-  Colors,
-  TouchableOpacity,
-  Icon,
-  LoaderScreen,
-  Switch,
-} from 'react-native-ui-lib';
+import {View} from 'react-native-ui-lib';
 import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {converTime} from '../util/convertTime';
 import {Dimensions, RefreshControl, ScrollView} from 'react-native';
 import codePush from 'react-native-code-push';
 
 import {
-  enableLocketGold,
+  // enableLocketGold,
   getAccountInfo,
   updateDisplayName,
 } from '../redux/action/user.action';
@@ -29,6 +18,7 @@ import UpdatePopup from '../Dialog/UpdatePopup';
 import {CODEPUSH_DEPLOYMENTKEY, getStatusFromCodePush} from '../util/codepush';
 import MainButton from '../components/MainButton';
 import {setMessage} from '../redux/slice/message.slice';
+import UserInfo from '../components/UserInfo';
 
 const AccountScreen = () => {
   const dispatch = useDispatch();
@@ -111,17 +101,18 @@ const AccountScreen = () => {
     // );
   };
 
-  const handleEnableGold = val => {
-    dispatch(
-      enableLocketGold({
-        idToken: user?.idToken,
-        refreshToken: user?.refreshToken,
-        enable: val,
-      }),
-    );
-  };
+  // const handleEnableGold = val => {
+  //   dispatch(
+  //     enableLocketGold({
+  //       idToken: user?.idToken,
+  //       refreshToken: user?.refreshToken,
+  //       enable: val,
+  //     }),
+  //   );
+  // };
 
   // State cập nhật CodePush
+
   const [updateInfo, setUpdateInfo] = useState(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -191,63 +182,12 @@ const AccountScreen = () => {
         <RefreshControl onRefresh={handleRefresh} refreshing={isLoading} />
       }>
       <View height={Dimensions.get('window').height} bg-black centerV gap-24>
-        {dataUser ? (
-          <View center>
-            {!updateAvatarLoading ? (
-              <Avatar
-                source={{uri: dataUser?.photoUrl}}
-                size={100}
-                onPress={handleUpdateAvatar}
-                animate
-              />
-            ) : (
-              <View>
-                <LoaderScreen color={Colors.white} size={'medium'} />
-              </View>
-            )}
-            <View row centerV marginT-20>
-              <Text text50BL color={Colors.white}>
-                {dataUser?.displayName}
-              </Text>
-              <View absR style={{right: -24}}>
-                <TouchableOpacity onPress={handleEditName}>
-                  <Icon
-                    assetGroup="icons"
-                    assetName="ic_edit"
-                    size={18}
-                    tintColor={Colors.grey40}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-            <Text text60BL color={Colors.white} marginT-20>
-              {dataUser?.email}
-            </Text>
-            <Text text70BL color={Colors.white} marginT-10>
-              Tham gia vào Locket {converTime(dataUser?.createdAt)}
-            </Text>
-
-            <View row gap-12 marginT-20>
-              <Text text70BL white>
-                Locket Gold icon
-              </Text>
-              <Switch
-                onColor={Colors.primary}
-                onValueChange={handleEnableGold}
-                disabled={isLoading}
-              />
-            </View>
-          </View>
-        ) : (
-          <View center>
-            <Text text70BL color={Colors.white} marginT-20>
-              {
-                'Không tìm thấy thông tin tài khoản \nhãy thử vuốt xuống để làm mới nhé!'
-              }
-            </Text>
-          </View>
-        )}
-
+        <UserInfo
+          dataUser={dataUser}
+          handleEditName={handleEditName}
+          handleUpdateAvatar={handleUpdateAvatar}
+          updateAvatarLoading={updateAvatarLoading}
+        />
         <View paddingH-23>
           <MainButton
             label={'Kiểm tra cập nhật ứng dụng'}

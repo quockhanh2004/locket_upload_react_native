@@ -1,12 +1,14 @@
-import {View, TouchableOpacity, Icon, Colors} from 'react-native-ui-lib';
 import React from 'react';
+import {View, TouchableOpacity, Icon, Colors} from 'react-native-ui-lib';
 import {useNavigation} from '@react-navigation/native';
 
-const Header = () => {
+const Header: React.FC = () => {
   const navigation = useNavigation();
+
   const handleBack = () => {
     navigation.goBack();
   };
+
   return (
     <View bg-black absT paddingH-20 paddingT-20>
       <TouchableOpacity onPress={handleBack}>
