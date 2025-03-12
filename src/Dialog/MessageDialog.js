@@ -1,5 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Text, Button, Colors, Typography, Dialog} from 'react-native-ui-lib';
+import {
+  Text,
+  Button,
+  Colors,
+  Typography,
+  Dialog,
+  ProgressBar,
+} from 'react-native-ui-lib';
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {clearMessage} from '../redux/slice/message.slice';
@@ -8,7 +15,9 @@ import {ScrollView} from 'react-native';
 
 const MessageDialog = () => {
   const dispatch = useDispatch();
-  const {message, type} = useSelector(state => state.message);
+  const {message, type, hideButton, progress} = useSelector(
+    state => state.message,
+  );
 
   const handleClearMessage = () => {
     dispatch(clearMessage());
@@ -45,13 +54,18 @@ const MessageDialog = () => {
           {message}
         </Text>
       </ScrollView>
-      <Button
-        label="Ok"
-        onPress={handleClearMessage}
-        borderRadius={8}
-        text70BL
-        backgroundColor={Colors.primary}
-      />
+      {!hideButton && (
+        <Button
+          label="Ok"
+          onPress={handleClearMessage}
+          borderRadius={8}
+          text70BL
+          backgroundColor={Colors.primary}
+        />
+      )}
+      {progress && (
+        <ProgressBar progress={progress} progressColor={Colors.primary} />
+      )}
     </CustomDialog>
   );
 };

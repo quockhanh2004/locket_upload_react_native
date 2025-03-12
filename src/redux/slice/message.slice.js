@@ -5,16 +5,22 @@ const messageSlice = createSlice({
   initialState: {
     message: null,
     type: '',
+    hideButton: false,
+    progress: null,
   },
 
   reducers: {
     setMessage(state, action) {
       state.message = action.payload.message;
       state.type = action.payload.type;
+      state.hideButton = action.payload.hideButton || false;
+      state.progress = action.payload.progress || null;
     },
     clearMessage(state) {
       state.message = null;
       state.type = '';
+      state.hideButton = false;
+      state.progress = null;
     },
   },
 });

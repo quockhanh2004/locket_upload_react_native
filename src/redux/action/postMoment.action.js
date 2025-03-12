@@ -7,10 +7,12 @@ import {
   createImageBlob,
   getDownloadUrl,
   initiateUpload,
+  UPLOAD_PROGRESS_STAGE,
   uploadImage,
   validateImageInfo,
 } from '../../util/uploadImage';
 import {loginHeader} from '../../util/header';
+import {setProgressUpload} from '../slice/postMoment.slice';
 
 export const uploadImageToFirebaseStorage = createAsyncThunk(
   'uploadImage',
@@ -18,11 +20,26 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
     const {idUser, idToken, imageInfo, caption, refreshToken} = data;
     let currentToken = idToken;
     try {
+      // xử lý ảnh
+      thunkApi.dispatch(
+        setProgressUpload({
+          state: UPLOAD_PROGRESS_STAGE.PROCESSING_IMAGE,
+          progress: 0,
+        }),
+      );
       validateImageInfo(imageInfo);
-
       const {image, fileSize} = await createImageBlob(imageInfo);
       const nameImg = `${Date.now()}_vtd182.webp`;
 
+      //khởi tạo upload
+      setTimeout(() => {
+        thunkApi.dispatch(
+          setProgressUpload({
+            state: UPLOAD_PROGRESS_STAGE.INITIATING_UPLOAD,
+            progress: 24,
+          }),
+        );
+      }, 100);
       const uploadUrl = await initiateUpload(
         idUser,
         currentToken,
@@ -30,9 +47,31 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
         nameImg,
       );
 
+      //upload ảnh
+      thunkApi.dispatch(
+        setProgressUpload({
+          state: UPLOAD_PROGRESS_STAGE.UPLOADING,
+          progress: 42,
+        }),
+      );
       await uploadImage(uploadUrl, image, currentToken);
 
+      //lấy link download ảnh
+      thunkApi.dispatch(
+        setProgressUpload({
+          state: UPLOAD_PROGRESS_STAGE.FETCHING_DOWNLOAD_URL,
+          progress: 66,
+        }),
+      );
       const downloadUrl = await getDownloadUrl(idUser, currentToken, nameImg);
+
+      // tạo moment
+      thunkApi.dispatch(
+        setProgressUpload({
+          state: UPLOAD_PROGRESS_STAGE.CREATING_MOMENT,
+          progress: 80,
+        }),
+      );
       const bodyPostMoment = {
         data: {
           caption,
@@ -51,8 +90,18 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
           },
         },
       );
+
       if (response.status === 200) {
-        return response.data;
+        thunkApi.dispatch(
+          setProgressUpload({
+            state: UPLOAD_PROGRESS_STAGE.CREATING_MOMENT,
+            progress: 100,
+          }),
+        );
+        setTimeout(() => {
+          thunkApi.dispatch(setProgressUpload(null));
+          return response.data;
+        }, 400);
       } else {
         thunkApi.dispatch(
           setMessage({

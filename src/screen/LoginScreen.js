@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import {
   View,
@@ -7,13 +8,14 @@ import {
   Typography,
   LoaderScreen,
 } from 'react-native-ui-lib';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 
 import InputView from '../components/InputView';
 import {login, resetPassword} from '../redux/action/user.action';
 import {setMessage} from '../redux/slice/message.slice';
 import {checkEmail} from '../util/regex';
+import {clearStatus} from '../redux/slice/user.slice';
 
 const LoginScreen = () => {
   const dispatch = useDispatch();
@@ -22,6 +24,9 @@ const LoginScreen = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
 
   const handleLogin = async () => {
     if (checkValue()) {
@@ -58,7 +63,10 @@ const LoginScreen = () => {
     return true;
   };
 
-  // useEffect(() => {});
+  useEffect(() => {
+    dispatch(clearStatus());
+  }, []);
+
   return (
     <View flex centerV bg-black paddingH-20>
       <Text text20BL marginB-20 white center>
@@ -80,6 +88,10 @@ const LoginScreen = () => {
               borderWidth={1}
               inputStyle={{color: Colors.grey40, ...Typography.text70BL}}
               style={{paddingLeft: 10}}
+              ref={emailRef}
+              onSubmitEditing={() => {
+                passwordRef.current.focus();
+              }}
             />
           </View>
           <View gap-8>
@@ -96,6 +108,7 @@ const LoginScreen = () => {
               borderWidth={1}
               inputStyle={{color: Colors.grey40, ...Typography.text70BL}}
               style={{paddingLeft: 10}}
+              ref={passwordRef}
             />
           </View>
         </View>

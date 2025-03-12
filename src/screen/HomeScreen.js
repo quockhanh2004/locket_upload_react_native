@@ -24,15 +24,16 @@ import {nav} from '../navigation/navName';
 import {uploadImageToFirebaseStorage} from '../redux/action/postMoment.action';
 import {setMessage} from '../redux/slice/message.slice';
 import {clearPostMoment} from '../redux/slice/postMoment.slice';
-import {clearAppCache} from '../util/uploadImage';
-import {converTime} from '../util/convertTime';
+import {clearAppCache, UPLOAD_PROGRESS_STAGE} from '../util/uploadImage';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const route = useRoute();
   const {user, userInfo} = useSelector(state => state.user);
-  const {postMoment, isLoading} = useSelector(state => state.postMoment);
+  const {postMoment, isLoading, progressUpload} = useSelector(
+    state => state.postMoment,
+  );
 
   const [uriMedia, seturiMedia] = useState(null);
   const [caption, setCaption] = useState('');
@@ -61,8 +62,6 @@ const HomeScreen = () => {
     const unsubscribe = navigation.addListener('focus', () => {
       if (route.params?.uri) {
         seturiMedia(route.params.uri);
-        console.log(route.params.uri);
-
         navigation.setParams({uri: undefined});
       }
     });
@@ -109,7 +108,7 @@ const HomeScreen = () => {
       dispatch(
         setMessage({
           message: postMoment,
-          type: 'success',
+          type: 'Success',
         }),
       );
       dispatch(clearPostMoment());
@@ -119,6 +118,27 @@ const HomeScreen = () => {
       setCaption('');
     }
   }, [postMoment]);
+
+  useEffect(() => {
+    if (!progressUpload) {
+      return;
+    }
+    console.log(progressUpload);
+
+    if (
+      progressUpload?.state !== UPLOAD_PROGRESS_STAGE.COMPLETED &&
+      progressUpload?.state !== UPLOAD_PROGRESS_STAGE.FAILED
+    ) {
+      dispatch(
+        setMessage({
+          message: `${progressUpload?.state}`,
+          type: 'Info',
+          hideButton: true,
+          progress: progressUpload.progress,
+        }),
+      );
+    }
+  }, [progressUpload]);
 
   return (
     <View flex bg-black padding-12>

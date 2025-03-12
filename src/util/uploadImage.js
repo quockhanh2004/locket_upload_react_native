@@ -2,6 +2,16 @@ import axios from 'axios';
 import {uploadHeaders} from './header';
 import {createBlobFromUri} from './getBufferFile';
 
+export const UPLOAD_PROGRESS_STAGE = {
+  PROCESSING_IMAGE: 'Processing image', // Xử lý ảnh (resize, convert, v.v.)
+  INITIATING_UPLOAD: 'Initiating upload', // Khởi tạo link upload
+  UPLOADING: 'Uploading image', // Đang tải lên
+  FETCHING_DOWNLOAD_URL: 'Fetching download URL', // Lấy link download
+  CREATING_MOMENT: 'Creating moment', // Tạo moment
+  COMPLETED: 'Upload completed', // Hoàn tất
+  FAILED: 'Upload failed', // Thất bại
+};
+
 export const validateImageInfo = imageInfo => {
   if (!imageInfo) {
     throw new Error('No image info provided');
@@ -22,7 +32,13 @@ export const createImageBlob = async imageInfo => {
   return {image, fileSize: imageInfo.fileSize};
 };
 
-export const initiateUpload = async (idUser, idToken, fileSize, nameImg) => {
+export const initiateUpload = async (
+  idUser,
+  idToken,
+  fileSize,
+  nameImg,
+  progress,
+) => {
   const startUrl = `https://firebasestorage.googleapis.com/v0/b/locket-img/o/users%2F${idUser}%2Fmoments%2Fthumbnails%2F${nameImg}?uploadType=resumable&name=users%2F${idUser}%2Fmoments%2Fthumbnails%2F${nameImg}`;
 
   const startHeaders = {
@@ -50,6 +66,7 @@ export const initiateUpload = async (idUser, idToken, fileSize, nameImg) => {
   const response = await axios.post(startUrl, startData, {
     headers: startHeaders,
     validateStatus: status => status < 500,
+    onDownloadProgress: progress,
   });
 
   if (response.status >= 400) {
@@ -59,17 +76,18 @@ export const initiateUpload = async (idUser, idToken, fileSize, nameImg) => {
   return response.headers['x-goog-upload-url'];
 };
 
-export const uploadImage = async (uploadUrl, blobImage, token) => {
+export const uploadImage = async (uploadUrl, blobImage, token, progress) => {
   const response = await axios.put(uploadUrl, blobImage, {
     headers: {
       ...uploadHeaders,
       Authorization: 'Firebase ' + token,
     },
+    onUploadProgress: progress,
   });
   return response.data;
 };
 
-export const getDownloadUrl = async (idUser, idToken, nameImg) => {
+export const getDownloadUrl = async (idUser, idToken, nameImg, progress) => {
   const getUrl = `https://firebasestorage.googleapis.com/v0/b/locket-img/o/users%2F${idUser}%2Fmoments%2Fthumbnails%2F${nameImg}`;
 
   const getHeaders = {
@@ -79,6 +97,7 @@ export const getDownloadUrl = async (idUser, idToken, nameImg) => {
 
   const response = await axios.get(getUrl, {
     headers: getHeaders,
+    onUploadProgress: progress,
   });
 
   if (response.status >= 400) {

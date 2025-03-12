@@ -4,7 +4,7 @@ import {setMessage} from '../slice/message.slice';
 import instanceFirebase from '../../util/axios_firebase';
 import instanceLocket from '../../util/axios_locketcamera';
 import axios from 'axios';
-import {logout, setToken} from '../slice/user.slice';
+import {logout} from '../slice/user.slice';
 import {
   createImageBlob,
   getDownloadUrl,
@@ -12,7 +12,6 @@ import {
   uploadImage,
   validateImageInfo,
 } from '../../util/uploadImage';
-import {getAccessToken} from '../../api/user.api';
 
 export const login = createAsyncThunk('login', async (data, thunkApi) => {
   try {
@@ -42,14 +41,21 @@ export const login = createAsyncThunk('login', async (data, thunkApi) => {
       thunkApi.rejectWithValue();
     }
   } catch (error) {
-    console.log(error.response);
-
-    thunkApi.dispatch(
-      setMessage({
-        message: `Error: ${error?.response?.data?.error?.message}`,
-        type: 'Error',
-      }),
-    );
+    if (error?.response) {
+      thunkApi.dispatch(
+        setMessage({
+          message: `Error: ${error?.response?.data?.error?.message}`,
+          type: 'Error',
+        }),
+      );
+    } else {
+      thunkApi.dispatch(
+        setMessage({
+          message: `Error: ${error?.message}`,
+          type: 'Error',
+        }),
+      );
+    }
     thunkApi.rejectWithValue();
   }
 });

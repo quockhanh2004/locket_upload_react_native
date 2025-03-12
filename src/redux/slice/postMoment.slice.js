@@ -6,11 +6,15 @@ const postMomentSlice = createSlice({
   initialState: {
     postMoment: null,
     isLoading: false,
+    progressUpload: null,
   },
   reducers: {
     clearPostMoment: state => {
       state.postMoment = null;
       state.isLoading = false;
+    },
+    setProgressUpload: (state, action) => {
+      state.progressUpload = action.payload;
     },
   },
   extraReducers: builder => {
@@ -28,6 +32,6 @@ const postMomentSlice = createSlice({
   },
 });
 
-export const {clearPostMoment} = postMomentSlice.actions;
+export const {clearPostMoment, setProgressUpload} = postMomentSlice.actions;
 
 export default postMomentSlice.reducer;
