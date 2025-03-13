@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {View} from 'react-native-ui-lib';
+import {Colors, Icon, Text, TouchableOpacity, View} from 'react-native-ui-lib';
 import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {Dimensions, RefreshControl, ScrollView} from 'react-native';
+import {Dimensions, Linking, RefreshControl, ScrollView} from 'react-native';
 import codePush from 'react-native-code-push';
 
 import {
@@ -176,6 +176,12 @@ const AccountScreen = () => {
     }, 900);
   }, []);
 
+  const handlePressGithub = useCallback(() => {
+    Linking.openURL(
+      'https://github.com/quockhanh2004/locket_upload_react_native',
+    );
+  }, []);
+
   return (
     <ScrollView
       refreshControl={
@@ -194,6 +200,18 @@ const AccountScreen = () => {
             onPress={handleCodePushUpdate}
           />
         </View>
+
+        <TouchableOpacity onPress={handlePressGithub}>
+          <View center row gap-8>
+            <Icon
+              assetGroup="icons"
+              assetName="ic_github"
+              tintColor={Colors.grey30}
+              size={20}
+            />
+            <Text grey30>quockhanh2004</Text>
+          </View>
+        </TouchableOpacity>
       </View>
       <Header />
       <EditTextDialog
