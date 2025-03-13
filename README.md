@@ -31,6 +31,7 @@ Trước tiên, hãy đảm bảo bạn đã cài đặt:
 - **Yarn** hoặc **npm**
 - **React Native CLI**
 - **Android Studio** (nếu build trên Android)
+- **Đổi tên file .env.exmable thành .env**
 
 ### 2️⃣ Clone repo
 ```sh
