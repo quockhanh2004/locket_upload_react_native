@@ -19,9 +19,13 @@ import {CODEPUSH_DEPLOYMENTKEY, getStatusFromCodePush} from '../util/codepush';
 import MainButton from '../components/MainButton';
 import {setMessage} from '../redux/slice/message.slice';
 import UserInfo from '../components/UserInfo';
+import {useRoute} from '@react-navigation/native';
 
 const AccountScreen = () => {
   const dispatch = useDispatch();
+  const params = useRoute().params;
+  const local_update = params?.local_update;
+
   const {userInfo, isLoading, user, updateAvatarLoading} = useSelector(
     state => state.user,
   );
@@ -100,18 +104,11 @@ const AccountScreen = () => {
     //   }),
     // );
   };
-
-  // const handleEnableGold = val => {
-  //   dispatch(
-  //     enableLocketGold({
-  //       idToken: user?.idToken,
-  //       refreshToken: user?.refreshToken,
-  //       enable: val,
-  //     }),
-  //   );
-  // };
-
-  // State cập nhật CodePush
+  useEffect(() => {
+    if (local_update) {
+      handleCodePushUpdate();
+    }
+  }, [local_update]);
 
   const [updateInfo, setUpdateInfo] = useState(null);
   const [downloadProgress, setDownloadProgress] = useState(0);

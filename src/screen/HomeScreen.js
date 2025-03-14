@@ -26,9 +26,11 @@ import {setMessage} from '../redux/slice/message.slice';
 import {clearPostMoment} from '../redux/slice/postMoment.slice';
 import {clearAppCache, UPLOAD_PROGRESS_STAGE} from '../util/uploadImage';
 
+let navigation;
+
 const HomeScreen = () => {
   const dispatch = useDispatch();
-  const navigation = useNavigation();
+  navigation = useNavigation();
   const route = useRoute();
   const {user, userInfo} = useSelector(state => state.user);
   const {postMoment, isLoading, progressUpload} = useSelector(
@@ -237,6 +239,10 @@ const HomeScreen = () => {
       </View>
     </View>
   );
+};
+
+export const navigationTo = (to, data) => {
+  navigation.navigate(to, data);
 };
 
 export default HomeScreen;

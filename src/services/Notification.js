@@ -2,8 +2,10 @@
 import {useEffect} from 'react';
 import {Platform, PermissionsAndroid, Linking} from 'react-native';
 import notifee, {AndroidImportance, EventType} from '@notifee/react-native';
-import messaging from '@react-native-firebase/messaging';
+import messaging, {getToken} from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {navigationTo} from '../screen/HomeScreen';
+import {nav} from '../navigation/navName';
 
 const CHANNEL_ID = 'locket_upload_channel';
 
@@ -95,6 +97,10 @@ const handleNotificationClick = async data => {
         console.error('Lỗi mở URL:', err),
       );
     }
+
+    if (lastData.local_update) {
+      navigationTo(nav.accountInfo, {local_update: true});
+    }
   }
 };
 
@@ -162,7 +168,7 @@ export const NotificationService = () => {
     requestNotificationPermission();
     createNotificationChannel();
     listenToNotificationClicks();
-
+    getFcmToken();
     const unsubscribeForeground = listenToForegroundNotifications();
 
     return () => {
@@ -171,4 +177,10 @@ export const NotificationService = () => {
   }, []);
 
   return null;
+};
+
+export const getFcmToken = async () => {
+  const fcmToken = await messaging().getToken();
+  console.log('FcmToken: ' + fcmToken);
+  return fcmToken;
 };
