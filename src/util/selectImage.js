@@ -13,6 +13,7 @@ export const selectMedia = async isMultiple => {
     if (result.didCancel) {
       return undefined;
     }
+
     return result.assets || [];
   } catch (error) {
     console.log('error select image', error);

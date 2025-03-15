@@ -21,7 +21,10 @@ import {selectMedia} from '../util/selectImage';
 import InputView from '../components/InputView';
 import {getAccountInfo, getToken} from '../redux/action/user.action';
 import {nav} from '../navigation/navName';
-import {uploadImageToFirebaseStorage} from '../redux/action/postMoment.action';
+import {
+  uploadImageToFirebaseStorage,
+  uploadVideoToFirebase,
+} from '../redux/action/postMoment.action';
 import {setMessage} from '../redux/slice/message.slice';
 import {clearPostMoment} from '../redux/slice/postMoment.slice';
 import {clearAppCache, UPLOAD_PROGRESS_STAGE} from '../util/uploadImage';
@@ -31,6 +34,10 @@ import {
 } from '@react-native-firebase/messaging';
 import {getApp} from '@react-native-firebase/app';
 import {handleNotificationClick} from '../services/Notification';
+import Video from 'react-native-video';
+import {showEditor} from 'react-native-video-trim';
+import useTrimVideo from '../hooks/useTrimVideo';
+import {deleteAllMp4Files, getInfoVideo} from '../util/uploadVideo';
 
 let navigation;
 
@@ -44,8 +51,9 @@ const HomeScreen = () => {
     state => state.postMoment,
   );
 
-  const [uriMedia, seturiMedia] = useState(null);
+  const [selectedMedia, setselectedMedia] = useState(null);
   const [caption, setCaption] = useState('');
+  const [isVideo, setIsVideo] = useState(false);
 
   useEffect(() => {
     clearAppCache();
@@ -77,7 +85,7 @@ const HomeScreen = () => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       if (route.params?.uri) {
-        seturiMedia(route.params.uri);
+        setselectedMedia(route.params.uri);
         navigation.setParams({uri: undefined});
       }
     });
@@ -89,18 +97,30 @@ const HomeScreen = () => {
     dispatch(logout());
   };
 
-  const handleSelectImage = async () => {
+  const handleSelectMedia = async () => {
     const result = await selectMedia();
     if (result?.length > 0) {
-      seturiMedia('');
-      navigation.navigate(nav.crop, {
-        imageUri: result[0].uri,
-      });
+      setselectedMedia('');
+      const media = result[0];
+
+      if (media?.type?.startsWith('image')) {
+        setIsVideo(false);
+        navigation.navigate(nav.crop, {
+          imageUri: result[0].uri,
+        });
+      } else if (media?.type?.startsWith('video')) {
+        showEditor(media.uri, {
+          maxDuration: 7,
+          saveButtonText: 'Save',
+        });
+        setIsVideo(true);
+        return;
+      }
     }
   };
 
   const handleRemoveImage = () => {
-    seturiMedia(null);
+    setselectedMedia(null);
   };
 
   const handleViewProfile = () => {
@@ -108,15 +128,27 @@ const HomeScreen = () => {
   };
 
   const handlePost = async () => {
-    dispatch(
-      uploadImageToFirebaseStorage({
-        idUser: user.localId,
-        idToken: user.idToken,
-        imageInfo: uriMedia,
-        caption,
-        refreshToken: user.refreshToken,
-      }),
-    );
+    if (selectedMedia?.type === 'video') {
+      dispatch(
+        uploadVideoToFirebase({
+          idUser: user.localId,
+          idToken: user.idToken,
+          videoInfo: selectedMedia,
+          caption,
+          refreshToken: user.refreshToken,
+        }),
+      );
+    } else {
+      dispatch(
+        uploadImageToFirebaseStorage({
+          idUser: user.localId,
+          idToken: user.idToken,
+          imageInfo: selectedMedia,
+          caption,
+          refreshToken: user.refreshToken,
+        }),
+      );
+    }
   };
 
   useEffect(() => {
@@ -128,9 +160,10 @@ const HomeScreen = () => {
         }),
       );
       dispatch(clearPostMoment());
-      seturiMedia(null);
+      setselectedMedia(null);
       //xóa cache của app sau khi upload thành công
       clearAppCache();
+      deleteAllMp4Files('/data/user/0/com.locket_upload/files/');
       setCaption('');
     }
   }, [postMoment]);
@@ -141,21 +174,23 @@ const HomeScreen = () => {
     }
     console.log(progressUpload);
 
-    if (
-      progressUpload?.state !== UPLOAD_PROGRESS_STAGE.COMPLETED &&
-      progressUpload?.state !== UPLOAD_PROGRESS_STAGE.FAILED
-    ) {
-      dispatch(
-        setMessage({
-          message: `${progressUpload?.state}`,
-          type: 'Info',
-          hideButton: true,
-          progress: progressUpload.progress,
-        }),
-      );
-    }
+    dispatch(
+      setMessage({
+        message: `${progressUpload?.state}`,
+        type: 'Info',
+        hideButton: true,
+        progress: progressUpload.progress,
+      }),
+    );
   }, [progressUpload]);
 
+  const uriVideo = useTrimVideo();
+
+  useEffect(() => {
+    if (uriVideo) {
+      setselectedMedia({uri: uriVideo, type: 'video'});
+    }
+  }, [uriVideo]);
   return (
     <View flex bg-black padding-12>
       <View row spread centerV>
@@ -189,26 +224,46 @@ const HomeScreen = () => {
               borderWidth: 2,
               borderColor: Colors.grey40,
             }}
-            onPress={handleSelectImage}>
-            {uriMedia ? (
-              <View>
-                <Image
-                  width={264}
-                  height={264}
-                  source={{uri: uriMedia.uri}}
-                  style={{borderRadius: 6}}
-                />
-                <View absT marginT-4 marginR-4 absR>
-                  <TouchableOpacity onPress={handleRemoveImage}>
-                    <Icon
-                      assetGroup="icons"
-                      assetName="ic_cancel"
-                      size={24}
-                      tintColor={Colors.red30}
-                    />
-                  </TouchableOpacity>
+            onPress={handleSelectMedia}>
+            {selectedMedia ? (
+              !isVideo ? (
+                <View>
+                  <Image
+                    width={264}
+                    height={264}
+                    source={{uri: selectedMedia.uri}}
+                    style={{borderRadius: 6}}
+                  />
+                  <View absT marginT-4 marginR-4 absR>
+                    <TouchableOpacity onPress={handleRemoveImage}>
+                      <Icon
+                        assetGroup="icons"
+                        assetName="ic_cancel"
+                        size={24}
+                        tintColor={Colors.red30}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
+              ) : (
+                <View>
+                  <Video
+                    source={{uri: selectedMedia.uri}}
+                    resizeMode="cover"
+                    style={{borderRadius: 6, width: 264, height: 264}}
+                  />
+                  <View absT marginT-4 marginR-4 absR>
+                    <TouchableOpacity onPress={handleRemoveImage}>
+                      <Icon
+                        assetGroup="icons"
+                        assetName="ic_cancel"
+                        size={24}
+                        tintColor={Colors.red30}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )
             ) : (
               <Icon
                 assetGroup="icons"

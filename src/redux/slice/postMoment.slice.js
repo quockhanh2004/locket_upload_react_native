@@ -1,5 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {uploadImageToFirebaseStorage} from '../action/postMoment.action';
+import {
+  uploadImageToFirebaseStorage,
+  uploadVideoToFirebase,
+} from '../action/postMoment.action';
 
 const postMomentSlice = createSlice({
   name: 'postMoment',
@@ -27,6 +30,17 @@ const postMomentSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(uploadImageToFirebaseStorage.rejected, state => {
+        state.isLoading = false;
+      })
+
+      .addCase(uploadVideoToFirebase.pending, state => {
+        state.isLoading = true;
+      })
+      .addCase(uploadVideoToFirebase.fulfilled, (state, action) => {
+        state.postMoment = 'Post Moment completed';
+        state.isLoading = false;
+      })
+      .addCase(uploadVideoToFirebase.rejected, state => {
         state.isLoading = false;
       });
   },

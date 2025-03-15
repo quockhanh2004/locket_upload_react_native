@@ -2649,6 +2649,11 @@ acorn@^8.8.2, acorn@^8.9.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.14.0.tgz#063e2c70cac5fb4f6467f0b11152e04c682795b0"
   integrity sha512-cl669nCJTZBsL97OF4kUQm5g5hC2uihk0NxY3WENAC0TYdILVkAyHymAntgxGkl7K+t0cXIrH5siy5S4XkFycA==
 
+add@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/add/-/add-2.0.6.tgz#248f0a9f6e5a528ef2295dbeec30532130ae2235"
+  integrity sha512-j5QzrmsokwWWp6kUcJQySpbG+xfOBqqKnup3OIk1pz+kB/80SLorZ9V8zHFLO92Lcd+hbvq8bT+zOGoPkmBV0Q==
+
 agent-base@^7.1.0, agent-base@^7.1.2:
   version "7.1.3"
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.1.3.tgz#29435eb821bc4194633a5b89e5bc4703bafc25a1"
@@ -6821,6 +6826,16 @@ react-native-code-push@^9.0.1:
     semver "^7.3.5"
     xcode "3.0.1"
 
+react-native-compressor@^1.10.5:
+  version "1.10.5"
+  resolved "https://registry.yarnpkg.com/react-native-compressor/-/react-native-compressor-1.10.5.tgz#d3b470cf5d26c536d407c29f8a8a1b037f23a09d"
+  integrity sha512-TAMVDUwKuLmx+LtRhD/uayb7UMWPv7YAKJEvmR0TtfLykTCZuCTAjtNZ/L3PO6pSjMBpmnRaiUOu2rcxVWtlWw==
+
+react-native-create-thumbnail@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-create-thumbnail/-/react-native-create-thumbnail-2.0.1.tgz#8a42f4a73fe6db8cc7ecc4673c55f13f89dd45fb"
+  integrity sha512-D3UEuFJ9hDuf4XTMyNsqsk1SsTxak8EeKTf68QclZQKngwe67YuYaCE8h6CWdzm6ncDH4nbq/MZtFs+d+lD+iA==
+
 react-native-dotenv@^3.4.11:
   version "3.4.11"
   resolved "https://registry.yarnpkg.com/react-native-dotenv/-/react-native-dotenv-3.4.11.tgz#2e6c4eabd55d5f1bf109b3dd9141dadf9c55cdd4"
@@ -6927,6 +6942,16 @@ react-native-ui-lib@^7.35.0:
     uilib-native "^4.5.0"
     url-parse "^1.2.0"
     wix-react-native-text-size "1.0.9"
+
+react-native-video-trim@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-video-trim/-/react-native-video-trim-3.0.2.tgz#6a3119677f263079314a093e8f1d4573a0f4fe2f"
+  integrity sha512-HQ2NsXwF2D+O+PjtsiMCvncjrNpe12/958tO+E5dpeqCjNJorCE6VTW1k8ed1+1xB289qhUlxI8anfY1EwjTaA==
+
+react-native-video@^6.10.2:
+  version "6.10.2"
+  resolved "https://registry.yarnpkg.com/react-native-video/-/react-native-video-6.10.2.tgz#cf956f4d1140900e1fadfe994716db03a4e4da6f"
+  integrity sha512-ua/7mGZVJYe0pUh5tWccG4h+Jj3IGemGSwsc6E7HFV+nfvUfULtWuCth4dYDU1HPeuVW+aDlD660AnKD+mdS1w==
 
 react-native@0.73.8:
   version "0.73.8"
@@ -8411,6 +8436,11 @@ yargs@^17.3.1, yargs@^17.6.2, yargs@^17.7.2:
     string-width "^4.2.3"
     y18n "^5.0.5"
     yargs-parser "^21.1.1"
+
+yarn@^1.22.22:
+  version "1.22.22"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.22.22.tgz#ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+  integrity sha512-prL3kGtyG7o9Z9Sv8IPfBNrWTDmXB4Qbes8A9rEzt6wkJV8mUvoirjU0Mp3GGAU06Y0XQyA3/2/RQFVuK7MTfg==
 
 yazl@^2.5.1:
   version "2.5.1"
