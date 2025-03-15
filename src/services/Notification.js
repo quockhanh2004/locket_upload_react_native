@@ -2,12 +2,18 @@
 import {useEffect} from 'react';
 import {Platform, PermissionsAndroid, Linking} from 'react-native';
 import notifee, {AndroidImportance, EventType} from '@notifee/react-native';
-import messaging, {getToken} from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {navigationTo} from '../screen/HomeScreen';
 import {nav} from '../navigation/navName';
+import {
+  getMessaging,
+  getToken,
+  onNotificationOpenedApp,
+} from '@react-native-firebase/messaging';
+import {getApp} from '@react-native-firebase/app';
 
 const CHANNEL_ID = 'locket_upload_channel';
+const messaging = getMessaging(getApp());
 
 /**
  * 1️⃣ Yêu cầu quyền thông báo trên Android 13+
@@ -53,26 +59,30 @@ const displayNotification = async message => {
     );
   }
 
-  await notifee.displayNotification({
-    title:
-      message?.notification?.title || message?.data?.title || 'Thông báo mới',
-    body:
-      message?.notification?.body ||
-      message?.data?.body ||
-      'Bạn có tin nhắn mới',
-    android: {
-      smallIcon: 'ic_launcher',
-      channelId: CHANNEL_ID,
-      importance: AndroidImportance.HIGH,
-      pressAction: {id: 'default'},
-    },
-  });
+  try {
+    await notifee.displayNotification({
+      title:
+        message?.notification?.title || message?.data?.title || 'Thông báo mới',
+      body:
+        message?.notification?.body ||
+        message?.data?.body ||
+        'Bạn có tin nhắn mới',
+      android: {
+        smallIcon: 'ic_launcher',
+        channelId: CHANNEL_ID,
+        importance: AndroidImportance.HIGH,
+        pressAction: {id: 'default'},
+      },
+    });
+  } catch (error) {
+    console.log('show noti error', error);
+  }
 };
 
 /**
  * 4️⃣ Xử lý khi người dùng nhấn vào thông báo (Mở link nếu có)
  */
-const handleNotificationClick = async data => {
+export const handleNotificationClick = async data => {
   let lastData;
 
   if (data) {
@@ -105,82 +115,57 @@ const handleNotificationClick = async data => {
 };
 
 /**
- * 5️⃣ Xử lý sự kiện khi người dùng nhấn vào thông báo
+ * 5️⃣ Xử lý sự kiện khi nhận thông báo trong app
  */
 const listenToNotificationClicks = () => {
   // Khi app đang mở (Foreground)
   notifee.onForegroundEvent(async ({type, detail}) => {
     if (type === EventType.PRESS) {
-      console.log('🔘 Người dùng nhấn vào thông báo khi app mở');
+      console.log('🔘 Người dùng nhấn vào thông báo khi app mở', detail);
       await handleNotificationClick();
     }
   });
-
-  // Khi app đang chạy nền (Background)
-  messaging().onNotificationOpenedApp(async remoteMessage => {
-    console.log(
-      '🔘 Người dùng nhấn vào thông báo khi app chạy nền:',
-      remoteMessage,
-    );
-    await handleNotificationClick(remoteMessage.notification.data);
-  });
-
-  // Khi app bị tắt hoàn toàn (Killed State)
-  messaging()
-    .getInitialNotification()
-    .then(async remoteMessage => {
-      if (remoteMessage) {
-        console.log(
-          '🔘 Người dùng nhấn vào thông báo khi app bị tắt:',
-          remoteMessage,
-        );
-        await handleNotificationClick(remoteMessage.notification.data);
-      }
-    });
 };
 
 /**
- * 6️⃣ Lắng nghe thông báo khi app đang mở
+ * 6️⃣ Lắng nghe thông báo khi app đang background
  */
-const listenToForegroundNotifications = () => {
-  return messaging().onMessage(async remoteMessage => {
-    await displayNotification(remoteMessage);
-  });
-};
-
-/**
- * 7️⃣ Xử lý thông báo khi app ở Background hoặc Killed State
- */
-messaging().setBackgroundMessageHandler(async remoteMessage => {
-  console.log('🌙 Nhận thông báo nền:', remoteMessage);
-
-  // Nếu có `notification`, FCM đã tự hiển thị => Bỏ qua Notifee
-  if (remoteMessage.notification) return;
-
-  await displayNotification(remoteMessage);
+notifee.onBackgroundEvent(async event => {
+  console.log('Nhấn thông báo khi app ở background:', event.detail);
+  await handleNotificationClick();
 });
 
 /**
- * 8️⃣ Hook khởi tạo Notification Service trong `App.tsx`
+ * 7️⃣ Hook khởi tạo Notification Service trong `App.tsx`
  */
 export const NotificationService = () => {
   useEffect(() => {
     requestNotificationPermission();
     createNotificationChannel();
     listenToNotificationClicks();
-    getFcmToken();
-    const unsubscribeForeground = listenToForegroundNotifications();
 
-    return () => {
-      unsubscribeForeground();
-    };
+    getFcmToken();
+    const unsubscribe = messaging.onMessage(async remoteMessage => {
+      await displayNotification(remoteMessage);
+    });
+
+    return unsubscribe;
   }, []);
+
+  onNotificationOpenedApp(messaging, async remoteMessage => {
+    console.log('🔘 App chưa kill:', remoteMessage);
+    await handleNotificationClick(remoteMessage.data);
+  });
 
   return null;
 };
 
+/**
+ * 8️⃣ Get Notification token
+ */
+
 export const getFcmToken = async () => {
-  const fcmToken = await messaging().getToken();
+  const fcmToken = await getToken(messaging);
   console.log('FcmToken: ' + fcmToken);
   return fcmToken;
 };

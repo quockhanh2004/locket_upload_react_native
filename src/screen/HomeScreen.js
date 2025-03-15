@@ -25,10 +25,17 @@ import {uploadImageToFirebaseStorage} from '../redux/action/postMoment.action';
 import {setMessage} from '../redux/slice/message.slice';
 import {clearPostMoment} from '../redux/slice/postMoment.slice';
 import {clearAppCache, UPLOAD_PROGRESS_STAGE} from '../util/uploadImage';
+import {
+  getInitialNotification,
+  getMessaging,
+} from '@react-native-firebase/messaging';
+import {getApp} from '@react-native-firebase/app';
+import {handleNotificationClick} from '../services/Notification';
 
 let navigation;
 
 const HomeScreen = () => {
+  const messaging = getMessaging(getApp());
   const dispatch = useDispatch();
   navigation = useNavigation();
   const route = useRoute();
@@ -42,6 +49,13 @@ const HomeScreen = () => {
 
   useEffect(() => {
     clearAppCache();
+
+    getInitialNotification(messaging).then(async remoteMessage => {
+      if (remoteMessage?.data?.local_update) {
+        handleNotificationClick(remoteMessage?.data);
+      }
+    });
+
     if (user.timeExpires < new Date().getTime()) {
       dispatch(
         getToken({
