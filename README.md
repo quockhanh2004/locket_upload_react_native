@@ -5,6 +5,7 @@
 ## ✨ Tính năng nổi bật
 
 - ✂️ **Cắt ảnh**: Đảm bảo ảnh có tỉ lệ 1:1 trước khi tải lên.
+- 🔥 **Upload Video**: Có thể update video từ thư viện
 - 📤 **Hiển thị tiến trình tải ảnh**: Dễ dàng theo dõi trạng thái upload.
 - 🔄 **Thay đổi tên người dùng**: Tùy chỉnh họ tên ngay trong app.
 - 🚀 **Cập nhật trong ứng dụng**: Không cần cài đặt lại bằng APK.
