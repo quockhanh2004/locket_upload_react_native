@@ -1,11 +1,13 @@
 import {Platform} from 'react-native';
 import codePush from 'react-native-code-push';
 
+const CODEPUSH_ANDROID_KEY = 'iBfzrBb1TTD1jZyazQKslU4Wr7WC4ksvOXqog';
+const CODEPUSH_IOS_KEY = '';
 export const CODEPUSH_DEPLOYMENTKEY = () => {
   if (Platform.OS === 'android') {
-    return 'X_gWZ6w023OX_s32KItOkndwovTe_OvbpfyYgk';
+    return CODEPUSH_ANDROID_KEY;
   } else {
-    return '';
+    return CODEPUSH_IOS_KEY;
   }
 };
 

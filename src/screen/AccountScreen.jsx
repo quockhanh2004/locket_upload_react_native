@@ -113,6 +113,7 @@ const AccountScreen = () => {
   const [updateInfo, setUpdateInfo] = useState(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [decriptionUpdate, setDecriptionUpdate] = useState('');
 
   const handleCodePushUpdate = useCallback(async () => {
     setUpdateInfo('CHECKING_FOR_UPDATE');
@@ -120,12 +121,18 @@ const AccountScreen = () => {
 
     try {
       const update = await codePush.checkForUpdate(CODEPUSH_DEPLOYMENTKEY());
+      console.log(update);
+
       if (!update) {
         setUpdateInfo('UP_TO_DATE');
+        setDecriptionUpdate('');
       } else {
         setUpdateInfo('UPDATE_AVAILABLE');
+        setDecriptionUpdate(update?.description);
       }
     } catch (error) {
+      console.log(error);
+
       dispatch(
         setMessage({
           message: JSON.stringify(error),
@@ -148,13 +155,16 @@ const AccountScreen = () => {
         switch (status) {
           case codePush.SyncStatus.UPDATE_INSTALLED:
             setUpdateInfo('UPDATE_INSTALLED');
+            setDecriptionUpdate('');
             break;
           case codePush.SyncStatus.UP_TO_DATE:
             setUpdateInfo('UP_TO_DATE');
+            setDecriptionUpdate('');
             break;
           case codePush.SyncStatus.UNKNOWN_ERROR:
           case codePush.SyncStatus.UPDATE_IGNORED:
             setUpdateInfo('ERROR');
+            setDecriptionUpdate('');
             break;
           default:
             setUpdateInfo(getStatusFromCodePush(status)); // Hàm helper để map status
@@ -228,6 +238,7 @@ const AccountScreen = () => {
         updateInfo={updateInfo}
         progress={downloadProgress}
         onUpdate={onUpdate}
+        decriptionUpdate={decriptionUpdate}
         onPostpone={onPostpone}
         onCheckUpdate={handleCodePushUpdate}
       />

@@ -12,6 +12,7 @@ import {persistor, store} from './src/redux/store';
 import MessageDialog from './src/Dialog/MessageDialog';
 import CodePush from 'react-native-code-push';
 import {NotificationService} from './src/services/Notification';
+import {CODEPUSH_DEPLOYMENTKEY} from './src/util/codepush';
 
 const App = () => {
   // useEffect(() => {
@@ -37,5 +38,7 @@ const App = () => {
 
 const codePushOptions = {
   checkFrequency: CodePush.CheckFrequency.MANUAL, // Kiểm tra cập nhật
+  deploymentKey: CODEPUSH_DEPLOYMENTKEY(),
+  serverUrl: 'https://code-push.quockhanh020924.id.vn',
 };
 export default CodePush(codePushOptions)(App);

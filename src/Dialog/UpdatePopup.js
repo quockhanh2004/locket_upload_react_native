@@ -6,6 +6,7 @@ import {
   Typography,
   Colors,
   ProgressBar,
+  Text,
 } from 'react-native-ui-lib';
 import CustomDialog from './CustomDialog';
 import MainButton from '../components/MainButton';
@@ -15,6 +16,7 @@ const UpdatePopup = ({
   updateInfo,
   progress,
   onUpdate,
+  decriptionUpdate,
   onCheckUpdate,
   onPostpone,
 }) => {
@@ -58,16 +60,12 @@ const UpdatePopup = ({
         message: 'Kiểm tra cập nhật...',
         buttons: <MainButton label="Kiểm tra" onPress={onCheckUpdate} />,
       },
-      DEFAULT: {
-        message: 'Trạng thái cập nhật không xác định',
-        buttons: null,
-      },
     }),
     [onPostpone, onUpdate, onCheckUpdate, progressPercent],
   );
 
   // Cập nhật UI khi updateInfo thay đổi
-  const {message, buttons} = updateState[updateInfo] || updateState.DEFAULT;
+  const {message, buttons} = updateState[updateInfo] || updateState.UP_TO_DATE;
 
   return (
     <CustomDialog
@@ -96,7 +94,15 @@ const UpdatePopup = ({
         paddingBottom: 24,
       }}
       title={message}>
-      <View bg-black padding-20>
+      <View bg-black padding-20 paddingT-0>
+        {decriptionUpdate && (
+          <View paddingB-12>
+            <Text white text70BL>
+              Thông tin cập nhật:
+            </Text>
+            <Text white> - {decriptionUpdate}</Text>
+          </View>
+        )}
         {showProgress && (
           <ProgressBar
             progress={progressPercent}
