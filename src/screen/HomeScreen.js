@@ -37,7 +37,7 @@ import {handleNotificationClick} from '../services/Notification';
 import Video from 'react-native-video';
 import {showEditor} from 'react-native-video-trim';
 import useTrimVideo from '../hooks/useTrimVideo';
-import {deleteAllMp4Files, getInfoVideo} from '../util/uploadVideo';
+import {deleteAllMp4Files} from '../util/uploadVideo';
 
 let navigation;
 
@@ -59,9 +59,7 @@ const HomeScreen = () => {
     clearAppCache();
 
     getInitialNotification(messaging).then(async remoteMessage => {
-      if (remoteMessage?.data?.local_update) {
-        handleNotificationClick(remoteMessage?.data);
-      }
+      handleNotificationClick(remoteMessage?.data);
     });
 
     if (user.timeExpires < new Date().getTime()) {
