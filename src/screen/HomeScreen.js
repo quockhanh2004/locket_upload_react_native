@@ -59,7 +59,7 @@ const HomeScreen = () => {
     clearAppCache();
 
     getInitialNotification(messaging).then(async remoteMessage => {
-      handleNotificationClick(remoteMessage?.data);
+      handleNotificationClick(remoteMessage?.data || {});
     });
 
     if (user.timeExpires < new Date().getTime()) {
