@@ -10,5 +10,13 @@ export const AssetsInit = () => {
     ic_back: require('../assets/icons/ic_back.png'),
     ic_edit: require('../assets/icons/ic_edit.png'),
     ic_github: require('../assets/icons/ic_github.png'),
+    ic_camera: require('../assets/icons/ic_camera.png'),
+    ic_gallery: require('../assets/icons/ic_gallery.png'),
+    ic_setting: require('../assets/icons/ic_setting.png'),
+    ic_camera_rotate: require('../assets/icons/ic_camera_rotate.png'),
+    ic_flash: require('../assets/icons/ic_flash.png'),
+    ic_flash_off: require('../assets/icons/ic_flash_off.png'),
+    ic_save: require('../assets/icons/ic_save.png'),
+    ic_check: require('../assets/icons/ic_check.png'),
   });
 };

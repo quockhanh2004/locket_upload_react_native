@@ -1,15 +1,17 @@
+/* eslint-disable react-native/no-inline-styles */
 import {View} from 'react-native-ui-lib';
-import React, {useRef} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {CropView} from 'react-native-image-crop-tools';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useRoute} from '@react-navigation/native';
 
 import {nav} from '../navigation/navName';
 import {resizeImage} from '../util/uploadImage';
 import MainButton from '../components/MainButton';
 import Header from '../components/Header';
+import {BackHandler} from 'react-native';
+import {navigationTo} from './HomeScreen';
 
 const CropImageScreen = () => {
-  const navigation = useNavigation();
   const cropViewRef = useRef();
   const route = useRoute();
   const {imageUri} = route.params;
@@ -24,11 +26,29 @@ const CropImageScreen = () => {
 
     //giảm kích thước ảnh lại trước khi upload lên
     const newImage = await resizeImage(croppedImageUri);
-    navigation.navigate(nav.home, {uri: {...newImage, type: 'PNG'}});
+    navigationTo(nav.home, {uri: {...newImage, type: 'PNG'}, from: nav.crop});
   };
+
+  //xử lý sự kiện back
+  useEffect(() => {
+    const backAction = () => {
+      navigationTo(nav.home, {uri: null, from: nav.crop});
+      return true;
+    };
+
+    BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () =>
+      BackHandler.removeEventListener('hardwareBackPress', backAction);
+  }, []);
 
   return (
     <View flex bg-black>
+      <Header
+        leftIconAction={() => {
+          navigationTo(nav.home, {uri: null, from: nav.crop});
+        }}
+      />
       <View flex>
         <CropView
           sourceUrl={imageUri}
@@ -42,7 +62,6 @@ const CropImageScreen = () => {
       <View marginB-100>
         <MainButton label="Cắt ảnh" onPress={handleCrop} />
       </View>
-      <Header />
     </View>
   );
 };

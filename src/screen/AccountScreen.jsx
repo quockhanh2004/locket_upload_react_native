@@ -20,6 +20,8 @@ import MainButton from '../components/MainButton';
 import {setMessage} from '../redux/slice/message.slice';
 import UserInfo from '../components/UserInfo';
 import {useRoute} from '@react-navigation/native';
+import {navigationTo} from './HomeScreen';
+import {nav} from '../navigation/navName';
 
 const AccountScreen = () => {
   const dispatch = useDispatch();
@@ -143,6 +145,10 @@ const AccountScreen = () => {
     }
   }, []);
 
+  const handleSetting = () => {
+    navigationTo(nav.setting);
+  };
+
   const onUpdate = useCallback(() => {
     setUpdateInfo('DOWNLOADING_PACKAGE');
     codePush.sync(
@@ -190,59 +196,61 @@ const AccountScreen = () => {
   }, []);
 
   return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl onRefresh={handleRefresh} refreshing={isLoading} />
-      }>
-      <View height={Dimensions.get('window').height} bg-black centerV gap-24>
-        <UserInfo
-          dataUser={dataUser}
-          handleEditName={handleEditName}
-          handleUpdateAvatar={handleUpdateAvatar}
-          updateAvatarLoading={updateAvatarLoading}
-        />
-        <View paddingH-23>
-          <MainButton
-            label={'Kiểm tra cập nhật ứng dụng'}
-            onPress={handleCodePushUpdate}
+    <>
+      <Header rightIcon={'ic_setting'} rightIconAction={handleSetting} />
+      <ScrollView
+        refreshControl={
+          <RefreshControl onRefresh={handleRefresh} refreshing={isLoading} />
+        }>
+        <View height={Dimensions.get('window').height} bg-black centerV gap-24>
+          <UserInfo
+            dataUser={dataUser}
+            handleEditName={handleEditName}
+            handleUpdateAvatar={handleUpdateAvatar}
+            updateAvatarLoading={updateAvatarLoading}
           />
-        </View>
-
-        <TouchableOpacity onPress={handlePressGithub}>
-          <View center row gap-8>
-            <Icon
-              assetGroup="icons"
-              assetName="ic_github"
-              tintColor={Colors.grey30}
-              size={20}
+          <View paddingH-23>
+            <MainButton
+              label={'Kiểm tra cập nhật ứng dụng'}
+              onPress={handleCodePushUpdate}
             />
-            <Text grey30>quockhanh2004</Text>
           </View>
-        </TouchableOpacity>
-      </View>
-      <Header />
-      <EditTextDialog
-        visible={isEditName}
-        onDismiss={onDismissEditName}
-        label={'Update Name'}
-        onConfirm={handleConfirmEditName}
-        isEditName={true}
-        placeholder={'First Name'}
-        placeholder2={'Last Name'}
-        value={localFirstName}
-        value2={localLastName}
-        isLoading={isLoading}
-      />
-      <UpdatePopup
-        isVisible={isPopupVisible}
-        updateInfo={updateInfo}
-        progress={downloadProgress}
-        onUpdate={onUpdate}
-        decriptionUpdate={decriptionUpdate}
-        onPostpone={onPostpone}
-        onCheckUpdate={handleCodePushUpdate}
-      />
-    </ScrollView>
+
+          <TouchableOpacity onPress={handlePressGithub}>
+            <View center row gap-8>
+              <Icon
+                assetGroup="icons"
+                assetName="ic_github"
+                tintColor={Colors.grey30}
+                size={20}
+              />
+              <Text grey30>quockhanh2004</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <EditTextDialog
+          visible={isEditName}
+          onDismiss={onDismissEditName}
+          label={'Update Name'}
+          onConfirm={handleConfirmEditName}
+          isEditName={true}
+          placeholder={'First Name'}
+          placeholder2={'Last Name'}
+          value={localFirstName}
+          value2={localLastName}
+          isLoading={isLoading}
+        />
+        <UpdatePopup
+          isVisible={isPopupVisible}
+          updateInfo={updateInfo}
+          progress={downloadProgress}
+          onUpdate={onUpdate}
+          decriptionUpdate={decriptionUpdate}
+          onPostpone={onPostpone}
+          onCheckUpdate={handleCodePushUpdate}
+        />
+      </ScrollView>
+    </>
   );
 };
 

@@ -25,7 +25,12 @@ export const takePhoto = async () => {
   try {
     await requestCameraPermission();
     const result = await launchCamera({
-      mediaTypes: 'photo',
+      durationLimit: 7,
+      videoQuality: 'medium',
+      mediaType: 'mixed',
+      maxWidth: 1020,
+      maxHeight: 1020,
+      formatAsMp4: true,
       quality: 1,
       allowsEditing: true,
     });

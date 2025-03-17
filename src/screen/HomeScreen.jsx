@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Icon,
   Colors,
-  Image,
   Typography,
   Button,
   LoaderScreen,
@@ -27,17 +26,18 @@ import {
 } from '../redux/action/postMoment.action';
 import {setMessage} from '../redux/slice/message.slice';
 import {clearPostMoment} from '../redux/slice/postMoment.slice';
-import {clearAppCache, UPLOAD_PROGRESS_STAGE} from '../util/uploadImage';
+import {clearAppCache} from '../util/uploadImage';
 import {
   getInitialNotification,
   getMessaging,
 } from '@react-native-firebase/messaging';
 import {getApp} from '@react-native-firebase/app';
 import {handleNotificationClick} from '../services/Notification';
-import Video from 'react-native-video';
 import {showEditor} from 'react-native-video-trim';
 import useTrimVideo from '../hooks/useTrimVideo';
 import {deleteAllMp4Files} from '../util/uploadVideo';
+import SelectMediaDialog from '../Dialog/SelectMediaDialog';
+import ViewMedia from '../components/ViewMedia';
 
 let navigation;
 
@@ -46,14 +46,19 @@ const HomeScreen = () => {
   const dispatch = useDispatch();
   navigation = useNavigation();
   const route = useRoute();
+
+  //redux state
   const {user, userInfo} = useSelector(state => state.user);
   const {postMoment, isLoading, progressUpload} = useSelector(
     state => state.postMoment,
   );
+  const {useCamera} = useSelector(state => state.setting);
 
+  //use state
   const [selectedMedia, setselectedMedia] = useState(null);
   const [caption, setCaption] = useState('');
   const [isVideo, setIsVideo] = useState(false);
+  const [visibleSelectMedia, setVisibleSelectMedia] = useState(false);
 
   useEffect(() => {
     clearAppCache();
@@ -76,16 +81,32 @@ const HomeScreen = () => {
           refreshToken: user.refreshToken,
         }),
       );
-    }, 2500);
+    }, 3500);
   }, []);
 
   // Lắng nghe sự kiện khi cắt ảnh xong
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      if (route.params?.uri) {
-        setselectedMedia(route.params.uri);
-        navigation.setParams({uri: undefined});
+      switch (route.params?.from) {
+        case nav.crop:
+          if (route.params?.uri) {
+            setselectedMedia(route.params.uri);
+            navigation.setParams({uri: undefined});
+          }
+          break;
+        case nav.camera:
+          if (route.params?.camera) {
+            compressMedia(route.params.camera);
+            navigation.setParams({uri: undefined});
+          }
+          break;
+
+        default:
+          console.log(route.params);
+          navigation.setParams({uri: undefined});
+          break;
       }
+      console.log('focus');
     });
 
     return unsubscribe; // Hủy đăng ký listener khi component unmount
@@ -95,25 +116,11 @@ const HomeScreen = () => {
     dispatch(logout());
   };
 
-  const handleSelectMedia = async () => {
-    const result = await selectMedia();
-    if (result?.length > 0) {
-      setselectedMedia('');
-      const media = result[0];
-
-      if (media?.type?.startsWith('image')) {
-        setIsVideo(false);
-        navigation.navigate(nav.crop, {
-          imageUri: result[0].uri,
-        });
-      } else if (media?.type?.startsWith('video')) {
-        showEditor(media.uri, {
-          maxDuration: 7,
-          saveButtonText: 'Save',
-        });
-        setIsVideo(true);
-        return;
-      }
+  const handleSelectMedia = () => {
+    if (useCamera) {
+      setVisibleSelectMedia(true);
+    } else {
+      handleConfirmSelectMedia('gallery');
     }
   };
 
@@ -146,6 +153,44 @@ const HomeScreen = () => {
           refreshToken: user.refreshToken,
         }),
       );
+    }
+  };
+
+  const handleCancelSelectMedia = () => {
+    setVisibleSelectMedia(false);
+  };
+
+  const handleConfirmSelectMedia = value => {
+    onSelectMedia(value);
+  };
+
+  const onSelectMedia = async from => {
+    let result;
+    if (from === 'gallery') {
+      result = await selectMedia();
+      compressMedia(result[0]);
+    } else if (from === 'camera') {
+      navigationTo(nav.camera);
+    } else {
+      return;
+    }
+  };
+
+  const compressMedia = media => {
+    setselectedMedia('');
+
+    if (media?.type?.startsWith('image')) {
+      setIsVideo(false);
+      navigation.navigate(nav.crop, {
+        imageUri: media.uri,
+      });
+    } else if (media?.type?.startsWith('video')) {
+      showEditor(media.uri, {
+        maxDuration: 7,
+        saveButtonText: 'Save',
+      });
+      setIsVideo(true);
+      return;
     }
   };
 
@@ -189,6 +234,7 @@ const HomeScreen = () => {
       setselectedMedia({uri: uriVideo, type: 'video'});
     }
   }, [uriVideo]);
+
   return (
     <View flex bg-black padding-12>
       <View row spread centerV>
@@ -215,64 +261,12 @@ const HomeScreen = () => {
         </TouchableOpacity>
       </View>
       <View centerV flex gap-24>
-        <View center>
-          <TouchableOpacity
-            style={{
-              borderRadius: 8,
-              borderWidth: 2,
-              borderColor: Colors.grey40,
-            }}
-            onPress={handleSelectMedia}>
-            {selectedMedia ? (
-              !isVideo ? (
-                <View>
-                  <Image
-                    width={264}
-                    height={264}
-                    source={{uri: selectedMedia.uri}}
-                    style={{borderRadius: 6}}
-                  />
-                  <View absT marginT-4 marginR-4 absR>
-                    <TouchableOpacity onPress={handleRemoveImage}>
-                      <Icon
-                        assetGroup="icons"
-                        assetName="ic_cancel"
-                        size={24}
-                        tintColor={Colors.red30}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              ) : (
-                <View>
-                  <Video
-                    source={{uri: selectedMedia.uri}}
-                    resizeMode="cover"
-                    style={{borderRadius: 6, width: 264, height: 264}}
-                  />
-                  <View absT marginT-4 marginR-4 absR>
-                    <TouchableOpacity onPress={handleRemoveImage}>
-                      <Icon
-                        assetGroup="icons"
-                        assetName="ic_cancel"
-                        size={24}
-                        tintColor={Colors.red30}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              )
-            ) : (
-              <Icon
-                assetGroup="icons"
-                assetName="ic_add"
-                tintColor={Colors.grey40}
-                size={64}
-                margin-100
-              />
-            )}
-          </TouchableOpacity>
-        </View>
+        <ViewMedia
+          selectedMedia={selectedMedia}
+          isVideo={isVideo}
+          onRemoveMedia={handleRemoveImage}
+          onSelectMedia={handleSelectMedia}
+        />
 
         <View flexS>
           <InputView
@@ -304,6 +298,11 @@ const HomeScreen = () => {
           )}
         </Button>
       </View>
+      <SelectMediaDialog
+        visible={visibleSelectMedia}
+        onDismiss={handleCancelSelectMedia}
+        onConfirm={handleConfirmSelectMedia}
+      />
     </View>
   );
 };

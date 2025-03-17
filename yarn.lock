@@ -1943,6 +1943,11 @@
   dependencies:
     merge-options "^3.0.4"
 
+"@react-native-camera-roll/camera-roll@^7.10.0":
+  version "7.10.0"
+  resolved "https://registry.yarnpkg.com/@react-native-camera-roll/camera-roll/-/camera-roll-7.10.0.tgz#5e9518d78a9cd87ddc8e68d03e31a608df5033ab"
+  integrity sha512-Zm1yHxxTQS2APsnnxUFoLnK+DMMTPqmIQ2z2pGtNyHRXAG40Nt4MLVB3tDJTWnuJLAG87BpTCEvpz49+u0YkUw==
+
 "@react-native-community/cli-clean@12.3.6":
   version "12.3.6"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-clean/-/cli-clean-12.3.6.tgz#e8a7910bebc97266fd5068649013a03958021fc4"
@@ -6952,6 +6957,11 @@ react-native-video@^6.10.2:
   version "6.10.2"
   resolved "https://registry.yarnpkg.com/react-native-video/-/react-native-video-6.10.2.tgz#cf956f4d1140900e1fadfe994716db03a4e4da6f"
   integrity sha512-ua/7mGZVJYe0pUh5tWccG4h+Jj3IGemGSwsc6E7HFV+nfvUfULtWuCth4dYDU1HPeuVW+aDlD660AnKD+mdS1w==
+
+react-native-vision-camera@4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/react-native-vision-camera/-/react-native-vision-camera-4.3.1.tgz#f755107f259f71f51a619ccaaefc55bbe341b2c7"
+  integrity sha512-7BzvZnorTQDQ5qZEOeiRpjA1BM0ZsUxxCsPtntRf1by7Ialok+gD04k285+n+7yy/2+WT4TwLSPeiAqx9z+uew==
 
 react-native@0.73.8:
   version "0.73.8"

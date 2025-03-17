@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {PermissionsAndroid, Platform} from 'react-native';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import {Camera} from 'react-native-vision-camera';
 
 export const requestMediaPermission = async () => {
   try {
@@ -47,8 +49,30 @@ export const requestCameraPermission = async () => {
           buttonPositive: 'OK',
         },
       );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('Camera permission granted');
+
+      const micro = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+      );
+
+      // = await PermissionsAndroid.request(
+      //   PermissionsAndroid.PERMISSIONS.MANAGE_EXTERNAL_STORAGE,
+      // );
+      console.log('sdk: ' + Platform.Version);
+      let manager_file;
+      if (Platform.Version >= 30) {
+        manager_file = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.MANAGE_EXTERNAL_STORAGE,
+        );
+      } else {
+        manager_file = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        );
+      }
+
+      if (
+        granted === PermissionsAndroid.RESULTS.GRANTED &&
+        micro === PermissionsAndroid.RESULTS.GRANTED
+      ) {
         return true;
       } else {
         console.log('Camera permission denied');
@@ -59,12 +83,10 @@ export const requestCameraPermission = async () => {
       const cameraStatus = await check(PERMISSIONS.IOS.CAMERA);
 
       if (cameraStatus === RESULTS.GRANTED) {
-        console.log('Camera permission granted');
         return true;
       } else {
         const requestStatus = await request(PERMISSIONS.IOS.CAMERA);
         if (requestStatus === RESULTS.GRANTED) {
-          console.log('Camera permission granted after request');
           return true;
         }
         console.log('Camera permission denied after request');
@@ -77,5 +99,19 @@ export const requestCameraPermission = async () => {
   } catch (error) {
     console.error('Error requesting camera permission:', error);
     return false;
+  }
+};
+
+export const checkPermissions = async () => {
+  await Camera.getCameraPermissionStatus();
+
+  // Kiểm tra và yêu cầu quyền cho cả camera và microphone (Android)
+  if (Platform.OS === 'android') {
+    try {
+      await check(PERMISSIONS.ANDROID.CAMERA);
+      await check(PERMISSIONS.ANDROID.RECORD_AUDIO);
+    } catch (err) {
+      console.warn('Error requesting permissions:', err);
+    }
   }
 };

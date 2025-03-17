@@ -1,7 +1,6 @@
 import React from 'react';
 
 import {nav} from './navName';
-import ResetPasswordScreen from '../screen/ResetPasswordScreen';
 import LoginScreen from '../screen/LoginScreen';
 import HomeScreen from '../screen/HomeScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -9,6 +8,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import AccountScreen from '../screen/AccountScreen';
 import CropImageScreen from '../screen/CropImageScreen';
+import SettingScreen from '../screen/SettingScreen';
+import CameraScreen from '../screen/CameraScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,7 +19,6 @@ const AuthNavigator = () => {
       initialRouteName={nav.login}
       screenOptions={{headerShown: false}}>
       <Stack.Screen name={nav.login} component={LoginScreen} />
-      <Stack.Screen name={nav.resetPassword} component={ResetPasswordScreen} />
     </Stack.Navigator>
   );
 };
@@ -29,6 +29,8 @@ const HomeNavigator = () => {
       <Stack.Screen name={nav.home} component={HomeScreen} />
       <Stack.Screen name={nav.accountInfo} component={AccountScreen} />
       <Stack.Screen name={nav.crop} component={CropImageScreen} />
+      <Stack.Screen name={nav.setting} component={SettingScreen} />
+      <Stack.Screen name={nav.camera} component={CameraScreen} />
     </Stack.Navigator>
   );
 };

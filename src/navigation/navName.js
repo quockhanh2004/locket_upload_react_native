@@ -4,4 +4,6 @@ export const nav = {
   resetPassword: 'resetPassword',
   accountInfo: 'accountInfo',
   crop: 'crop',
+  setting: 'setting',
+  camera: 'camera',
 };

@@ -5,21 +5,21 @@ import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2';
 
 import userReducer from './slice/user.slice';
 import messageReducer from './slice/message.slice';
-import apiMiddleware from './middleware/apiMiddleware';
 import postMomentReducer from './slice/postMoment.slice';
+import settingReducer from './slice/setting.slice';
 
 const rootReducer = combineReducers({
   user: userReducer,
   message: messageReducer,
   postMoment: postMomentReducer,
-  // Add other reducers here
+  setting: settingReducer,
 });
 
 let persistConfig;
 persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['user'],
+  whitelist: ['user', 'setting'],
   stateReconciler: autoMergeLevel2,
 };
 
