@@ -19,7 +19,8 @@
 ![Screenshot](./images/screenshot5.png)
 ![Screenshot](./images/screenshot6.png)
 
-## Bản dựng sẵn có thể tải [Tại đây](https://github.com/quockhanh2004/locket_upload_react_native/releases)
+## Bản dựng sẵn có thể tải
+[![GitHub Releases](https://img.shields.io/github/downloads/quockhanh2004/locket_upload_react_native/total?label=Downloads&style=flat)](https://github.com/quockhanh2004/locket_upload_react_native/releases)
 
 ## 🔧 Hướng dẫn build và custom
 
@@ -75,3 +76,4 @@ Nếu bạn có ý tưởng hoặc muốn cải thiện ứng dụng, hãy tạo
 
 ---
 📢 Nếu thấy hữu ích, hãy ⭐ repo nhé! 😍
+
