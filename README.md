@@ -20,7 +20,7 @@
 ![Screenshot](./images/screenshot6.png)
 
 ## Bản dựng sẵn có thể tải
-[![GitHub Releases](https://img.shields.io/github/downloads/quockhanh2004/locket_upload_react_native/total?label=Downloads&style=flat)](https://github.com/quockhanh2004/locket_upload_react_native/releases)
+[![GitHub Releases](https://img.shields.io/github/downloads/quockhanh2004/locket_upload_react_native/total?label=Downloads&style=flat&logo=android)](https://github.com/quockhanh2004/locket_upload_react_native/releases)
 
 ## 🔧 Hướng dẫn build và custom
 
@@ -33,7 +33,7 @@ Trước tiên, hãy đảm bảo bạn đã cài đặt:
 - **Yarn** hoặc **npm**
 - **React Native CLI**
 - **Android Studio** (nếu build trên Android)
-- **Đổi tên file .env.exmable thành .env**
+- **Đổi tên file .env.examble thành .env**
 
 ### 2️⃣ Clone repo
 ```sh
