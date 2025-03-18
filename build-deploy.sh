@@ -55,21 +55,25 @@ else
   gh release upload "v${version}" "$new_apk_path" --clobber
 fi
 
-
-# FCM_SERVER_KEY=$(node -p "require('./server-service.json').private_key")
-# PACKAGE_NAME="com.com.locket_upload"
-# curl -X POST "https://fcm.googleapis.com/fcm/send" \
-#      -H "Authorization: key=$FCM_SERVER_KEY" \
-#      -H "Content-Type: application/json" \
-#      -d '{
-#            "to": "/new_update/all_users",
-#            "notification": {
-#              "title": "New Release Available!",
-#              "body": "Version '"$version"' has been released. Check the changelog.",
-#              "click_action": "OPEN_APP"
-#            },
-#            "data": {
-#              "update_url": "https://github.com/quockhanh2004/locket_upload_react_native/releases"
-#            },
-#            "restricted_package_name": "'"$PACKAGE_NAME"'"
-#          }'
+PROJECT_ID=$(node -p "require('./google-services.json').project_info.project_id")
+FCM_URL="https://fcm.googleapis.com/v1/projects/$PROJECT_ID/messages:send"
+ACCESS_TOKEN=$(gcloud auth application-default print-access-token)
+PACKAGE_NAME="com.com.locket_upload"
+curl -X POST "$FCM_URL" \
+     -H "Authorization: Bearer $ACCESS_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+ "message": {
+  "android": {
+   "restricted_package_name": "com.locket_upload"
+  },
+  "data": {
+   "local_update": "true"
+  },
+  "notification": {
+   "body": "'"$DESCRIPTION"'",
+   "title": "Đã có bản cập nhật mới!"
+  },
+  "topic": "new_update"
+ }
+}'

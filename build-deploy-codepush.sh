@@ -26,22 +26,28 @@ code-push release-react "$APP_NAME" android \
   --mandatory \
   --description "$DESCRIPTION"
 
-FCM_SERVER_KEY=$(node -p "require('./server-service.json').private_key")
-PACKAGE_NAME="com.com.locket_upload"
-curl -X POST "https://fcm.googleapis.com/fcm/send" \
-     -H "Authorization: key=$FCM_SERVER_KEY" \
+PROJECT_ID=$(node -p "require('./google-services.json').project_info.project_id")
+FCM_URL="https://fcm.googleapis.com/v1/projects/$PROJECT_ID/messages:send"
+ACCESS_TOKEN=$(gcloud auth application-default print-access-token)
+
+curl -X POST "$FCM_URL" \
+     -H "Authorization: Bearer $ACCESS_TOKEN" \
      -H "Content-Type: application/json" \
      -d '{
-           "to": "/new_update/all_users",
-           "notification": {
-             "title": "Đã có bản cập nhật mới!",
-             "body": "'"$DESCRIPTION"'",
-             "click_action": "OPEN_APP"
-           },
-           "data": {
-             "local_update": "true"
-           },
-           "restricted_package_name": "'"$PACKAGE_NAME"'"
-         }'
+          "message": {
+            "android": {
+              "restricted_package_name": "com.locket_upload"
+            },
+            "data": {
+              "local_update": "true"
+            },
+            "notification": {
+              "body": "'"$DESCRIPTION"'",
+              "title": "Đã có bản cập nhật mới!"
+            },
+          "topic": "new_update"
+          }
+        }'
+
 
 echo "✅ CodePush deploy hoàn tất!"
