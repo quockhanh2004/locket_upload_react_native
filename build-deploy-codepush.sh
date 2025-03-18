@@ -19,25 +19,29 @@ echo "📝 Mô tả: $DESCRIPTION"
 
 # Đẩy lên CodePush cho Android
 echo "🚀 Deploy lên CodePush (Android)..."
-# code-push release-react $APP_NAME android \
-#   --targetBinaryVersion "$TARGET_VERSION" \
-#   --deploymentName "$DEPLOYMENT" \
-#   --description "$DESCRIPTION" \
-#   --mandatory true \
-#   --outputDir ./build/android
+
 code-push release-react "$APP_NAME" android \
   --deploymentName "$DEPLOYMENT" \
   --targetBinaryVersion "$TARGET_VERSION" \
   --mandatory \
   --description "$DESCRIPTION"
 
-# Đẩy lên CodePush cho iOS
-# echo "🚀 Deploy lên CodePush (iOS)..."
-# code-push release-react $APP_NAME ios \
-#   --targetBinaryVersion "$TARGET_VERSION" \
-#   --deploymentName "$DEPLOYMENT" \
-#   --description "$DESCRIPTION" \
-#   --mandatory true \
-#   --outputDir ./build/ios
+FCM_SERVER_KEY=$(node -p "require('./server-service.json').private_key")
+PACKAGE_NAME="com.com.locket_upload"
+curl -X POST "https://fcm.googleapis.com/fcm/send" \
+     -H "Authorization: key=$FCM_SERVER_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "to": "/new_update/all_users",
+           "notification": {
+             "title": "Đã có bản cập nhật mới!",
+             "body": "'"$DESCRIPTION"'",
+             "click_action": "OPEN_APP"
+           },
+           "data": {
+             "local_update": "true"
+           },
+           "restricted_package_name": "'"$PACKAGE_NAME"'"
+         }'
 
 echo "✅ CodePush deploy hoàn tất!"
