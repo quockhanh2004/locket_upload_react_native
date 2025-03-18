@@ -7,7 +7,7 @@ version=$(node -p "require('./package.json').version")
 current_time=$(date +%Y%m%d_%H%M)
 
 # Lấy message commit của version trước
-previous_version_commit=$(git log --grep "Build and release APK version" --pretty=format:"%s" | tail -n 2 | head -n 1)
+previous_version_commit=$(git log --grep "Build and release APK version" --pretty=format:"%H" | tail -n 2 | head -n 1)
 previous_version=$(echo "$previous_version_commit" | grep -oE "version [0-9]+\.[0-9]+\.[0-9]+")
 previous_version=$(echo "$previous_version" | awk '{print $2}')
 
@@ -15,7 +15,7 @@ previous_version=$(echo "$previous_version" | awk '{print $2}')
 # Tạo changelog
 changelog=""
 if [[ -n "$previous_version_commit" ]]; then
-  changelog=$(git log --pretty=format:"- %s" "$previous_version_commit"..HEAD)  
+  changelog=$(git log --pretty=format:"- %s" "${previous_version_commit}..HEAD")  
 fi
 
 
