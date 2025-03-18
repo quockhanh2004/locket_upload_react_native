@@ -9,6 +9,7 @@ import {
   getMessaging,
   getToken,
   onNotificationOpenedApp,
+  subscribeToTopic,
 } from '@react-native-firebase/messaging';
 import {getApp} from '@react-native-firebase/app';
 
@@ -135,6 +136,10 @@ notifee.onBackgroundEvent(async event => {
   await handleNotificationClick();
 });
 
+async function subscribeTopic() {
+  await subscribeToTopic(messaging, 'new_update');
+  console.log('Thiết bị đã đăng ký vào topic all_users');
+}
 /**
  * 7️⃣ Hook khởi tạo Notification Service trong `App.tsx`
  */
@@ -145,6 +150,9 @@ export const NotificationService = () => {
     listenToNotificationClicks();
 
     getFcmToken();
+
+    subscribeTopic();
+
     const unsubscribe = messaging.onMessage(async remoteMessage => {
       await displayNotification(remoteMessage);
     });

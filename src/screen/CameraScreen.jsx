@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useRef, useEffect} from 'react';
 import {
@@ -21,6 +22,9 @@ import {setCameraSettings} from '../redux/slice/setting.slice';
 import {useDispatch, useSelector} from 'react-redux';
 import {navigationTo} from './HomeScreen';
 import {nav} from '../navigation/navName';
+import Header from '../components/Header';
+import {setMessage} from '../redux/slice/message.slice';
+import Video from 'react-native-video';
 
 function CameraScreen() {
   const dispatch = useDispatch();
@@ -34,7 +38,7 @@ function CameraScreen() {
 
   const format = useCameraFormat(device, [
     {videoResolution: {width: 1920, height: 1080}},
-    // !isRecording && {photoAspectRatio: 4 / 3, photoResolution: 'max'},
+    {photoAspectRatio: 4 / 3},
   ]);
 
   const timeoutRef = useRef(null);
@@ -43,6 +47,7 @@ function CameraScreen() {
   const [photo, setPhoto] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [timeRecording, setTimeRecording] = useState(0);
+  const [type, setType] = useState(null);
 
   const handleSwitchCamera = () => {
     startRotation();
@@ -63,10 +68,15 @@ function CameraScreen() {
 
   const handleTakePicture = () => {
     if (camera.current) {
-      camera.current.takePhoto({}).then(data => {
-        console.log(data);
-        setPhoto('file://' + data.path);
-      });
+      camera.current
+        .takePhoto({
+          flash: cameraSettings.flash ? 'on' : 'off',
+        })
+        .then(data => {
+          console.log(data);
+          setPhoto('file://' + data.path);
+          setType('image');
+        });
     }
   };
 
@@ -75,8 +85,21 @@ function CameraScreen() {
       setIsRecording(true);
       await camera.current.startRecording({
         videoCodec: 'h264',
-        onRecordingFinished: video => console.log(video),
-        onRecordingError: error => console.error(error),
+        fileType: 'mp4',
+        flash: cameraSettings.flash ? 'on' : 'off',
+        onRecordingFinished: video => {
+          console.log('Recording finished', video);
+          setPhoto('file://' + video.path);
+          setType('video');
+        },
+        onRecordingError: error => {
+          dispatch(
+            setMessage({
+              message: JSON.stringify(error),
+              type: 'Error',
+            }),
+          );
+        },
       });
       timeoutRef.current = setTimeout(async () => {
         await stopRecording();
@@ -110,8 +133,20 @@ function CameraScreen() {
       try {
         const newUri = await CameraRoll.saveAsset(photo, {});
         console.log('Saved to camera roll:', newUri);
+        dispatch(
+          setMessage({
+            message: `${type.toUpperCase()} saved to camera roll`,
+            type: 'success',
+          }),
+        );
       } catch (error) {
         console.error('error saving camera roll', error);
+        dispatch(
+          setMessage({
+            message: `Error saving ${type} to camera roll: ${error.message}`,
+            type: 'Error',
+          }),
+        );
       }
     }
   };
@@ -121,10 +156,18 @@ function CameraScreen() {
       navigationTo(nav.home, {
         camera: {
           uri: photo,
-          type: 'image/jpeg',
+          type: type,
         },
         from: nav.camera,
       });
+    }
+  };
+
+  const handleClearMedia = () => {
+    if (photo) {
+      setPhoto(null);
+      setType(null);
+      return true;
     }
   };
 
@@ -147,10 +190,7 @@ function CameraScreen() {
   //xử lý sự kiện back
   useEffect(() => {
     const backAction = () => {
-      if (photo) {
-        setPhoto(null);
-        return true;
-      }
+      handleClearMedia();
     };
 
     BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -160,150 +200,193 @@ function CameraScreen() {
   }, [photo]);
 
   return (
-    <View flex bg-black centerV>
-      <View
-        style={{
-          borderRadius: 20,
-          overflow: 'hidden',
-        }}>
-        {photo ? (
-          <Image
-            source={{uri: photo}}
-            style={{aspectRatio: format.photoHeight / format.photoWidth}}
-          />
-        ) : (
-          <Camera
-            ref={camera}
-            style={{aspectRatio: format.photoHeight / format.photoWidth}}
-            preview={true}
-            isActive={true}
-            photo={true}
-            video={true}
-            resizeMode="cover"
-            captureAudio={true}
-            device={device}
-            format={format}
-            androidCameraPermissionOptions={{
-              title: 'Permission to use camera',
-              message: 'We need your permission to use your camera',
-              buttonPositive: 'Okay',
-              buttonNegative: 'Cancel',
-            }}
-          />
-        )}
-      </View>
-      {isRecording && (
-        <View>
-          <Text>{timeRecording}/10</Text>
-        </View>
-      )}
-
-      {!photo && (
+    <>
+      <Header />
+      <View flex bg-black paddingT-50 spread>
         <View
-          centerV
-          width={'100%'}
-          row
-          absB
-          marginT-12
-          style={{justifyContent: 'space-around'}}
-          backgroundColor={Colors.black}>
-          <TouchableOpacity onPress={handleFlash}>
-            <Icon
-              assetGroup="icons"
-              assetName={cameraSettings?.flash ? 'ic_flash' : 'ic_flash_off'}
-              size={24}
-              tintColor={Colors.grey40}
-            />
-          </TouchableOpacity>
-          <View row center>
-            <TouchableOpacity onPress={handleTakePicture}>
-              <View
-                borderRadius={99}
-                borderWidth={2}
-                padding-5
-                borderColor={Colors.grey40}>
-                <View width={50} height={50} borderRadius={50} bg-grey40 />
-              </View>
-            </TouchableOpacity>
-
-            {/* <TouchableOpacity
-              onPress={!isRecording ? handleRecordVideo : stopRecording}>
-              <View
-                style={{
-                  borderTopRightRadius: 99,
-                  borderBottomRightRadius: 99,
-                  marginLeft: -9,
-                  borderLeftWidth: 0,
-                }}
-                borderWidth={2}
-                padding-5
-                borderColor={Colors.grey40}>
-                <View
-                  marginL-8
-                  width={30}
-                  height={30}
-                  borderRadius={50}
-                  bg-red40
-                />
-              </View>
-            </TouchableOpacity> */}
-          </View>
-
-          <TouchableOpacity onPress={handleSwitchCamera}>
-            <Animated.View style={{transform: [{rotate: rotateInterpolate}]}}>
-              <Icon
-                assetGroup="icons"
-                assetName="ic_camera_rotate"
-                size={24}
-                tintColor={Colors.grey40}
+          style={{
+            borderRadius: 20,
+            overflow: 'hidden',
+          }}>
+          {console.log(photo)}
+          {photo ? (
+            type === 'image' ? (
+              <Image
+                source={{uri: photo}}
+                style={{aspectRatio: format.photoHeight / format.photoWidth}}
               />
-            </Animated.View>
-          </TouchableOpacity>
+            ) : (
+              <Video
+                source={{uri: photo}}
+                style={{aspectRatio: format.photoHeight / format.photoWidth}}
+                resizeMode="cover"
+              />
+            )
+          ) : (
+            <Camera
+              ref={camera}
+              style={{aspectRatio: format.photoHeight / format.photoWidth}}
+              preview={true}
+              isActive={true}
+              photo={true}
+              video={true}
+              resizeMode="cover"
+              captureAudio={true}
+              device={device}
+              format={format}
+              androidCameraPermissionOptions={{
+                title: 'Permission to use camera',
+                message: 'We need your permission to use your camera',
+                buttonPositive: 'Okay',
+                buttonNegative: 'Cancel',
+              }}
+            />
+          )}
         </View>
-      )}
+        <View width={'100%'} marginB-40>
+          {isRecording && (
+            <View center width={'100%'}>
+              <Text white text50BL>
+                {timeRecording < 10 ? `0${timeRecording}` : timeRecording} / 10
+              </Text>
+            </View>
+          )}
 
-      {photo && (
-        <View
-          centerV
-          width={'100%'}
-          row
-          absB
-          marginT-12
-          style={{justifyContent: 'space-around'}}
-          backgroundColor={Colors.transparent}>
-          <View width={24} height={24} margin-12 />
-          <TouchableOpacity onPress={handleReturnMedia}>
+          {!photo && (
             <View
-              borderRadius={99}
-              borderWidth={2}
-              padding-10
-              bg-black
-              borderColor={Colors.grey40}>
-              <View bg-grey40 width={50} height={50} borderRadius={50} center>
+              centerV
+              width={'100%'}
+              row
+              marginT-12
+              style={{justifyContent: 'space-around'}}
+              backgroundColor={Colors.black}>
+              <TouchableOpacity onPress={handleFlash}>
                 <Icon
                   assetGroup="icons"
-                  assetName="ic_check"
-                  size={25}
-                  tintColor={Colors.black}
+                  assetName={
+                    cameraSettings?.flash ? 'ic_flash' : 'ic_flash_off'
+                  }
+                  size={24}
+                  tintColor={Colors.grey40}
                 />
-              </View>
-            </View>
-          </TouchableOpacity>
+              </TouchableOpacity>
+              <View row center>
+                <TouchableOpacity onPress={handleTakePicture}>
+                  <View
+                    borderRadius={99}
+                    borderWidth={2}
+                    padding-5
+                    borderColor={Colors.grey40}>
+                    <View width={50} height={50} borderRadius={50} bg-grey40 />
+                  </View>
+                </TouchableOpacity>
 
-          <Card backgroundColor={Colors.black}>
-            <TouchableOpacity onPress={handleSavePicture}>
-              <Icon
-                assetGroup="icons"
-                assetName="ic_save"
-                size={24}
-                margin-12
-                tintColor={Colors.grey40}
-              />
-            </TouchableOpacity>
-          </Card>
+                <View
+                  style={{
+                    borderTopRightRadius: 99,
+                    borderBottomRightRadius: 99,
+                    marginLeft: -9,
+                    borderLeftWidth: 0,
+                  }}
+                  borderWidth={2}
+                  padding-5
+                  borderColor={Colors.grey40}>
+                  <TouchableOpacity
+                    onPress={!isRecording ? handleRecordVideo : stopRecording}>
+                    {!isRecording ? (
+                      <View
+                        marginL-8
+                        width={30}
+                        height={30}
+                        borderRadius={50}
+                        bg-red40
+                      />
+                    ) : (
+                      <View
+                        marginL-8
+                        width={30}
+                        height={30}
+                        borderRadius={50}
+                        center
+                        bg-grey40>
+                        <View width={10} height={10} backgroundColor="black" />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <TouchableOpacity onPress={handleSwitchCamera}>
+                <Animated.View
+                  style={{transform: [{rotate: rotateInterpolate}]}}>
+                  <Icon
+                    assetGroup="icons"
+                    assetName="ic_camera_rotate"
+                    size={24}
+                    tintColor={Colors.grey40}
+                  />
+                </Animated.View>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {photo && (
+            <View
+              centerV
+              width={'100%'}
+              row
+              spread
+              marginT-12
+              style={{justifyContent: 'space-around'}}
+              backgroundColor={Colors.transparent}>
+              <TouchableOpacity onPress={handleClearMedia}>
+                <Icon
+                  assetGroup="icons"
+                  assetName="ic_cancel"
+                  size={24}
+                  margin-12
+                  tintColor={Colors.grey40}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleReturnMedia}>
+                <View
+                  borderRadius={99}
+                  borderWidth={2}
+                  padding-10
+                  bg-black
+                  borderColor={Colors.grey40}>
+                  <View
+                    bg-grey40
+                    width={50}
+                    height={50}
+                    borderRadius={50}
+                    center>
+                    <Icon
+                      assetGroup="icons"
+                      assetName="ic_check"
+                      size={25}
+                      tintColor={Colors.black}
+                    />
+                  </View>
+                </View>
+              </TouchableOpacity>
+
+              <Card backgroundColor={Colors.black}>
+                <TouchableOpacity onPress={handleSavePicture}>
+                  <Icon
+                    assetGroup="icons"
+                    assetName="ic_save"
+                    size={24}
+                    margin-12
+                    tintColor={Colors.grey40}
+                  />
+                </TouchableOpacity>
+              </Card>
+            </View>
+          )}
         </View>
-      )}
-    </View>
+      </View>
+    </>
   );
 }
 

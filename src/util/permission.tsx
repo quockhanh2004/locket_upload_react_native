@@ -59,7 +59,11 @@ export const requestCameraPermission = async () => {
       // );
       console.log('sdk: ' + Platform.Version);
       let manager_file;
-      if (Platform.Version >= 30) {
+      if (Platform.Version >= 33) {
+        manager_file = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+        );
+      } else if (Platform.Version >= 30) {
         manager_file = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.MANAGE_EXTERNAL_STORAGE,
         );

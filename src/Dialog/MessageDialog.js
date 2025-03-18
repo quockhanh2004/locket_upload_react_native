@@ -26,7 +26,7 @@ const MessageDialog = () => {
     <CustomDialog
       visible={message}
       onDismiss={handleClearMessage}
-      title={type}
+      title={type.toUpperCase()}
       panDirection={Dialog.directions.DOWN}
       titleStyle={{
         color: 'white',
