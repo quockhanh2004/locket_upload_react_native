@@ -112,6 +112,10 @@ export const handleNotificationClick = async data => {
     if (lastData.local_update) {
       navigationTo(nav.accountInfo, {local_update: true});
     }
+
+    if (lastData.navigation_to) {
+      navigationTo(lastData.navigation_to);
+    }
   }
 };
 
