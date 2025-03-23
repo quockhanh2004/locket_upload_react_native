@@ -25,6 +25,10 @@ jobs:
           rm -f package-lock.json
           yarn install # Hoặc yarn install nếu bạn dùng Yarn
 
+      - name: Set up environment variables
+        run: |
+          mv .env.example .env
+
       - name: Install Android dependencies
         uses: android-actions/setup-android@v2
         with:
