@@ -28,6 +28,8 @@ jobs:
       - name: Set up environment variables
         run: |
           mv .env.example .env
+          echo "${{ secrets.ENV_FILE }}" > google-services.json
+          echo "${{ secrets.ENV_FILE }}" > ./android/app/google-services.json
 
       - name: Install Android dependencies
         uses: android-actions/setup-android@v2
