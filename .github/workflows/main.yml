@@ -1,0 +1,49 @@
+name: Build React Native Android APK
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x' # Hoặc phiên bản Node.js bạn đang sử dụng
+
+      - name: Install dependencies
+        run: npm install # Hoặc yarn install nếu bạn dùng Yarn
+      
+      - name: Install Android dependencies
+        uses: android-actions/setup-android@v2
+        with:
+          distribution: 'latest'
+
+      - name: Generate local.properties file
+        run: |
+          cd android
+          echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
+          cd ..
+
+      - name: Make Gradle executable
+        run: chmod +x android/gradlew
+
+      - name: Build APK
+        run: |
+          cd android
+          ./gradlew assembleRelease -PbuildType=Release
+          cd ..
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release.apk
+          path: android/app/build/outputs/apk/release/app-release.apk
