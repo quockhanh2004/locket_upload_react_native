@@ -27,7 +27,7 @@ jobs:
 
       - name: Set up environment variables
         run: |
-          mv ./.env.example ./.env
+          mv ./.env.examble ./.env
           echo "${{ secrets.GOOGLE_SERVICE }}" > ./google-services.json
           echo "${{ secrets.GOOGLE_SERVICE }}" > ./android/app/google-services.json
 
