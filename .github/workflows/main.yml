@@ -25,17 +25,12 @@ jobs:
           rm -f package-lock.json
           yarn install # Hoặc yarn install nếu bạn dùng Yarn
       
-      - name: Debug GOOGLE_SERVICES_JSON (Hidden Output)
-        run: |
-          echo "${{ secrets.GOOGLE_SERVICE_BASE64 }}" | head -c 100
-
-
       - name: Set up environment variables
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICE_BASE64 }} #check the secret name
         run: |
           mv ./.env.examble ./.env
-          echo $GOOGLE_SERVICES_JSON | base64 -d > ./android/app/google-services.json
+          echo "$GOOGLE_SERVICES_JSON" | base64 -d > ./android/app/google-services.json
 
       - name: Install Android dependencies
         uses: android-actions/setup-android@v2
