@@ -24,6 +24,11 @@ jobs:
           rm -rf node_modules
           rm -f package-lock.json
           yarn install # Hoặc yarn install nếu bạn dùng Yarn
+      
+      - name: Debug GOOGLE_SERVICES_JSON (Hidden Output)
+        run: |
+          echo "${GOOGLE_SERVICES_JSON}" | head -c 100
+
 
       - name: Set up environment variables
         env:
