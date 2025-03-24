@@ -1,9 +1,7 @@
-name: Build React Native Android APK
+name: Build and Release React Native APK
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
     branches: [ "main" ]
 
 jobs:
@@ -13,21 +11,29 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Lấy toàn bộ lịch sử commit để tính changelog
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.x' # Hoặc phiên bản Node.js bạn đang sử dụng
+          node-version: '20.x'
 
       - name: Install dependencies
         run: |
-          rm -rf node_modules
-          rm -f package-lock.json
-          yarn install # Hoặc yarn install nếu bạn dùng Yarn
-      
+          yarn install
+
+      - name: Get version from package.json
+        id: get_version
+        run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+
+      - name: Get current time
+        id: get_time
+        run: echo "CURRENT_TIME=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+
       - name: Set up environment variables
         env:
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICE_BASE64 }} #check the secret name
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICE_BASE64 }}
         run: |
           mv ./.env.examble ./.env
           echo "$GOOGLE_SERVICES_JSON" | base64 -d > ./android/app/google-services.json
@@ -52,8 +58,76 @@ jobs:
           ./gradlew assembleRelease -PbuildType=Release
           cd ..
 
-      - name: Upload APK
+      - name: Rename APK with version
+        run: mv android/app/build/outputs/apk/release/app-release.apk android/app/build/outputs/apk/release/${{ secrets.APP_NAME }}_${{ env.VERSION }}.apk
+
+      - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release.apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+          name: app-release
+          path: android/app/build/outputs/apk/release/${{ secrets.APP_NAME }}_${{ env.VERSION }}.apk
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit -m "Build and release APK version ${{ env.VERSION }} on ${{ env.CURRENT_TIME }}"
+          git push origin main || echo "No changes to commit"
+
+  release:
+    name: Release APK
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Lấy toàn bộ commit history để tính changelog
+
+      - name: Get version from package.json
+        id: get_version
+        run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+
+      - name: Get previous version commit and changelog
+        id: changelog
+        run: |
+          previous_version_commit=$(git log --grep "Build and release APK version" --pretty=format:"%H" | sed -n 2p)
+          previous_version=$(echo "$previous_version_commit" | grep -oE "version [0-9]+\.[0-9]+\.[0-9]+")
+          previous_version=$(echo "$previous_version" | awk '{print $2}')
+
+          changelog=""
+          if [[ -n "$previous_version_commit" ]]; then
+            changelog=$(git log --pretty=format:"- %s" "${previous_version_commit}..HEAD" --no-merges)
+          fi
+
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          echo "$changelog" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Install GitHub CLI
+        run: sudo apt update && sudo apt install gh -y
+
+      - name: Authenticate GitHub CLI
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Download APK from artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release
+          path: android/app/build/outputs/apk/release/
+
+      - name: Create or Update GitHub Release
+        run: |
+          release_notes="Release version ${{ env.VERSION }}
+          Changelog:
+          ${{ env.CHANGELOG }}"
+
+          release_id=$(gh release view "v${{ env.VERSION }}" --json id -q .id 2>/dev/null)
+
+          if [ -z "$release_id" ]; then
+            gh release create "v${{ env.VERSION }}" "android/app/build/outputs/apk/release/${{ secrets.APP_NAME }}_${{ env.VERSION }}.apk" --notes "$release_notes"
+          else
+            gh release update "v${{ env.VERSION }}" --notes "$release_notes"
+            gh release upload "v${{ env.VERSION }}" "android/app/build/outputs/apk/release/${{ secrets.APP_NAME }}_${{ env.VERSION }}.apk" --clobber
+          fi
