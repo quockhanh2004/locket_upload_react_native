@@ -4,8 +4,8 @@ import {createThumbnail, Thumbnail} from 'react-native-create-thumbnail';
 import RNFS from 'react-native-fs';
 import axios from 'axios';
 
-import {createBlobFromUri} from './getBufferFile';
 import {uploadHeaders} from './header';
+import {readFileAsBytes} from './getBufferFile';
 
 export const compressVideo = async (
   videoUri: string,
@@ -19,11 +19,17 @@ export const compressVideo = async (
   uri: any;
   type: any;
 }> => {
-  console.log('debug here');
+  console.log('debug here', videoUri);
   // const uriNewVideo = videoUri;
-  const uriNewVideo = await Video.compress(videoUri, {}, progres => {
-    console.log('Compression Progress: ', progres);
-  });
+  const uriNewVideo = await Video.compress(
+    videoUri,
+    {
+      maxSize: 1020,
+      compressionMethod: 'auto',
+      getCancellationId: cancelid,
+    },
+    progress,
+  );
 
   return await getInfoVideo(uriNewVideo, 'video/mp4');
 };
@@ -31,6 +37,7 @@ export const compressVideo = async (
 export const deleteAllMp4Files = async (directoryPath: string) => {
   try {
     const files = await RNFS.readDir(directoryPath); // Lấy danh sách file trong thư mục
+    let totalSize = 0;
     const mp4Files = files.filter(
       file => file.isFile() && file.name.endsWith('.mp4'),
     );
@@ -41,6 +48,7 @@ export const deleteAllMp4Files = async (directoryPath: string) => {
     }
 
     for (const file of mp4Files) {
+      totalSize = (totalSize || 0) + file.size;
       await RNFS.unlink(file.path);
       console.log('Đã xóa:', file.name);
     }
@@ -48,6 +56,9 @@ export const deleteAllMp4Files = async (directoryPath: string) => {
     console.log(
       `✅ Đã xóa ${mp4Files.length} file .mp4 trong thư mục: ${directoryPath}`,
     );
+    //return totalsize dạng mb
+    const totalSizeMb = totalSize / 1024 / 1024;
+    return totalSizeMb;
   } catch (error) {
     console.error('Lỗi khi xóa file .mp4:', error);
   }
@@ -66,20 +77,6 @@ export const UPLOAD_VIDEO_PROGRESS_STAGE = {
   CREATING_MOMENT: 'Creating moment', // Tạo moment
   COMPLETED: 'Upload completed', // Hoàn tất
   FAILED: 'Upload failed', // Thất bại
-};
-
-export const createVideoBlob = async (videoInfo: {
-  uri: string;
-  type: string;
-  size?: number | undefined;
-}) => {
-  const response = await createBlobFromUri(videoInfo);
-
-  if (!response?.blob) {
-    throw new Error('Failed to create Blob');
-  }
-
-  return {video: response.blob, fileSize: videoInfo.size};
 };
 
 export const getInfoVideo = async (videoUri: string, videoType: string) => {

@@ -36,9 +36,11 @@ const postMomentSlice = createSlice({
       .addCase(uploadImageToFirebaseStorage.pending, state => {
         state.isLoading = true;
       })
-      .addCase(uploadImageToFirebaseStorage.fulfilled, state => {
-        state.postMoment = 'Post Moment completed';
-        state.isLoading = false;
+      .addCase(uploadImageToFirebaseStorage.fulfilled, (state, action: any) => {
+        if (action.payload) {
+          state.postMoment = 'Post Moment completed';
+          state.isLoading = false;
+        }
       })
       .addCase(uploadImageToFirebaseStorage.rejected, state => {
         state.isLoading = false;
@@ -47,9 +49,11 @@ const postMomentSlice = createSlice({
       .addCase(uploadVideoToFirebase.pending, state => {
         state.isLoading = true;
       })
-      .addCase(uploadVideoToFirebase.fulfilled, state => {
-        state.postMoment = 'Post Moment completed';
-        state.isLoading = false;
+      .addCase(uploadVideoToFirebase.fulfilled, (state, action: any) => {
+        if (action.payload) {
+          state.postMoment = 'Post Moment completed';
+          state.isLoading = false;
+        }
       })
       .addCase(uploadVideoToFirebase.rejected, state => {
         state.isLoading = false;

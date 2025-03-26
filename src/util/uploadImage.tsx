@@ -1,6 +1,5 @@
 import axios, {AxiosProgressEvent} from 'axios';
 import {uploadHeaders} from './header';
-import {createBlobFromUri} from './getBufferFile';
 
 export const UPLOAD_PROGRESS_STAGE = {
   PROCESSING_IMAGE: 'Processing image', // Xử lý ảnh (resize, convert, v.v.)
@@ -10,27 +9,6 @@ export const UPLOAD_PROGRESS_STAGE = {
   CREATING_MOMENT: 'Creating moment', // Tạo moment
   COMPLETED: 'Upload completed', // Hoàn tất
   FAILED: 'Upload failed', // Thất bại
-};
-
-export const createImageBlob = async (imageInfo: {
-  uri: string;
-  type: string;
-  size: number;
-}): Promise<{image: Uint8Array<ArrayBuffer>; fileSize: number}> => {
-  const result = await createBlobFromUri(imageInfo);
-  if (!result) {
-    throw new Error('Failed to create Blob');
-  }
-  const {blob: image} = result;
-  //nếu file size lớn hơn 1mb thì trả lỗi
-  if (imageInfo.size && imageInfo.size > 1024 * 1024) {
-    throw new Error('Image size is too large');
-  }
-
-  if (!image) {
-    throw new Error('Failed to create Blob');
-  }
-  return {image, fileSize: imageInfo.size};
 };
 
 export const initiateUpload = async (
