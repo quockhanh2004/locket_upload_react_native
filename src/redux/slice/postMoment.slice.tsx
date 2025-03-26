@@ -4,13 +4,24 @@ import {
   uploadVideoToFirebase,
 } from '../action/postMoment.action';
 
+interface ProgressUpload {
+  state: string;
+  progress: number;
+}
+
+interface TypePostMomentSlice {
+  postMoment: string | null | undefined;
+  isLoading: boolean;
+  progressUpload: ProgressUpload | null | undefined;
+}
+
 const postMomentSlice = createSlice({
   name: 'postMoment',
   initialState: {
     postMoment: null,
     isLoading: false,
     progressUpload: null,
-  },
+  } as TypePostMomentSlice,
   reducers: {
     clearPostMoment: state => {
       state.postMoment = null;
@@ -25,7 +36,7 @@ const postMomentSlice = createSlice({
       .addCase(uploadImageToFirebaseStorage.pending, state => {
         state.isLoading = true;
       })
-      .addCase(uploadImageToFirebaseStorage.fulfilled, (state, action) => {
+      .addCase(uploadImageToFirebaseStorage.fulfilled, state => {
         state.postMoment = 'Post Moment completed';
         state.isLoading = false;
       })
@@ -36,7 +47,7 @@ const postMomentSlice = createSlice({
       .addCase(uploadVideoToFirebase.pending, state => {
         state.isLoading = true;
       })
-      .addCase(uploadVideoToFirebase.fulfilled, (state, action) => {
+      .addCase(uploadVideoToFirebase.fulfilled, state => {
         state.postMoment = 'Post Moment completed';
         state.isLoading = false;
       })

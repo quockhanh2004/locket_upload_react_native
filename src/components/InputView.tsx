@@ -3,7 +3,58 @@ import React, {useState, forwardRef} from 'react';
 import {TextInput, StyleSheet, Pressable} from 'react-native';
 import {Colors, View, Icon, Typography, Card, Image} from 'react-native-ui-lib';
 
-const InputView = forwardRef(
+interface InputViewProps {
+  bgColor?: string;
+  borderColor?: string;
+  placeholderTextColor?: string;
+  style?: any;
+  radius?: number;
+  onFocus?: (focused: boolean) => void;
+  onPressIn?: () => void;
+  onSubmitEditing?: () => void;
+  inputStyle?: any;
+  placeholder?: string;
+  multiline?: boolean;
+  value?: string;
+  onChangeText?: (text: string) => void;
+  maxLength?: number;
+  error?: string;
+  renderLeft?: React.ReactNode;
+  renderRight?: React.ReactNode;
+  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'number-pad';
+  flex?: boolean;
+  iconLeft?: string;
+  iconLeftGroup?: string;
+  iconLeftColor?: string;
+  onPressLeft?: () => void;
+  iconRight?: string;
+  iconRightGroup?: string;
+  iconRightColor?: string;
+  onPressRight?: () => void;
+  letterSpacing?: number;
+  description?: string;
+  defaultValue?: string;
+  onBlur?: () => void;
+  textContentType?: string;
+  disabled?: boolean;
+  title?: string;
+  required?: boolean;
+  returnKeyType?: 'done' | 'go' | 'next' | 'search' | 'send';
+  eyePassword?: boolean;
+  withColon?: boolean;
+  bold?: boolean;
+  maxHeight?: number;
+  borderB?: boolean;
+  typography?: any;
+  showClear?: boolean;
+  styleIcon?: any;
+  enableShadow?: boolean;
+  borderWidth?: number;
+  onKeyPress?: (event: any) => void;
+  width?: string | number;
+}
+
+const InputView = forwardRef<TextInput, InputViewProps>(
   (
     {
       bgColor,
@@ -132,7 +183,8 @@ const InputView = forwardRef(
           backgroundColor={bgColor}
           borderColor={borderColor}
           borderWidth={borderWidth}
-          borderRadius={radius}>
+          borderRadius={radius}
+          width={props.width}>
           {renderLeft || renderLeftComponent()}
           <TextInput
             ref={inputRef}

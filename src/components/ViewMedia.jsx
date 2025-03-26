@@ -4,6 +4,8 @@ import {View, TouchableOpacity, Colors, Image, Icon} from 'react-native-ui-lib';
 import Video from 'react-native-video';
 
 const ViewMedia = ({selectedMedia, isVideo, onSelectMedia, onRemoveMedia}) => {
+  console.log(selectedMedia);
+
   return (
     <View center>
       <TouchableOpacity

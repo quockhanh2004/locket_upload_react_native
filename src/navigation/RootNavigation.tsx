@@ -10,6 +10,7 @@ import AccountScreen from '../screen/AccountScreen';
 import CropImageScreen from '../screen/CropImageScreen';
 import SettingScreen from '../screen/SettingScreen';
 import CameraScreen from '../screen/CameraScreen';
+import {RootState} from '../redux/store';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,7 +37,9 @@ const HomeNavigator = () => {
 };
 
 const RootNavigation = () => {
-  const isLoggedIn = useSelector(state => state.user?.user?.localId);
+  const isLoggedIn = useSelector(
+    (state: RootState) => state.user?.user?.localId,
+  );
 
   return (
     <>

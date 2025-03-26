@@ -1,4 +1,4 @@
-export const splitName = name => {
+export const splitName = (name: string) => {
   let first_name = '';
   let last_name = '';
 

@@ -9,7 +9,6 @@ import {
   initiateUpload,
   UPLOAD_PROGRESS_STAGE,
   uploadImage,
-  validateImageInfo,
 } from '../../util/uploadImage';
 import {loginHeader} from '../../util/header';
 import {setProgressUpload} from '../slice/postMoment.slice';
@@ -17,7 +16,6 @@ import {
   compressVideo,
   cretateBody,
   getDownloadVideoUrl,
-  getInfoVideo,
   getVideoThumbnail,
   initiateUploadVideo,
   UPLOAD_VIDEO_PROGRESS_STAGE,
@@ -25,9 +23,18 @@ import {
 } from '../../util/uploadVideo';
 import {readFileAsBytes} from '../../util/getBufferFile';
 
+interface DataPostMoment {
+  idUser: string;
+  idToken: string;
+  imageInfo?: any;
+  caption: string;
+  refreshToken: string;
+  videoInfo?: any;
+}
+
 export const uploadImageToFirebaseStorage = createAsyncThunk(
   'uploadImage',
-  async (data, thunkApi) => {
+  async (data: DataPostMoment, thunkApi) => {
     const {idUser, idToken, imageInfo, caption, refreshToken} = data;
     let currentToken = idToken;
     try {
@@ -38,7 +45,6 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
           progress: 0,
         }),
       );
-      validateImageInfo(imageInfo);
       const {image, fileSize} = await createImageBlob(imageInfo);
       const nameImg = `${Date.now()}_vtd182.webp`;
 
@@ -102,7 +108,7 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
         },
       );
 
-      if (response.status === 200) {
+      if (response.status < 400) {
         thunkApi.dispatch(
           setProgressUpload({
             state: UPLOAD_PROGRESS_STAGE.CREATING_MOMENT,
@@ -122,7 +128,7 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
         );
         throw new Error('Post failed with status other than 200');
       }
-    } catch (error) {
+    } catch (error: any) {
       const refresh = await getAccessToken({
         refreshToken: refreshToken,
       });
@@ -140,14 +146,16 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
           type: 'Error',
         }),
       );
-      return thunkApi.rejectWithValue();
+      return thunkApi.rejectWithValue(
+        error?.response?.data?.error || error.message,
+      );
     }
   },
 );
 
 export const uploadVideoToFirebase = createAsyncThunk(
   'upload-video',
-  async (data, thunkApi) => {
+  async (data: DataPostMoment, thunkApi) => {
     const {idUser, idToken, videoInfo, caption} = data;
     thunkApi.dispatch(
       setMessage({
@@ -157,17 +165,33 @@ export const uploadVideoToFirebase = createAsyncThunk(
         progress: 0,
       }),
     );
-    const newVideo = await compressVideo(videoInfo.uri, null, progress => {
-      thunkApi.dispatch(
-        setProgressUpload({
-          state: UPLOAD_VIDEO_PROGRESS_STAGE.PROCESSING,
-          progress: progress * 100,
-        }),
-      );
-    });
+    const newVideo = await compressVideo(
+      videoInfo.uri,
+      id => {
+        console.log('cancel id', id);
+      },
+      progress => {
+        thunkApi.dispatch(
+          setProgressUpload({
+            state: UPLOAD_VIDEO_PROGRESS_STAGE.PROCESSING,
+            progress: progress * 100,
+          }),
+        );
+      },
+    );
+    console.log('here');
 
     const videoBlob = await readFileAsBytes(newVideo);
-    // return;
+
+    if (!videoBlob) {
+      thunkApi.dispatch(
+        setMessage({
+          message: 'Error read video file',
+          type: 'Error',
+        }),
+      );
+      throw new Error('Error read video file');
+    }
 
     const nameVideo = `${Date.now()}_vtd182.mp4`;
 
@@ -241,12 +265,12 @@ export const uploadVideoToFirebase = createAsyncThunk(
         downloadVideoUrl,
       );
 
-      const response = await axios.post(
+      const response: any = await axios.post(
         'https://api.locketcamera.com/postMomentV2',
         bodyPostMoment,
         {headers: postHeaders},
       );
-      if (response.status === 200) {
+      if (response.status < 400) {
         thunkApi.dispatch(
           setProgressUpload({
             state: UPLOAD_PROGRESS_STAGE.CREATING_MOMENT,
@@ -264,7 +288,13 @@ export const uploadVideoToFirebase = createAsyncThunk(
       thunkApi.dispatch(
         setMessage({
           message: `Error: ${JSON.stringify(
-            error?.response?.data?.error || error.message,
+            error instanceof Error
+              ? error.message
+              : typeof error === 'object' &&
+                error !== null &&
+                'response' in error
+              ? (error.response as any)?.data?.error
+              : 'Unknown error',
           )}`,
           type: 'Error',
         }),
@@ -273,8 +303,16 @@ export const uploadVideoToFirebase = createAsyncThunk(
   },
 );
 
-const uploadThumbnail = async (uriVideo, idToken, idUser) => {
+const uploadThumbnail = async (
+  uriVideo: string,
+  idToken: string,
+  idUser: string,
+) => {
   const thumbnail = await getVideoThumbnail(uriVideo);
+
+  if (!thumbnail) {
+    throw new Error("Can't create thumbnail from video");
+  }
   const nameThumbnail = `${Date.now()}_vtd182.jpg`;
 
   const upload_url = await initiateUpload(
@@ -284,7 +322,13 @@ const uploadThumbnail = async (uriVideo, idToken, idUser) => {
     nameThumbnail,
   );
 
-  await uploadImage(upload_url, thumbnail, idToken);
+  const blobThumbnail = await createImageBlob({
+    uri: thumbnail.path,
+    size: thumbnail.size,
+    type: thumbnail.mime,
+  });
+
+  await uploadImage(upload_url, blobThumbnail.image, idToken);
 
   const downloadUrl = await getDownloadUrl(idUser, idToken, nameThumbnail);
   return downloadUrl;

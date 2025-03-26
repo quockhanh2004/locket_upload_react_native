@@ -1,8 +1,14 @@
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {
+  Asset,
+  launchCamera,
+  launchImageLibrary,
+} from 'react-native-image-picker';
 import {requestCameraPermission} from './permission';
 import {requestMediaPermission} from './permission';
 
-export const selectMedia = async isMultiple => {
+export const selectMedia = async (
+  isMultiple?: boolean,
+): Promise<Array<Asset> | undefined> => {
   try {
     await requestMediaPermission();
     const result = await launchImageLibrary({
@@ -14,14 +20,14 @@ export const selectMedia = async isMultiple => {
       return undefined;
     }
 
-    return result.assets || [];
+    return result.assets;
   } catch (error) {
     console.log('error select image', error);
     return undefined;
   }
 };
 
-export const takePhoto = async () => {
+export const takePhoto = async (): Promise<Array<Asset> | undefined | null> => {
   try {
     await requestCameraPermission();
     const result = await launchCamera({
@@ -32,10 +38,9 @@ export const takePhoto = async () => {
       maxHeight: 1020,
       formatAsMp4: true,
       quality: 1,
-      allowsEditing: true,
     });
 
-    if (!result.cancelled) {
+    if (!result.didCancel) {
       return result.assets;
     }
   } catch (error) {

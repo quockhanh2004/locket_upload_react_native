@@ -18,7 +18,7 @@ export const login = async data => {
       {headers: loginHeader},
     );
 
-    if (response.status === 200) {
+    if (response.status < 400) {
       return response.data;
     } else {
       console.warn(JSON.stringify(response.data));

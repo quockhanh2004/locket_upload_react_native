@@ -9,7 +9,19 @@ import {
 } from 'react-native-ui-lib';
 import {useNavigation} from '@react-navigation/native';
 
-const Header = ({title, rightIcon, rightIconAction, leftIconAction}) => {
+interface HeaderProps {
+  title?: string;
+  rightIcon?: string;
+  rightIconAction?: () => void;
+  leftIconAction?: () => void;
+}
+
+const Header = ({
+  title,
+  rightIcon,
+  rightIconAction,
+  leftIconAction,
+}: HeaderProps) => {
   const navigation = useNavigation();
 
   const handleBack = () => {

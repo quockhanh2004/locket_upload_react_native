@@ -12,11 +12,12 @@ import {useDispatch, useSelector} from 'react-redux';
 import {clearMessage} from '../redux/slice/message.slice';
 import CustomDialog from './CustomDialog';
 import {ScrollView} from 'react-native';
+import {RootState} from '../redux/store';
 
 const MessageDialog = () => {
   const dispatch = useDispatch();
   const {message, type, hideButton, progress} = useSelector(
-    state => state.message,
+    (state: RootState) => state.message,
   );
 
   const handleClearMessage = () => {
@@ -24,9 +25,9 @@ const MessageDialog = () => {
   };
   return (
     <CustomDialog
-      visible={message}
+      visible={!!message}
       onDismiss={handleClearMessage}
-      title={type.toUpperCase()}
+      title={type?.toUpperCase() || ''}
       panDirection={Dialog.directions.DOWN}
       titleStyle={{
         color: 'white',
@@ -63,7 +64,7 @@ const MessageDialog = () => {
           backgroundColor={Colors.primary}
         />
       )}
-      {progress && (
+      {typeof progress === 'number' && (
         <ProgressBar progress={progress} progressColor={Colors.primary} />
       )}
     </CustomDialog>
