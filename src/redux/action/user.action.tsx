@@ -6,11 +6,11 @@ import instanceLocket from '../../util/axios_locketcamera';
 import axios, {AxiosResponse} from 'axios';
 import {clearStatus, logout} from '../slice/user.slice';
 import {
-  createImageBlob,
   getDownloadUrl,
   initiateUpload,
   uploadImage,
 } from '../../util/uploadImage';
+import {readFileAsBytes} from '../../util/getBufferFile';
 
 interface DataLogin {
   email: string;
@@ -216,7 +216,11 @@ export const updateAvatar = createAsyncThunk(
 
     try {
       // Prepare image for upload
-      const {image, fileSize} = await createImageBlob(imageInfo);
+      const imageBlob = await readFileAsBytes(imageInfo);
+      if (!imageBlob) {
+        throw new Error('Failed to read image file');
+      }
+      const fileSize = imageBlob.byteLength;
       const imageName = `${Date.now()}_vtd182.webp`;
 
       // Upload logic
@@ -227,7 +231,7 @@ export const updateAvatar = createAsyncThunk(
           fileSize,
           imageName,
         );
-        await uploadImage(uploadUrl, image, token);
+        await uploadImage(uploadUrl, imageBlob, token);
         return await getDownloadUrl(idUser, token, imageName);
       };
 

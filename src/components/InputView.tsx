@@ -1,3 +1,5 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {useState, forwardRef} from 'react';
 
 import {TextInput, StyleSheet, Pressable} from 'react-native';
@@ -21,7 +23,12 @@ interface InputViewProps {
   error?: string;
   renderLeft?: React.ReactNode;
   renderRight?: React.ReactNode;
-  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'number-pad';
+  keyboardType?:
+    | 'default'
+    | 'email-address'
+    | 'numeric'
+    | 'phone-pad'
+    | 'number-pad';
   flex?: boolean;
   iconLeft?: string;
   iconLeftGroup?: string;
@@ -106,7 +113,7 @@ const InputView = forwardRef<TextInput, InputViewProps>(
       onKeyPress,
       ...props
     },
-    inputRef,
+    inputRef: any,
   ) => {
     const [showPassword, setShowPassword] = useState(eyePassword);
     // const [isFocus, setIsFocus] = useState(false);
@@ -130,7 +137,7 @@ const InputView = forwardRef<TextInput, InputViewProps>(
 
     const renderLeftComponent = () =>
       !!iconLeft && (
-        <View customStyle={styleIcon}>
+        <View style={styleIcon}>
           <Pressable onPress={onPressLeft}>
             <Icon
               size={16}
@@ -144,7 +151,7 @@ const InputView = forwardRef<TextInput, InputViewProps>(
 
     const renderRightComponent = () =>
       !!iconRight && (
-        <View customStyle={styleIcon}>
+        <View style={styleIcon}>
           <Pressable onPress={onPressRight}>
             <Icon
               size={16}
@@ -169,7 +176,7 @@ const InputView = forwardRef<TextInput, InputViewProps>(
 
       // </WrapInput>
       // </View>
-      <View radius={12} border={borderB ? 0 : 2} maxHeight={maxHeight}>
+      <View style={{borderRadius: 12, maxHeight: maxHeight}}>
         <Card
           flex={flex}
           row

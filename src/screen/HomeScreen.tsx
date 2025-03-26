@@ -68,7 +68,7 @@ const HomeScreen = () => {
 
   //redux state
   const {user, userInfo} = useSelector((state: RootState) => state.user);
-  const {postMoment, isLoading, progressUpload} = useSelector(
+  const {postMoment, isLoading} = useSelector(
     (state: RootState) => state.postMoment,
   );
   const {useCamera} = useSelector((state: RootState) => state.setting);
@@ -95,6 +95,8 @@ const HomeScreen = () => {
     }
     setTimeout(() => {
       if (user) {
+        console.log('get account info');
+
         dispatch(
           getAccountInfo({
             idToken: user.idToken || '',
@@ -133,10 +135,12 @@ const HomeScreen = () => {
     return unsubscribe; // Hủy đăng ký listener khi component unmount
   }, [navigation, route]);
 
+  //event đăng xuất
   const handleLogout = () => {
     dispatch(logout());
   };
 
+  //kiểm tra cài đặt, nếu có bật cho phép chụp ảnh từ camera thì thêm option chụp ảnh nữa
   const handleSelectMedia = () => {
     if (useCamera) {
       setVisibleSelectMedia(true);
@@ -145,14 +149,17 @@ const HomeScreen = () => {
     }
   };
 
-  const handleRemoveImage = () => {
+  //event bỏ loại bỏ media
+  const handleRemoveMedia = () => {
     setselectedMedia(null);
   };
 
+  //event nhấn xem profile
   const handleViewProfile = () => {
     navigation.navigate(nav.accountInfo);
   };
 
+  //event post moment
   const handlePost = async () => {
     if (!user) {
       return;
@@ -181,14 +188,17 @@ const HomeScreen = () => {
     }
   };
 
+  //event hủy chọn
   const handleCancelSelectMedia = () => {
     setVisibleSelectMedia(false);
   };
 
+  //event chọn cách lấy file media (thư viện, camera)
   const handleConfirmSelectMedia = (value: 'gallery' | 'camera') => {
     onSelectMedia(value);
   };
 
+  //xử lý option sau khi chọn
   const onSelectMedia = async (from: 'gallery' | 'camera') => {
     let result;
     if (from === 'gallery') {
@@ -203,6 +213,7 @@ const HomeScreen = () => {
     }
   };
 
+  //xử lý cắt ngắn video sau khi chọn xong
   const compressMedia = (media: Asset) => {
     setselectedMedia(null);
 
@@ -223,6 +234,7 @@ const HomeScreen = () => {
     }
   };
 
+  //sau khi postmoment xong thì xử lý ở đây
   useEffect(() => {
     if (postMoment) {
       dispatch(
@@ -233,6 +245,7 @@ const HomeScreen = () => {
       );
       dispatch(clearPostMoment());
       setselectedMedia(null);
+
       //xóa cache của app sau khi upload thành công
       clearAppCache();
       deleteAllMp4Files('/data/user/0/com.locket_upload/files/');
@@ -277,7 +290,7 @@ const HomeScreen = () => {
         <ViewMedia
           selectedMedia={selectedMedia}
           isVideo={isVideo}
-          onRemoveMedia={handleRemoveImage}
+          onRemoveMedia={handleRemoveMedia}
           onSelectMedia={handleSelectMedia}
         />
 

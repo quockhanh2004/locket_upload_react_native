@@ -4,14 +4,12 @@ import {setMessage} from '../slice/message.slice';
 import {setToken} from '../slice/user.slice';
 import {getAccessToken} from '../../api/user.api';
 import {
-  createImageBlob,
   getDownloadUrl,
   initiateUpload,
   UPLOAD_PROGRESS_STAGE,
   uploadImage,
 } from '../../util/uploadImage';
 import {loginHeader} from '../../util/header';
-import {setProgressUpload} from '../slice/postMoment.slice';
 import {
   compressVideo,
   cretateBody,
@@ -40,19 +38,29 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
     try {
       // xử lý ảnh
       thunkApi.dispatch(
-        setProgressUpload({
-          state: UPLOAD_PROGRESS_STAGE.PROCESSING_IMAGE,
+        setMessage({
+          message: UPLOAD_PROGRESS_STAGE.PROCESSING_IMAGE,
+          type: 'info',
+          hideButton: true,
           progress: 0,
         }),
       );
-      const {image, fileSize} = await createImageBlob(imageInfo);
+
+      const imageBlob = await readFileAsBytes(imageInfo);
+      if (!imageBlob) {
+        throw new Error('Failed to read file');
+      }
+      const fileSize = imageBlob.byteLength;
+
       const nameImg = `${Date.now()}_vtd182.webp`;
 
       //khởi tạo upload
       setTimeout(() => {
         thunkApi.dispatch(
-          setProgressUpload({
-            state: UPLOAD_PROGRESS_STAGE.INITIATING_UPLOAD,
+          setMessage({
+            message: UPLOAD_PROGRESS_STAGE.INITIATING_UPLOAD,
+            type: 'info',
+            hideButton: true,
             progress: 24,
           }),
         );
@@ -66,17 +74,21 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
 
       //upload ảnh
       thunkApi.dispatch(
-        setProgressUpload({
-          state: UPLOAD_PROGRESS_STAGE.UPLOADING,
+        setMessage({
+          message: UPLOAD_PROGRESS_STAGE.UPLOADING,
+          type: 'info',
+          hideButton: true,
           progress: 42,
         }),
       );
-      await uploadImage(uploadUrl, image, currentToken);
+      await uploadImage(uploadUrl, imageBlob, currentToken);
 
       //lấy link download ảnh
       thunkApi.dispatch(
-        setProgressUpload({
-          state: UPLOAD_PROGRESS_STAGE.FETCHING_DOWNLOAD_URL,
+        setMessage({
+          message: UPLOAD_PROGRESS_STAGE.FETCHING_DOWNLOAD_URL,
+          type: 'info',
+          hideButton: true,
           progress: 66,
         }),
       );
@@ -84,8 +96,10 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
 
       // tạo moment
       thunkApi.dispatch(
-        setProgressUpload({
-          state: UPLOAD_PROGRESS_STAGE.CREATING_MOMENT,
+        setMessage({
+          message: UPLOAD_PROGRESS_STAGE.CREATING_MOMENT,
+          type: 'info',
+          hideButton: true,
           progress: 80,
         }),
       );
@@ -110,15 +124,14 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
 
       if (response.status < 400) {
         thunkApi.dispatch(
-          setProgressUpload({
-            state: UPLOAD_PROGRESS_STAGE.CREATING_MOMENT,
+          setMessage({
+            message: UPLOAD_PROGRESS_STAGE.CREATING_MOMENT,
+            type: 'info',
+            hideButton: true,
             progress: 100,
           }),
         );
-        setTimeout(() => {
-          thunkApi.dispatch(setProgressUpload(null));
-          return response.data;
-        }, 400);
+        return response.data;
       } else {
         thunkApi.dispatch(
           setMessage({
@@ -160,13 +173,14 @@ export const uploadVideoToFirebase = createAsyncThunk(
     thunkApi.dispatch(
       setMessage({
         message: `${UPLOAD_VIDEO_PROGRESS_STAGE.PROCESSING}`,
-        type: 'Info',
+        type: 'info',
         hideButton: true,
         progress: 0,
       }),
     );
+
     const newVideo = await compressVideo(
-      videoInfo.uri,
+      videoInfo,
       id => {
         console.log('cancel id', id);
       },
@@ -175,14 +189,14 @@ export const uploadVideoToFirebase = createAsyncThunk(
           setMessage({
             message: UPLOAD_VIDEO_PROGRESS_STAGE.PROCESSING,
             type: 'info',
+            hideButton: true,
             progress: progress * 100,
           }),
         );
       },
     );
-    console.log('debug here 1');
 
-    const videoBlob = await readFileAsBytes(newVideo);
+    const videoBlob = await readFileAsBytes(newVideo.uri);
 
     if (!videoBlob) {
       thunkApi.dispatch(
@@ -197,8 +211,10 @@ export const uploadVideoToFirebase = createAsyncThunk(
     const nameVideo = `${Date.now()}_vtd182.mp4`;
 
     thunkApi.dispatch(
-      setProgressUpload({
-        state: UPLOAD_VIDEO_PROGRESS_STAGE.INITIATING_UPLOAD,
+      setMessage({
+        message: UPLOAD_VIDEO_PROGRESS_STAGE.INITIATING_UPLOAD,
+        type: 'info',
+        hideButton: true,
         progress: 10,
       }),
     );
@@ -212,8 +228,10 @@ export const uploadVideoToFirebase = createAsyncThunk(
       );
 
       thunkApi.dispatch(
-        setProgressUpload({
-          state: UPLOAD_VIDEO_PROGRESS_STAGE.UPLOADING,
+        setMessage({
+          message: UPLOAD_VIDEO_PROGRESS_STAGE.UPLOADING,
+          type: 'info',
+          hideButton: true,
           progress: 26,
         }),
       );
@@ -221,8 +239,10 @@ export const uploadVideoToFirebase = createAsyncThunk(
       await uploadVideo(uploadUrl, videoBlob, idToken);
 
       thunkApi.dispatch(
-        setProgressUpload({
-          state: UPLOAD_VIDEO_PROGRESS_STAGE.FETCHING_DOWNLOAD_URL,
+        setMessage({
+          message: UPLOAD_VIDEO_PROGRESS_STAGE.FETCHING_DOWNLOAD_URL,
+          type: 'info',
+          hideButton: true,
           progress: 48,
         }),
       );
@@ -235,22 +255,22 @@ export const uploadVideoToFirebase = createAsyncThunk(
       console.log('downloadVideoUrl', downloadVideoUrl);
 
       thunkApi.dispatch(
-        setProgressUpload({
-          state: UPLOAD_VIDEO_PROGRESS_STAGE.UPLOADING_THUMBNAIL,
+        setMessage({
+          message: UPLOAD_VIDEO_PROGRESS_STAGE.UPLOADING_THUMBNAIL,
+          type: 'info',
+          hideButton: true,
           progress: 60,
         }),
       );
 
-      const thumbnailUrl = await uploadThumbnail(
-        videoInfo.uri,
-        idToken,
-        idUser,
-      );
+      const thumbnailUrl = await uploadThumbnail(videoInfo, idToken, idUser);
       console.log('thumbnail url', thumbnailUrl);
 
       thunkApi.dispatch(
-        setProgressUpload({
-          state: UPLOAD_VIDEO_PROGRESS_STAGE.CREATING_MOMENT,
+        setMessage({
+          message: UPLOAD_VIDEO_PROGRESS_STAGE.CREATING_MOMENT,
+          type: 'info',
+          hideButton: true,
           progress: 88,
         }),
       );
@@ -271,35 +291,25 @@ export const uploadVideoToFirebase = createAsyncThunk(
         bodyPostMoment,
         {headers: postHeaders},
       );
-      if (response.status < 400) {
-        thunkApi.dispatch(
-          setProgressUpload({
-            state: UPLOAD_PROGRESS_STAGE.CREATING_MOMENT,
-            progress: 100,
-          }),
-        );
-        setTimeout(() => {
-          thunkApi.dispatch(setProgressUpload(null));
-          return response.data;
-        }, 400);
-      }
-    } catch (error) {
-      console.log('error', error);
 
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${JSON.stringify(
-            error instanceof Error
-              ? error.message
-              : typeof error === 'object' &&
-                error !== null &&
-                'response' in error
-              ? (error.response as any)?.data?.error
-              : 'Unknown error',
-          )}`,
+          message: UPLOAD_PROGRESS_STAGE.CREATING_MOMENT,
+          type: 'info',
+          hideButton: true,
+          progress: 100,
+        }),
+      );
+      return response.data;
+    } catch (error: any) {
+      console.log('error', error.response.data);
+      thunkApi.dispatch(
+        setMessage({
+          message: `Error: ${error.response.data || error.message}`,
           type: 'Error',
         }),
       );
+      thunkApi.rejectWithValue(error);
     }
   },
 );
@@ -316,20 +326,14 @@ const uploadThumbnail = async (
   }
   const nameThumbnail = `${Date.now()}_vtd182.jpg`;
 
-  const upload_url = await initiateUpload(
-    idUser,
-    idToken,
-    thumbnail.size,
-    nameThumbnail,
-  );
+  const blobThumbnail = await readFileAsBytes(thumbnail.path);
+  const size = blobThumbnail?.byteLength;
+  if (!blobThumbnail || !size) {
+    throw new Error("Can't create blob from thumbnail");
+  }
+  const upload_url = await initiateUpload(idUser, idToken, size, nameThumbnail);
 
-  const blobThumbnail = await createImageBlob({
-    uri: thumbnail.path,
-    size: thumbnail.size,
-    type: thumbnail.mime,
-  });
-
-  await uploadImage(upload_url, blobThumbnail.image, idToken);
+  await uploadImage(upload_url, blobThumbnail, idToken);
 
   const downloadUrl = await getDownloadUrl(idUser, idToken, nameThumbnail);
   return downloadUrl;

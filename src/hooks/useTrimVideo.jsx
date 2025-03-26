@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import {NativeEventEmitter, NativeModules} from 'react-native';
+import {clearAppCache} from '../util/uploadImage';
 
 const useTrimVideo = () => {
   const [videoOut, setVideoOut] = useState(null);
@@ -28,6 +29,7 @@ const useTrimVideo = () => {
           console.log('onFinishTrimming', event);
           const uri = 'file://' + event?.outputPath;
           setVideoOut(uri);
+          clearAppCache();
           break;
         }
         case 'onCancelTrimming': {
