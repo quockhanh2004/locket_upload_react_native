@@ -5,9 +5,22 @@ import CustomDialog from './CustomDialog';
 import MainButton from '../components/MainButton';
 import MainInput from '../components/MainInput';
 
+interface EditTextDialogProps {
+  value: string;
+  value2?: string;
+  visible: boolean;
+  onDismiss: () => void;
+  label: string;
+  isLoading: boolean;
+  onConfirm: (text: string, text2?: string) => void;
+  isEditName?: boolean;
+  placeholder?: string;
+  placeholder2?: string;
+}
+
 const EditTextDialog = ({
   value,
-  value2,
+  value2 = '',
   visible,
   onDismiss,
   label,
@@ -16,13 +29,11 @@ const EditTextDialog = ({
   isEditName = false,
   placeholder,
   placeholder2,
-}) => {
-  const [text, setText] = useState(value);
-  const [text2, setText2] = useState(value2);
+}: EditTextDialogProps) => {
+  const [text, setText] = useState<string>(value);
+  const [text2, setText2] = useState<string>(value2 || '');
 
   useEffect(() => {
-    // console.log(value, value2);
-
     setText(value);
     setText2(value2);
   }, [value, value2]);

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, {AxiosProgressEvent} from 'axios';
 import {uploadHeaders} from './header';
 import {createBlobFromUri} from './getBufferFile';
 
@@ -12,33 +12,34 @@ export const UPLOAD_PROGRESS_STAGE = {
   FAILED: 'Upload failed', // Thất bại
 };
 
-export const validateImageInfo = imageInfo => {
-  if (!imageInfo) {
-    throw new Error('No image info provided');
+export const createImageBlob = async (imageInfo: {
+  uri: string;
+  type: string;
+  size: number;
+}): Promise<{image: Uint8Array<ArrayBuffer>; fileSize: number}> => {
+  const result = await createBlobFromUri(imageInfo);
+  if (!result) {
+    throw new Error('Failed to create Blob');
   }
-  return;
-};
-
-export const createImageBlob = async imageInfo => {
-  const {blob: image} = await createBlobFromUri(imageInfo);
+  const {blob: image} = result;
   //nếu file size lớn hơn 1mb thì trả lỗi
-  if (imageInfo.fileSize > 1024 * 1024) {
+  if (imageInfo.size && imageInfo.size > 1024 * 1024) {
     throw new Error('Image size is too large');
   }
 
   if (!image) {
     throw new Error('Failed to create Blob');
   }
-  return {image, fileSize: imageInfo.fileSize};
+  return {image, fileSize: imageInfo.size};
 };
 
 export const initiateUpload = async (
-  idUser,
-  idToken,
-  fileSize,
-  nameImg,
-  progress,
-) => {
+  idUser: string,
+  idToken: string,
+  fileSize: number,
+  nameImg: string,
+  progress?: (progressEvent: AxiosProgressEvent) => void,
+): Promise<string> => {
   const startUrl = `https://firebasestorage.googleapis.com/v0/b/locket-img/o/users%2F${idUser}%2Fmoments%2Fthumbnails%2F${nameImg}?uploadType=resumable&name=users%2F${idUser}%2Fmoments%2Fthumbnails%2F${nameImg}`;
 
   const startHeaders = {
@@ -76,7 +77,12 @@ export const initiateUpload = async (
   return response.headers['x-goog-upload-url'];
 };
 
-export const uploadImage = async (uploadUrl, blobImage, token, progress) => {
+export const uploadImage = async (
+  uploadUrl: string,
+  blobImage: Uint8Array<ArrayBuffer> | undefined,
+  token: string,
+  progress?: (progressEvent: AxiosProgressEvent) => void,
+) => {
   const response = await axios.put(uploadUrl, blobImage, {
     headers: {
       ...uploadHeaders,
@@ -87,7 +93,12 @@ export const uploadImage = async (uploadUrl, blobImage, token, progress) => {
   return response.data;
 };
 
-export const getDownloadUrl = async (idUser, idToken, nameImg, progress) => {
+export const getDownloadUrl = async (
+  idUser: string,
+  idToken: string,
+  nameImg: string,
+  progress?: (progressEvent: AxiosProgressEvent) => void,
+): Promise<string> => {
   const getUrl = `https://firebasestorage.googleapis.com/v0/b/locket-img/o/users%2F${idUser}%2Fmoments%2Fthumbnails%2F${nameImg}`;
 
   const getHeaders = {
@@ -109,8 +120,10 @@ export const getDownloadUrl = async (idUser, idToken, nameImg, progress) => {
 };
 
 import ImageResizer from 'react-native-image-resizer';
-export const resizeImage = async uri => {
-  if (!uri) return null;
+export const resizeImage = async (uri: string) => {
+  if (!uri) {
+    return null;
+  }
 
   try {
     const maxSize = 1020;
@@ -144,7 +157,9 @@ export const resizeImage = async uri => {
         );
         console.log(resizedFileInfo.size, compressQuality);
 
-        if (resizedFileInfo.size <= maxFileSize) break; // Thoát vòng lặp nếu kích thước file đạt yêu cầu
+        if (resizedFileInfo.size <= maxFileSize) {
+          break;
+        } // Thoát vòng lặp nếu kích thước file đạt yêu cầu
         // Nếu kích thước vẫn lớn hơn 1MB, giảm chất lượng
         compressQuality -= 1;
       } while (compressQuality > 20 && newWidth > 200 && newHeight > 200); // Điều kiện dừng: quality > 20 và size ảnh > 200x200

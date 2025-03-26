@@ -12,11 +12,17 @@ import {
 import CustomDialog from './CustomDialog';
 import {requestCameraPermission} from '../util/permission';
 
+interface SelectMediaDialogProps {
+  visible: boolean;
+  onDismiss: () => void;
+  onConfirm: (type: 'camera' | 'gallery') => void;
+}
+
 const SelectMediaDialog = ({
   visible,
   onDismiss = () => {},
   onConfirm = () => {},
-}) => {
+}: SelectMediaDialogProps) => {
   const handlePressCamera = async () => {
     await requestCameraPermission();
     onDismiss();

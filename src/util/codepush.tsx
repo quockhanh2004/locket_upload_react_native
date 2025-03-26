@@ -3,7 +3,7 @@ import codePush from 'react-native-code-push';
 
 const CODEPUSH_ANDROID_KEY = 'iBfzrBb1TTD1jZyazQKslU4Wr7WC4ksvOXqog';
 const CODEPUSH_IOS_KEY = '';
-export const CODEPUSH_DEPLOYMENTKEY = () => {
+export const CODEPUSH_DEPLOYMENTKEY = (): string => {
   if (Platform.OS === 'android') {
     return CODEPUSH_ANDROID_KEY;
   } else {
@@ -11,7 +11,7 @@ export const CODEPUSH_DEPLOYMENTKEY = () => {
   }
 };
 
-export const getStatusFromCodePush = status => {
+export const getStatusFromCodePush = (status: codePush.SyncStatus): string => {
   switch (status) {
     case codePush.SyncStatus.CHECKING_FOR_UPDATE:
       return 'CHECKING_FOR_UPDATE';
@@ -25,8 +25,8 @@ export const getStatusFromCodePush = status => {
       return 'UPDATE_INSTALLED';
     case codePush.SyncStatus.UPDATE_IGNORED:
     case codePush.SyncStatus.UNKNOWN_ERROR:
-      return 'ERROR'; // Tổng hợp các trạng thái lỗi
+      return 'ERROR';
     default:
-      return 'CHECK_UPDATE'; // Trạng thái không xác định
+      return 'CHECK_UPDATE';
   }
 };

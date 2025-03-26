@@ -1,16 +1,34 @@
 import {createSlice} from '@reduxjs/toolkit';
 
+interface TypeMessageSlice {
+  message: string | null | undefined;
+  type: string | null | undefined;
+  hideButton: boolean | null | undefined;
+  progress: number | null | undefined;
+}
+
 const messageSlice = createSlice({
   name: 'message',
   initialState: {
     message: null,
-    type: '',
-    hideButton: false,
+    type: null,
+    hideButton: null,
     progress: null,
-  },
+  } as TypeMessageSlice,
 
   reducers: {
-    setMessage(state, action) {
+    setMessage(
+      state,
+      action: {
+        type: string;
+        payload: {
+          message: string;
+          type: string;
+          hideButton?: boolean;
+          progress?: number;
+        };
+      },
+    ) {
       state.message = action.payload.message;
       state.type = action.payload.type;
       state.hideButton = action.payload.hideButton || false;

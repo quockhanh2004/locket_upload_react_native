@@ -1,16 +1,11 @@
 import RNFS from 'react-native-fs';
 import {decode as atob} from 'base-64';
 
-export async function createBlobFromUri(fileInfo) {
+export async function createBlobFromUri(fileInfo: {
+  uri: string;
+  size?: number;
+}) {
   try {
-    const {uri, type} = fileInfo;
-
-    if (!uri || !type) {
-      console.log(uri, type);
-
-      console.error('Invalid file info: URI or type is missing');
-      return null;
-    }
     const blob = await readFileAsBytes(fileInfo);
 
     return {blob, fileSize: fileInfo.size};
@@ -20,8 +15,10 @@ export async function createBlobFromUri(fileInfo) {
   }
 }
 
-export const readFileAsBytes = async file => {
-  console.log(file);
+export const readFileAsBytes = async (file: {
+  uri: string;
+}): Promise<Uint8Array<ArrayBuffer> | undefined> => {
+  // console.log(file);
 
   try {
     const fileContent = await RNFS.readFile(file.uri, 'base64'); // Đọc file dưới dạng base64

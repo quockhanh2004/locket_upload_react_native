@@ -10,6 +10,8 @@ import {
 } from 'react-native-ui-lib';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
+import {RootState, AppDispatch} from '../redux/store';
+import {TextInput} from 'react-native';
 
 import InputView from '../components/InputView';
 import {login, resetPassword} from '../redux/action/user.action';
@@ -18,18 +20,20 @@ import {checkEmail} from '../util/regex';
 import {clearStatus} from '../redux/slice/user.slice';
 
 const LoginScreen = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
-  const {isLoading, resetPasswordLoading} = useSelector(state => state.user);
+  const {isLoading, resetPasswordLoading} = useSelector(
+    (state: RootState) => state.user,
+  );
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
+  const emailRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
 
   const handleLogin = async () => {
-    if (checkValue()) {
+    if (checkValue(false)) {
       dispatch(login({email: email.trim(), password: password.trim()}));
     }
   };
@@ -40,7 +44,7 @@ const LoginScreen = () => {
     }
   };
 
-  const checkValue = isResetPassword => {
+  const checkValue = (isResetPassword: boolean) => {
     if (!checkEmail(email.trim())) {
       dispatch(
         setMessage({
@@ -90,7 +94,9 @@ const LoginScreen = () => {
               style={{paddingLeft: 10}}
               ref={emailRef}
               onSubmitEditing={() => {
-                passwordRef.current.focus();
+                if (passwordRef.current) {
+                  passwordRef.current.focus();
+                }
               }}
             />
           </View>
@@ -131,7 +137,7 @@ const LoginScreen = () => {
             )}
           </Button>
           <Button
-            label={!resetPasswordLoading && 'Reset Password'}
+            label={resetPasswordLoading ? '' : 'Reset Password'}
             backgroundColor={Colors.grey20}
             white
             onPress={handleResetPassword}

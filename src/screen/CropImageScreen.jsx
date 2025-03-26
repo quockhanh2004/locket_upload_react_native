@@ -26,7 +26,7 @@ const CropImageScreen = () => {
 
     //giảm kích thước ảnh lại trước khi upload lên
     const newImage = await resizeImage(croppedImageUri);
-    navigationTo(nav.home, {uri: {...newImage, type: 'PNG'}, from: nav.crop});
+    navigationTo(nav.home, {...newImage, type: 'PNG', from: nav.crop});
   };
 
   //xử lý sự kiện back

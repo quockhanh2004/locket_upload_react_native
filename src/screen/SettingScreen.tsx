@@ -4,12 +4,13 @@ import Header from '../components/Header';
 import {FlatList} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {setUseCameraSetting} from '../redux/slice/setting.slice';
+import {RootState} from '../redux/store';
 
 const SettingScreen = () => {
   const dispatch = useDispatch();
-  const {useCamera} = useSelector(state => state.setting);
+  const {useCamera} = useSelector((state: RootState) => state.setting);
 
-  const handleSwitchUseCamera = value => {
+  const handleSwitchUseCamera = (value: boolean) => {
     dispatch(setUseCameraSetting(value));
   };
 

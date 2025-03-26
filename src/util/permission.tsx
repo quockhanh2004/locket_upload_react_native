@@ -3,7 +3,7 @@ import {PermissionsAndroid, Platform} from 'react-native';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {Camera} from 'react-native-vision-camera';
 
-export const requestMediaPermission = async () => {
+export const requestMediaPermission = async (): Promise<boolean> => {
   try {
     if (Platform.OS === 'android') {
       if (Platform.Version >= 33) {
@@ -35,7 +35,7 @@ export const requestMediaPermission = async () => {
   }
 };
 
-export const requestCameraPermission = async () => {
+export const requestCameraPermission = async (): Promise<boolean> => {
   try {
     if (Platform.OS === 'android') {
       // Yêu cầu quyền cho Android

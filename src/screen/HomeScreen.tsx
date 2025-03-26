@@ -13,7 +13,14 @@ import {
 } from 'react-native-ui-lib';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {
+  useNavigation,
+  useRoute,
+  NavigationProp,
+  RouteProp,
+} from '@react-navigation/native';
+import {RootState} from '../redux/store';
+import {AppDispatch} from '../redux/store';
 
 import {logout} from '../redux/slice/user.slice';
 import {selectMedia} from '../util/selectImage';
@@ -38,24 +45,36 @@ import useTrimVideo from '../hooks/useTrimVideo';
 import {deleteAllMp4Files} from '../util/uploadVideo';
 import SelectMediaDialog from '../Dialog/SelectMediaDialog';
 import ViewMedia from '../components/ViewMedia';
+import {Asset} from 'react-native-image-picker';
 
-let navigation;
+let navigation: NavigationProp<any>;
+
+interface RouteParams {
+  from?: string;
+  uri?: string;
+  camera?: any;
+}
+
+interface MediaType {
+  uri: string;
+  type?: string;
+}
 
 const HomeScreen = () => {
   const messaging = getMessaging(getApp());
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   navigation = useNavigation();
-  const route = useRoute();
+  const route = useRoute<RouteProp<{params: RouteParams}>>();
 
   //redux state
-  const {user, userInfo} = useSelector(state => state.user);
+  const {user, userInfo} = useSelector((state: RootState) => state.user);
   const {postMoment, isLoading, progressUpload} = useSelector(
-    state => state.postMoment,
+    (state: RootState) => state.postMoment,
   );
-  const {useCamera} = useSelector(state => state.setting);
+  const {useCamera} = useSelector((state: RootState) => state.setting);
 
   //use state
-  const [selectedMedia, setselectedMedia] = useState(null);
+  const [selectedMedia, setselectedMedia] = useState<MediaType | null>(null);
   const [caption, setCaption] = useState('');
   const [isVideo, setIsVideo] = useState(false);
   const [visibleSelectMedia, setVisibleSelectMedia] = useState(false);
@@ -67,20 +86,22 @@ const HomeScreen = () => {
       handleNotificationClick(remoteMessage?.data || {});
     });
 
-    if (user.timeExpires < new Date().getTime()) {
+    if (user?.timeExpires && user.timeExpires < new Date().getTime()) {
       dispatch(
         getToken({
-          refreshToken: user.refreshToken,
+          refreshToken: user.refreshToken || '',
         }),
       );
     }
     setTimeout(() => {
-      dispatch(
-        getAccountInfo({
-          idToken: user.idToken,
-          refreshToken: user.refreshToken,
-        }),
-      );
+      if (user) {
+        dispatch(
+          getAccountInfo({
+            idToken: user.idToken || '',
+            refreshToken: user.refreshToken || '',
+          }),
+        );
+      }
     }, 3500);
   }, []);
 
@@ -90,7 +111,7 @@ const HomeScreen = () => {
       switch (route.params?.from) {
         case nav.crop:
           if (route.params?.uri) {
-            setselectedMedia(route.params.uri);
+            setselectedMedia({uri: route.params.uri});
             navigation.setParams({uri: undefined});
           }
           break;
@@ -102,7 +123,7 @@ const HomeScreen = () => {
           break;
 
         default:
-          console.log(route.params);
+          console.log('route.params', route.params);
           navigation.setParams({uri: undefined});
           break;
       }
@@ -133,12 +154,16 @@ const HomeScreen = () => {
   };
 
   const handlePost = async () => {
+    if (!user) {
+      return;
+    }
+
     if (selectedMedia?.type === 'video') {
       dispatch(
         uploadVideoToFirebase({
           idUser: user.localId,
           idToken: user.idToken,
-          videoInfo: selectedMedia,
+          videoInfo: selectedMedia.uri,
           caption,
           refreshToken: user.refreshToken,
         }),
@@ -160,15 +185,17 @@ const HomeScreen = () => {
     setVisibleSelectMedia(false);
   };
 
-  const handleConfirmSelectMedia = value => {
+  const handleConfirmSelectMedia = (value: 'gallery' | 'camera') => {
     onSelectMedia(value);
   };
 
-  const onSelectMedia = async from => {
+  const onSelectMedia = async (from: 'gallery' | 'camera') => {
     let result;
     if (from === 'gallery') {
       result = await selectMedia();
-      compressMedia(result[0]);
+      if (result) {
+        compressMedia(result[0]);
+      }
     } else if (from === 'camera') {
       navigationTo(nav.camera);
     } else {
@@ -176,8 +203,8 @@ const HomeScreen = () => {
     }
   };
 
-  const compressMedia = media => {
-    setselectedMedia('');
+  const compressMedia = (media: Asset) => {
+    setselectedMedia(null);
 
     if (media?.type?.startsWith('image')) {
       setIsVideo(false);
@@ -185,12 +212,14 @@ const HomeScreen = () => {
         imageUri: media.uri,
       });
     } else if (media?.type?.startsWith('video')) {
-      showEditor(media.uri, {
-        maxDuration: 7,
-        saveButtonText: 'Save',
-      });
-      setIsVideo(true);
-      return;
+      if (media.uri) {
+        showEditor(media.uri, {
+          maxDuration: 7,
+          saveButtonText: 'Save',
+        });
+        setIsVideo(true);
+        return;
+      }
     }
   };
 
@@ -210,22 +239,6 @@ const HomeScreen = () => {
       setCaption('');
     }
   }, [postMoment]);
-
-  useEffect(() => {
-    if (!progressUpload) {
-      return;
-    }
-    console.log(progressUpload);
-
-    dispatch(
-      setMessage({
-        message: `${progressUpload?.state}`,
-        type: 'Info',
-        hideButton: true,
-        progress: progressUpload.progress,
-      }),
-    );
-  }, [progressUpload]);
 
   const uriVideo = useTrimVideo();
 
@@ -283,7 +296,7 @@ const HomeScreen = () => {
         </View>
 
         <Button
-          label={!isLoading && 'Send!'}
+          label={!isLoading ? 'Send!' : ''}
           backgroundColor={Colors.primary}
           black
           onPress={handlePost}
@@ -307,7 +320,7 @@ const HomeScreen = () => {
   );
 };
 
-export const navigationTo = (to, data) => {
+export const navigationTo = (to: string, data?: any) => {
   navigation.navigate(to, data);
 };
 

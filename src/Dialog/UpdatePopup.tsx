@@ -11,6 +11,26 @@ import {
 import CustomDialog from './CustomDialog';
 import MainButton from '../components/MainButton';
 
+type UpdateInfoType =
+  | 'CHECKING_FOR_UPDATE'
+  | 'UPDATE_AVAILABLE'
+  | 'DOWNLOADING_PACKAGE'
+  | 'INSTALLING_UPDATE'
+  | 'UP_TO_DATE'
+  | 'UPDATE_INSTALLED'
+  | 'ERROR'
+  | 'CHECK_UPDATE';
+
+interface UpdatePopupProps {
+  isVisible: boolean;
+  updateInfo: UpdateInfoType;
+  progress?: number;
+  onUpdate: () => void;
+  decriptionUpdate?: string;
+  onCheckUpdate: () => void;
+  onPostpone: () => void;
+}
+
 const UpdatePopup = ({
   isVisible,
   updateInfo,
@@ -19,7 +39,7 @@ const UpdatePopup = ({
   decriptionUpdate,
   onCheckUpdate,
   onPostpone,
-}) => {
+}: UpdatePopupProps) => {
   const progressPercent = progress ? Math.floor(progress * 100) : 0;
 
   // Xác định trạng thái hiển thị ProgressBar
@@ -34,7 +54,9 @@ const UpdatePopup = ({
       },
       UPDATE_AVAILABLE: {
         message: 'Có bản cập nhật mới!',
-        buttons: <MainButton label="Cập nhật" onPress={onUpdate} />,
+        buttons: (
+          <MainButton label="Cập nhật" onPress={onUpdate} isLoading={false} />
+        ),
       },
       DOWNLOADING_PACKAGE: {
         message: `Đang tải xuống: ${progressPercent}%`,
@@ -46,19 +68,31 @@ const UpdatePopup = ({
       },
       UP_TO_DATE: {
         message: 'Bạn đã cập nhật phiên bản mới nhất',
-        buttons: <MainButton label="Đóng" onPress={onPostpone} />,
+        buttons: (
+          <MainButton label="Đóng" onPress={onPostpone} isLoading={false} />
+        ),
       },
       UPDATE_INSTALLED: {
         message: 'Cập nhật thành công! Ứng dụng sẽ khởi động lại.',
-        buttons: <MainButton label="Đóng" onPress={onPostpone} />,
+        buttons: (
+          <MainButton label="Đóng" onPress={onPostpone} isLoading={false} />
+        ),
       },
       ERROR: {
         message: 'Lỗi khi kiểm tra cập nhật.',
-        buttons: <MainButton label="Đóng" onPress={onPostpone} />,
+        buttons: (
+          <MainButton label="Đóng" onPress={onPostpone} isLoading={false} />
+        ),
       },
       CHECK_UPDATE: {
         message: 'Kiểm tra cập nhật...',
-        buttons: <MainButton label="Kiểm tra" onPress={onCheckUpdate} />,
+        buttons: (
+          <MainButton
+            label="Kiểm tra"
+            onPress={onCheckUpdate}
+            isLoading={false}
+          />
+        ),
       },
     }),
     [onPostpone, onUpdate, onCheckUpdate, progressPercent],

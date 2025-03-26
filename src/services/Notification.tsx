@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {navigationTo} from '../screen/HomeScreen';
 import {nav} from '../navigation/navName';
 import {
+  FirebaseMessagingTypes,
   getMessaging,
   getToken,
   onNotificationOpenedApp,
@@ -47,7 +48,9 @@ const createNotificationChannel = async () => {
 /**
  * 3️⃣ Hiển thị thông báo bằng Notifee và lưu `data`
  */
-const displayNotification = async message => {
+const displayNotification = async (
+  message: FirebaseMessagingTypes.RemoteMessage,
+) => {
   if (!message) return;
 
   console.log('🔔 Nhận thông báo:', message);
@@ -62,12 +65,8 @@ const displayNotification = async message => {
 
   try {
     await notifee.displayNotification({
-      title:
-        message?.notification?.title || message?.data?.title || 'Thông báo mới',
-      body:
-        message?.notification?.body ||
-        message?.data?.body ||
-        'Bạn có tin nhắn mới',
+      title: message?.notification?.title || 'Thông báo mới',
+      body: message?.notification?.body || 'Bạn có tin nhắn mới',
       android: {
         smallIcon: 'ic_launcher',
         channelId: CHANNEL_ID,
@@ -83,8 +82,14 @@ const displayNotification = async message => {
 /**
  * 4️⃣ Xử lý khi người dùng nhấn vào thông báo (Mở link nếu có)
  */
-export const handleNotificationClick = async data => {
-  let lastData;
+interface DataNotification {
+  update_url?: string;
+  local_update?: string;
+  navigation_to?: string;
+}
+
+export const handleNotificationClick = async (data?: DataNotification) => {
+  let lastData: DataNotification | undefined;
 
   if (data) {
     console.log('📌 Nhấn thông báo khi có `data` trực tiếp từ sự kiện.');
@@ -137,7 +142,7 @@ const listenToNotificationClicks = () => {
  */
 notifee.onBackgroundEvent(async event => {
   console.log('Nhấn thông báo khi app ở background:', event.detail);
-  await handleNotificationClick();
+  await handleNotificationClick(event.detail.notification?.data);
 });
 
 async function subscribeTopic() {
@@ -176,7 +181,7 @@ export const NotificationService = () => {
  * 8️⃣ Get Notification token
  */
 
-export const getFcmToken = async () => {
+export const getFcmToken = async (): Promise<string> => {
   const fcmToken = await getToken(messaging);
   console.log('FcmToken: ' + fcmToken);
   return fcmToken;

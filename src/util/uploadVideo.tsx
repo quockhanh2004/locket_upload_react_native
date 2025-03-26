@@ -1,22 +1,34 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {getVideoMetaData, Video} from 'react-native-compressor';
-import {createThumbnail} from 'react-native-create-thumbnail';
+import {createThumbnail, Thumbnail} from 'react-native-create-thumbnail';
 import RNFS from 'react-native-fs';
 import axios from 'axios';
 
 import {createBlobFromUri} from './getBufferFile';
 import {uploadHeaders} from './header';
 
-export const compressVideo = async (video, cancelid, progress) => {
-  const uriNewVideo = await Video.compress(
-    video,
-    {maxSize: 1020, getCancellationId: cancelid, compressionMethod: 'auto'},
-    progress,
-  );
+export const compressVideo = async (
+  videoUri: string,
+  cancelid?: (cancellationId: string) => void,
+  progress?: (progress: number) => void,
+): Promise<{
+  width: number;
+  height: number;
+  size: number;
+  duration: number;
+  uri: any;
+  type: any;
+}> => {
+  console.log('debug here');
+  // const uriNewVideo = videoUri;
+  const uriNewVideo = await Video.compress(videoUri, {}, progres => {
+    console.log('Compression Progress: ', progres);
+  });
 
   return await getInfoVideo(uriNewVideo, 'video/mp4');
 };
 
-export const deleteAllMp4Files = async directoryPath => {
+export const deleteAllMp4Files = async (directoryPath: string) => {
   try {
     const files = await RNFS.readDir(directoryPath); // Lấy danh sách file trong thư mục
     const mp4Files = files.filter(
@@ -41,7 +53,7 @@ export const deleteAllMp4Files = async directoryPath => {
   }
 };
 
-export const cancelCompressVideo = cancelId => {
+export const cancelCompressVideo = (cancelId: string): void => {
   Video.cancelCompression(cancelId);
 };
 
@@ -56,36 +68,36 @@ export const UPLOAD_VIDEO_PROGRESS_STAGE = {
   FAILED: 'Upload failed', // Thất bại
 };
 
-export const createVideoBlob = async videoInfo => {
-  const {blob: video} = await createBlobFromUri(videoInfo);
+export const createVideoBlob = async (videoInfo: {
+  uri: string;
+  type: string;
+  size?: number | undefined;
+}) => {
+  const response = await createBlobFromUri(videoInfo);
 
-  if (!video) {
+  if (!response?.blob) {
     throw new Error('Failed to create Blob');
   }
 
-  return {video, fileSize: videoInfo.fileSize};
+  return {video: response.blob, fileSize: videoInfo.size};
 };
 
-export const getInfoVideo = async (videoUri, videoType) => {
-  // Lấy thông tin về thời lượng video
+export const getInfoVideo = async (videoUri: string, videoType: string) => {
   const videoMetaData = await getVideoMetaData(videoUri);
 
   return {
-    width: videoMetaData.width,
-    height: videoMetaData.height,
-    size: videoMetaData.size,
-    duration: videoMetaData.duration,
+    ...videoMetaData,
     uri: videoUri,
     type: videoType,
   };
 };
 
 export const initiateUploadVideo = async (
-  idUser,
-  idToken,
-  fileSize,
-  nameVideo,
-  process,
+  idUser: string,
+  idToken: string,
+  fileSize: number,
+  nameVideo: string,
+  process?: (progress: number) => void,
 ) => {
   const url = `https://firebasestorage.googleapis.com/v0/b/locket-video/o/users%2F${idUser}%2Fmoments%2Fvideos%2F${nameVideo}?uploadType=resumable&name=users%2F${idUser}%2Fmoments%2Fvideos%2F${nameVideo}`;
 
@@ -118,7 +130,11 @@ export const initiateUploadVideo = async (
   return response.headers['x-goog-upload-url'];
 };
 
-export const uploadVideo = async (uploadUrl, blobVideo, token) => {
+export const uploadVideo = async (
+  uploadUrl: string,
+  blobVideo: Uint8Array<ArrayBuffer>,
+  token: string,
+) => {
   const response = await axios.put(uploadUrl, blobVideo, {
     headers: uploadHeaders,
   });
@@ -126,7 +142,11 @@ export const uploadVideo = async (uploadUrl, blobVideo, token) => {
   return response.data;
 };
 
-export const getDownloadVideoUrl = async (idUser, idToken, nameVideo) => {
+export const getDownloadVideoUrl = async (
+  idUser: string,
+  idToken: string,
+  nameVideo: string,
+) => {
   const getUrl = `https://firebasestorage.googleapis.com/v0/b/locket-video/o/users%2F${idUser}%2Fmoments%2Fvideos%2F${nameVideo}`;
 
   const getHeaders = {
@@ -142,16 +162,22 @@ export const getDownloadVideoUrl = async (idUser, idToken, nameVideo) => {
   return `${getUrl}?alt=media&token=${downloadToken}`;
 };
 
-export const getVideoThumbnail = async videoUri => {
+export const getVideoThumbnail = async (
+  videoUri: string,
+): Promise<Thumbnail> => {
   const response = await createThumbnail({
     url: videoUri,
     timeStamp: 1000, // Lấy thumbnail tại giây thứ 1 (1000ms)
   });
 
-  return response.path; // Trả về đường dẫn ảnh thumbnail
+  return response; // Trả về đường dẫn ảnh thumbnail
 };
 
-export const cretateBody = (caption, thumbnailUrl, downloadVideoUrl) => {
+export const cretateBody = (
+  caption: string,
+  thumbnailUrl: string,
+  downloadVideoUrl: string,
+) => {
   const bodyPostMoment = {
     data: {
       thumbnail_url: thumbnailUrl,

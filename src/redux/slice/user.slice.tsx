@@ -9,32 +9,80 @@ import {
   updateDisplayName,
 } from '../action/user.action';
 
+export interface User {
+  kind?: string;
+  localId: string;
+  email: string;
+  displayName: string;
+  idToken: string;
+  registered?: boolean;
+  profilePicture?: string;
+  refreshToken: string;
+  expiresIn?: string;
+  timeExpires?: any;
+
+  photoUrl?: string;
+  passwordHash?: string;
+  emailVerified?: boolean;
+  passwordUpdatedAt?: number;
+  providerUserInfo?: ProviderUserInfo[];
+  validSince?: string;
+  lastLoginAt?: string;
+  createdAt?: string;
+  customAuth?: boolean;
+  phoneNumber?: string;
+  customAttributes?: string;
+  lastRefreshAt?: Date;
+}
+
+export interface ProviderUserInfo {
+  providerId: string;
+  rawId: string;
+  phoneNumber?: string;
+  displayName?: string;
+  photoUrl?: string;
+  federatedId?: string;
+  email?: string;
+}
+
+export interface UserInfo {
+  kind: string;
+  users: User[];
+}
+
+interface TypeUserSlice {
+  user: User | null | undefined;
+  userInfo: UserInfo | null | undefined;
+  isLoading: boolean;
+  resetPasswordLoading: boolean;
+  updateAvatarLoading: boolean;
+}
+
 const userSlice = createSlice({
   name: 'user',
   initialState: {
     user: null,
     userInfo: null,
-    resetPassword: null,
     isLoading: false,
     resetPasswordLoading: false,
     updateAvatarLoading: false,
-  },
+  } as TypeUserSlice,
 
   reducers: {
     logout(state) {
       state.user = null;
-      state.resetPassword = null;
       state.userInfo = null;
       state.isLoading = false;
     },
     clearStatus: state => {
-      state.resetPassword = null;
       state.isLoading = false;
       state.updateAvatarLoading = false;
     },
     setToken: (state, action) => {
-      state.user.idToken = action.payload.access_token;
-      state.user.refreshToken = action.payload.refresh_token;
+      if (state.user) {
+        state.user.idToken = action.payload.access_token;
+        state.user.refreshToken = action.payload.refresh_token;
+      }
     },
   },
 
@@ -46,8 +94,10 @@ const userSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
-        let now = new Date().getTime() + 3600 * 1000;
-        state.user.timeExpires = now;
+        if (state.user) {
+          let now = new Date().getTime() + 3600 * 1000;
+          state.user.timeExpires = now;
+        }
       })
       .addCase(login.rejected, state => {
         state.isLoading = false;
@@ -71,11 +121,13 @@ const userSlice = createSlice({
       })
       .addCase(getToken.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user.idToken = action.payload.access_token;
-        state.user.refreshToken = action.payload.refresh_token;
-        state.user.expiresIn = action.payload.expiresIn;
-        let now = new Date().getTime() + 3600 * 1000;
-        state.user.timeExpires = now;
+        if (state.user) {
+          state.user.idToken = action.payload.access_token;
+          state.user.refreshToken = action.payload.refresh_token;
+          state.user.expiresIn = action.payload.expiresIn;
+          let now = new Date().getTime() + 3600 * 1000;
+          state.user.timeExpires = now;
+        }
       })
       .addCase(getToken.rejected, state => {
         state.isLoading = false;
@@ -85,7 +137,7 @@ const userSlice = createSlice({
       .addCase(resetPassword.pending, state => {
         state.resetPasswordLoading = true;
       })
-      .addCase(resetPassword.fulfilled, (state, action) => {
+      .addCase(resetPassword.fulfilled, state => {
         state.resetPasswordLoading = false;
       })
       .addCase(resetPassword.rejected, state => {
@@ -96,10 +148,10 @@ const userSlice = createSlice({
       .addCase(updateDisplayName.pending, state => {
         state.isLoading = true;
       })
-      .addCase(updateDisplayName.fulfilled, (state, action) => {
+      .addCase(updateDisplayName.fulfilled, state => {
         state.isLoading = false;
       })
-      .addCase(updateDisplayName.rejected, (state, action) => {
+      .addCase(updateDisplayName.rejected, state => {
         state.isLoading = false;
       })
 
@@ -107,10 +159,10 @@ const userSlice = createSlice({
       .addCase(updateAvatar.pending, state => {
         state.updateAvatarLoading = true;
       })
-      .addCase(updateAvatar.fulfilled, (state, action) => {
+      .addCase(updateAvatar.fulfilled, state => {
         state.updateAvatarLoading = false;
       })
-      .addCase(updateAvatar.rejected, (state, action) => {
+      .addCase(updateAvatar.rejected, state => {
         state.updateAvatarLoading = false;
       })
 
@@ -118,7 +170,7 @@ const userSlice = createSlice({
       .addCase(enableLocketGold.pending, state => {
         state.isLoading = true;
       })
-      .addCase(enableLocketGold.fulfilled, (state, action) => {
+      .addCase(enableLocketGold.fulfilled, state => {
         state.isLoading = false;
       })
       .addCase(enableLocketGold.rejected, state => {
