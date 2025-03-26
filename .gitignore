@@ -67,3 +67,4 @@ server-service.json
 
 # testing
 /coverage
+response.json
