@@ -172,14 +172,15 @@ export const uploadVideoToFirebase = createAsyncThunk(
       },
       progress => {
         thunkApi.dispatch(
-          setProgressUpload({
-            state: UPLOAD_VIDEO_PROGRESS_STAGE.PROCESSING,
+          setMessage({
+            message: UPLOAD_VIDEO_PROGRESS_STAGE.PROCESSING,
+            type: 'info',
             progress: progress * 100,
           }),
         );
       },
     );
-    console.log('here');
+    console.log('debug here 1');
 
     const videoBlob = await readFileAsBytes(newVideo);
 
@@ -283,7 +284,7 @@ export const uploadVideoToFirebase = createAsyncThunk(
         }, 400);
       }
     } catch (error) {
-      console.log(error);
+      console.log('error', error);
 
       thunkApi.dispatch(
         setMessage({

@@ -123,7 +123,7 @@ const HomeScreen = () => {
           break;
 
         default:
-          console.log(route.params);
+          console.log('route.params', route.params);
           navigation.setParams({uri: undefined});
           break;
       }
@@ -239,22 +239,6 @@ const HomeScreen = () => {
       setCaption('');
     }
   }, [postMoment]);
-
-  useEffect(() => {
-    if (!progressUpload) {
-      return;
-    }
-    console.log(progressUpload);
-
-    dispatch(
-      setMessage({
-        message: `${progressUpload?.state}`,
-        type: 'Info',
-        hideButton: true,
-        progress: progressUpload.progress,
-      }),
-    );
-  }, [progressUpload]);
 
   const uriVideo = useTrimVideo();
 

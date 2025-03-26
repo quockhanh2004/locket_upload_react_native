@@ -274,7 +274,7 @@ export const updateAvatar = createAsyncThunk(
           return true;
         } catch (error: any) {
           if (error.message.includes('403')) {
-            console.log(JSON.stringify(error));
+            console.log('error', JSON.stringify(error));
 
             throw new Error('Retry with new token');
           }
@@ -344,7 +344,7 @@ export const enableLocketGold = createAsyncThunk(
       thunkApi.dispatch(getAccountInfo({idToken, refreshToken}));
       return response.data;
     } catch (error: any) {
-      console.log(error.response.data);
+      console.log('error', error.response.data);
 
       thunkApi.dispatch(
         setMessage({

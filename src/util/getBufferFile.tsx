@@ -18,7 +18,7 @@ export async function createBlobFromUri(fileInfo: {
 export const readFileAsBytes = async (file: {
   uri: string;
 }): Promise<Uint8Array<ArrayBuffer> | undefined> => {
-  console.log(file);
+  // console.log(file);
 
   try {
     const fileContent = await RNFS.readFile(file.uri, 'base64'); // Đọc file dưới dạng base64

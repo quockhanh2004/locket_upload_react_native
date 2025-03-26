@@ -19,13 +19,11 @@ export const compressVideo = async (
   uri: any;
   type: any;
 }> => {
-  console.log('here');
-
-  const uriNewVideo = await Video.compress(
-    videoUri,
-    {maxSize: 1020, getCancellationId: cancelid},
-    progress,
-  );
+  console.log('debug here');
+  // const uriNewVideo = videoUri;
+  const uriNewVideo = await Video.compress(videoUri, {}, progres => {
+    console.log('Compression Progress: ', progres);
+  });
 
   return await getInfoVideo(uriNewVideo, 'video/mp4');
 };

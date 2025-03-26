@@ -123,7 +123,6 @@ const AccountScreen = () => {
 
     try {
       const update = await codePush.checkForUpdate(CODEPUSH_DEPLOYMENTKEY());
-      console.log(update);
 
       if (!update) {
         setUpdateInfo('UP_TO_DATE');
