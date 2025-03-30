@@ -46,7 +46,7 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
         }),
       );
 
-      const imageBlob = await readFileAsBytes(imageInfo);
+      const imageBlob = await readFileAsBytes(imageInfo.uri);
       if (!imageBlob) {
         throw new Error('Failed to read file');
       }

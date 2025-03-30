@@ -3,7 +3,7 @@ import {NativeEventEmitter, NativeModules} from 'react-native';
 import {clearAppCache} from '../util/uploadImage';
 
 const useTrimVideo = () => {
-  const [videoOut, setVideoOut] = useState(null);
+  const [videoOut, setVideoOut] = useState<string | null>(null);
 
   useEffect(() => {
     const eventEmitter = new NativeEventEmitter(NativeModules.VideoTrim);
