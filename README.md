@@ -34,6 +34,7 @@ Trước tiên, hãy đảm bảo bạn đã cài đặt:
 - **React Native CLI**
 - **Android Studio** (nếu build trên Android)
 - **Đổi tên file .env.examble thành .env**
+- **Bạn cần phải tạo hoặc sử dụng lại project trong google firebase để lấy file google-services.json để lưu vào folder root của project, `android/app/`** (nhận thông báo app khi tự build lại)
 
 ### 2️⃣ Clone repo
 ```sh
