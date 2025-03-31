@@ -6,13 +6,18 @@ export interface CameraSetting {
   flash: boolean;
 }
 
-const initialState: {useCamera: boolean; cameraSettings: CameraSetting} = {
+const initialState: {
+  useCamera: boolean;
+  cameraSettings: CameraSetting;
+  appVersion: string;
+} = {
   useCamera: false,
   cameraSettings: {
     cameraId: '0',
     format: 0,
     flash: false,
   },
+  appVersion: '',
 };
 
 const settingSlice = createSlice({
@@ -29,9 +34,14 @@ const settingSlice = createSlice({
         ...action.payload,
       };
     },
+
+    setCurrentVersion(state, action: PayloadAction<string>) {
+      state.appVersion = action.payload;
+    },
   },
 });
 
-export const {setUseCameraSetting, setCameraSettings} = settingSlice.actions;
+export const {setUseCameraSetting, setCameraSettings, setCurrentVersion} =
+  settingSlice.actions;
 
 export default settingSlice.reducer;

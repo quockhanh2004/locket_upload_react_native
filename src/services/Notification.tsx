@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable curly */
 import {useEffect} from 'react';
 import {Platform, PermissionsAndroid, Linking} from 'react-native';
@@ -11,8 +12,13 @@ import {
   getToken,
   onNotificationOpenedApp,
   subscribeToTopic,
+  unsubscribeFromTopic,
 } from '@react-native-firebase/messaging';
 import {getApp} from '@react-native-firebase/app';
+import {version} from '../../package.json';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../redux/store';
+import {setCurrentVersion} from '../redux/slice/setting.slice';
 
 const CHANNEL_ID = 'locket_upload_channel';
 const messaging = getMessaging(getApp());
@@ -145,14 +151,29 @@ notifee.onBackgroundEvent(async event => {
   await handleNotificationClick(event.detail.notification?.data);
 });
 
-async function subscribeTopic() {
+async function subscribeTopic(appVersion: string, dispatch: any) {
   await subscribeToTopic(messaging, 'new_update');
-  console.log('Thiết bị đã đăng ký vào topic all_users');
+  if (appVersion !== version) {
+    try {
+      await unsubscribeFromTopic(messaging, appVersion);
+      console.log('Thiết bị đã hủy đăng ký topic ' + appVersion);
+    } catch (error) {
+      console.error('Lỗi hủy đăng ký topic:', error);
+    }
+    dispatch(setCurrentVersion(version));
+  }
+  await subscribeToTopic(messaging, version);
+  console.log('Thiết bị đã đăng ký vào topic all_users, ' + version);
 }
 /**
  * 7️⃣ Hook khởi tạo Notification Service trong `App.tsx`
  */
 export const NotificationService = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const appVersion = useSelector(
+    (state: RootState) => state.setting?.appVersion,
+  );
+
   useEffect(() => {
     requestNotificationPermission();
     createNotificationChannel();
@@ -160,7 +181,7 @@ export const NotificationService = () => {
 
     getFcmToken();
 
-    subscribeTopic();
+    subscribeTopic(appVersion, dispatch);
 
     const unsubscribe = messaging.onMessage(async remoteMessage => {
       await displayNotification(remoteMessage);
