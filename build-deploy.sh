@@ -13,7 +13,7 @@ current_time=$(date +%Y%m%d_%H%M)
 
 # Lấy message commit của version trước
 previous_version_commit=$(git log --grep "Build and release APK version" --pretty=format:"%H" | sed -n 2p)
-previous_version=$(echo "$previous_version_commit" | grep -oE "version [0-9]+\.[0-9]+\.[0-9]+")
+previous_version=$(git log -1 --format=%s "$previous_version_commit" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")
 previous_version=$(echo "$previous_version" | awk '{print $2}')
 
 # Tạo changelog
