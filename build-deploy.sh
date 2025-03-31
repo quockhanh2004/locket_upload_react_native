@@ -80,7 +80,7 @@ if [[ "$send_fcm" == "y" || "$send_fcm" == "Y" ]]; then
      "restricted_package_name": "com.locket_upload"
     },
     "data": {
-     "local_update": "true"
+     "update_url": "https://github.com/quockhanh2004/locket_upload_react_native/releases"
     },
     "notification": {
      "body": "'"$DESCRIPTION"'",
