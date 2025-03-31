@@ -65,7 +65,7 @@ curl -X POST "$FCM_URL" \
               "body": "'"$DESCRIPTION"'",
               "title": "Đã có bản cập nhật mới!"
             },
-          "topic": "new_update"
+          "topic": "'"$TARGET_VERSION"'"
           }
         }'
 
