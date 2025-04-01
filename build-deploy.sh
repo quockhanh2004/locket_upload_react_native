@@ -83,7 +83,7 @@ if [[ "$send_fcm" == "y" || "$send_fcm" == "Y" ]]; then
      "update_url": "https://github.com/quockhanh2004/locket_upload_react_native/releases"
     },
     "notification": {
-     "body": "Cần cập nhật qua apk, nhấn vào để kiểm tra nhé!",
+     "body": "Đã thay đổi thuật toán nén ảnh để hạn chế lỗi 403. Cần cập nhật qua apk, nhấn vào để kiểm tra nhé!",
      "title": "Đã có bản cập nhật mới!"
     },
     "topic": "new_update"
