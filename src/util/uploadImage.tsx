@@ -1,5 +1,7 @@
 import axios, {AxiosProgressEvent} from 'axios';
 import {uploadHeaders} from './header';
+import RNFS from 'react-native-fs';
+import {Image} from 'react-native-compressor';
 
 export const UPLOAD_PROGRESS_STAGE = {
   PROCESSING_IMAGE: 'Processing image', // Xử lý ảnh (resize, convert, v.v.)
@@ -97,72 +99,25 @@ export const getDownloadUrl = async (
   return `${getUrl}?alt=media&token=${downloadToken}`;
 };
 
-import ImageResizer from 'react-native-image-resizer';
 export const resizeImage = async (uri: string) => {
   if (!uri) {
     return null;
   }
 
-  try {
-    const maxSize = 1020;
-    const maxFileSize = 1048576; // 1MB in bytes
+  const result = await Image.compress(uri, {
+    compressionMethod: 'manual',
+    maxWidth: 1020,
+    quality: 0.8,
+    output: 'jpg',
+  });
 
-    // Lấy thông tin về file ảnh
-    const fileInfo = await RNFS.stat(uri.replace('file://', ''));
-    const originalFileSize = fileInfo.size;
+  // return;
 
-    let resizedImage;
-
-    if (originalFileSize > maxFileSize) {
-      // Giảm kích thước file nếu vượt quá giới hạn
-      const compressFormat = 'WEBP'; // Sử dụng WEBP để giảm dung lượng
-      let compressQuality = 100; // Chất lượng ban đầu (có thể điều chỉnh)
-      let newWidth = maxSize;
-      let newHeight = maxSize;
-
-      do {
-        resizedImage = await ImageResizer.createResizedImage(
-          uri,
-          newWidth,
-          newHeight,
-          compressFormat,
-          compressQuality,
-          0,
-        );
-
-        const resizedFileInfo = await RNFS.stat(
-          resizedImage.uri.replace('file://', ''),
-        );
-        console.log(resizedFileInfo.size, compressQuality);
-
-        if (resizedFileInfo.size <= maxFileSize) {
-          break;
-        } // Thoát vòng lặp nếu kích thước file đạt yêu cầu
-        // Nếu kích thước vẫn lớn hơn 1MB, giảm chất lượng
-        compressQuality -= 1;
-      } while (compressQuality > 20 && newWidth > 200 && newHeight > 200); // Điều kiện dừng: quality > 20 và size ảnh > 200x200
-      //Nếu sau khi giảm kích thước và chất lượng mà vẫn chưa được thì xử lý ở đây
-    } else {
-      // Nếu file nhỏ hơn 1MB, resize bình thường
-      resizedImage = await ImageResizer.createResizedImage(
-        uri,
-        maxSize,
-        maxSize,
-        'PNG', // Giữ nguyên định dạng PNG nếu kích thước file nhỏ
-        100, // Chất lượng ảnh
-        0,
-      );
-    }
-
-    return resizedImage;
-  } catch (error) {
-    console.error('Lỗi khi resize ảnh:', error);
-    // Xử lý lỗi và trả về null hoặc throw error
-    return null;
-  }
+  return {
+    uri: result,
+  };
 };
 
-import RNFS from 'react-native-fs';
 export const clearAppCache = async () => {
   try {
     const cacheDir = RNFS.CachesDirectoryPath; // Đường dẫn đến thư mục cache

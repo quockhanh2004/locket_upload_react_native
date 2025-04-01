@@ -52,7 +52,7 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
       }
       const fileSize = imageBlob.byteLength;
 
-      const nameImg = `${Date.now()}_vtd182.webp`;
+      const nameImg = `${Date.now()}_vtd182.jpg`;
 
       //khởi tạo upload
       setTimeout(() => {
