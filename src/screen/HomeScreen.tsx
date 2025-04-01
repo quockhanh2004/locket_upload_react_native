@@ -86,14 +86,13 @@ const HomeScreen = () => {
       handleNotificationClick(remoteMessage?.data || {});
     });
 
-    if (user?.timeExpires && user.timeExpires < new Date().getTime()) {
+    if (user?.timeExpires && +user.timeExpires < new Date().getTime()) {
       dispatch(
         getToken({
           refreshToken: user.refreshToken || '',
         }),
       );
-    }
-    setTimeout(() => {
+    } else {
       if (user) {
         console.log('get account info');
 
@@ -104,7 +103,7 @@ const HomeScreen = () => {
           }),
         );
       }
-    }, 3500);
+    }
   }, []);
 
   // Lắng nghe sự kiện khi cắt ảnh xong

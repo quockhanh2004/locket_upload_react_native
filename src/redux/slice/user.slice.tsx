@@ -1,4 +1,4 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {
   enableLocketGold,
   getAccountInfo,
@@ -107,10 +107,17 @@ const userSlice = createSlice({
       .addCase(getAccountInfo.pending, state => {
         state.isLoading = true;
       })
-      .addCase(getAccountInfo.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.userInfo = action.payload;
-      })
+      .addCase(
+        getAccountInfo.fulfilled,
+        (state, action: PayloadAction<UserInfo>) => {
+          state.isLoading = false;
+          if (state.user) {
+            state.user.photoUrl = action.payload.users[0].photoUrl || '';
+          }
+
+          state.userInfo = action.payload;
+        },
+      )
       .addCase(getAccountInfo.rejected, state => {
         state.isLoading = false;
       })

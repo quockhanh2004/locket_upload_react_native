@@ -138,9 +138,13 @@ export const getToken = createAsyncThunk(
         body,
         {headers: loginHeader},
       );
-      if (response.status < 400) {
-        return response.data;
-      }
+      thunkApi.dispatch(
+        getAccountInfo({
+          idToken: response.data.access_token,
+          refreshToken: response.data.refresh_token,
+        }),
+      );
+      return response.data;
     } catch (error: any) {
       thunkApi.dispatch(
         setMessage({
