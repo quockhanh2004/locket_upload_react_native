@@ -42,6 +42,7 @@ npm-debug.log
 yarn-error.log
 .env
 server-service.json
+test.sh
 
 # fastlane
 #

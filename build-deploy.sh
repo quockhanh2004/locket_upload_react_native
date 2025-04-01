@@ -11,15 +11,17 @@ version=$(node -p "require('./package.json').version")
 # Định dạng thời gian hiện tại
 current_time=$(date +%Y%m%d_%H%M)
 
-# Lấy message commit của version trước
-previous_version_commit=$(git log --grep "Build and release APK version" --pretty=format:"%H" | sed -n 2p)
+# Lấy commit hash của phiên bản build gần nhất
+previous_version_commit=$(git log --grep "Build and release APK version" --pretty=format:"%H" -1)
+
+# Lấy phiên bản từ commit message của phiên bản build gần nhất
 previous_version=$(git log -1 --format=%s "$previous_version_commit" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")
-previous_version=$(echo "$previous_version" | awk '{print $2}')
 
 # Tạo changelog
 changelog=""
 if [[ -n "$previous_version_commit" ]]; then
-  changelog=$(git log --pretty=format:"- %s" "${previous_version_commit}..HEAD" --no-merges)  
+  # Lấy các commit sau commit của phiên bản trước
+  changelog=$(git log --pretty=format:"- %s" "${previous_version_commit}^..HEAD" --no-merges)
 fi
 
 # Tạo file APK
