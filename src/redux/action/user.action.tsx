@@ -89,7 +89,7 @@ export const resetPassword = createAsyncThunk(
           type: 'Error',
         }),
       );
-      return thunkApi.rejectWithValue(error?.response?.data?.error);
+      thunkApi.rejectWithValue(error?.response?.data?.error);
     }
   },
 );

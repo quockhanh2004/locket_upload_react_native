@@ -40,7 +40,7 @@ const LoginScreen = () => {
 
   const handleResetPassword = () => {
     if (checkValue(true)) {
-      dispatch(resetPassword({email}));
+      dispatch(resetPassword({email: email.trim()}));
     }
   };
 
