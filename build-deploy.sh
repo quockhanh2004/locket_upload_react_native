@@ -19,9 +19,10 @@ previous_version=$(git log -1 --format=%s "$previous_version_commit" | grep -oE 
 
 # Tạo changelog
 changelog=""
+# Lấy commit hash của phiên bản build gần nhất
 if [[ -n "$previous_version_commit" ]]; then
-  # Lấy các commit sau commit của phiên bản trước
-  changelog=$(git log --pretty=format:"- %s" "${previous_version_commit}^..HEAD" --no-merges)
+  # Lấy các commit sau commit của phiên bản trước và loại bỏ commit "Build and release APK version"
+  changelog=$(git log --pretty=format:"- %s" "${previous_version_commit}^..HEAD" --no-merges | grep -v "Build and release APK version")
 fi
 
 # Tạo file APK
