@@ -10,6 +10,9 @@
 - 🔄 **Thay đổi tên người dùng**: Tùy chỉnh họ tên ngay trong app.
 - 🚀 **Cập nhật trong ứng dụng**: Không cần cài đặt lại bằng APK.
 
+## Bản dựng sẵn có thể tải
+[![GitHub Releases](https://img.shields.io/github/downloads/quockhanh2004/locket_upload_react_native/total?label=Downloads&style=flat&logo=android)](https://github.com/quockhanh2004/locket_upload_react_native/releases)
+
 ## 📷 Hình ảnh minh họa
 
 ![Screenshot](./images/screenshot1.png)
@@ -18,10 +21,11 @@
 ![Screenshot](./images/screenshot4.png)
 ![Screenshot](./images/screenshot5.png)
 ![Screenshot](./images/screenshot6.png)
-
-## Bản dựng sẵn có thể tải
-[![GitHub Releases](https://img.shields.io/github/downloads/quockhanh2004/locket_upload_react_native/total?label=Downloads&style=flat&logo=android)](https://github.com/quockhanh2004/locket_upload_react_native/releases)
-
+![Screenshot](./images/screenshot7.png)
+![Screenshot](./images/screenshot8.png)
+![Screenshot](./images/screenshot9.png)
+![Screenshot](./images/screenshot10.png)
+![Screenshot](./images/screenshot11.png)
 ## 🔧 Hướng dẫn build và custom
 
 Nếu bạn muốn tùy chỉnh ứng dụng theo nhu cầu của riêng mình, hãy làm theo các bước sau:
