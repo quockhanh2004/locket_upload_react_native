@@ -19,13 +19,20 @@ type UpdateInfoType =
   | 'UP_TO_DATE'
   | 'UPDATE_INSTALLED'
   | 'ERROR'
-  | 'CHECK_UPDATE';
+  | 'CHECK_UPDATE'
+  | 'APK_UPDATE_AVAILABLE';
 
 interface UpdatePopupProps {
   isVisible: boolean;
   updateInfo: UpdateInfoType;
+  apkUpdateInfo?: {
+    latestVersion: string;
+    downloadUrl: string;
+    updateInfo: UpdateInfoType;
+  };
   progress?: number;
   onUpdate: () => void;
+  onUpdateApk: () => void;
   decriptionUpdate?: string;
   onCheckUpdate: () => void;
   onPostpone: () => void;
@@ -34,8 +41,10 @@ interface UpdatePopupProps {
 const UpdatePopup = ({
   isVisible,
   updateInfo,
+  apkUpdateInfo,
   progress,
   onUpdate,
+  onUpdateApk,
   decriptionUpdate,
   onCheckUpdate,
   onPostpone,
@@ -94,12 +103,25 @@ const UpdatePopup = ({
           />
         ),
       },
+      APK_UPDATE_AVAILABLE: {
+        message: 'Có bản cập nhật apk mới!',
+        buttons: (
+          <MainButton
+            label="Cập nhật apk"
+            onPress={onUpdateApk}
+            isLoading={false}
+            // style={{marginBottom: 12}}
+          />
+        ),
+      },
     }),
-    [onPostpone, onUpdate, onCheckUpdate, progressPercent],
+    [onUpdate, progressPercent, onPostpone, onCheckUpdate, onUpdateApk],
   );
 
   // Cập nhật UI khi updateInfo thay đổi
-  const {message, buttons} = updateState[updateInfo] || updateState.UP_TO_DATE;
+  const {message, buttons} = apkUpdateInfo
+    ? updateState[apkUpdateInfo.updateInfo as UpdateInfoType]
+    : updateState[updateInfo] || updateState.UP_TO_DATE;
 
   return (
     <CustomDialog
