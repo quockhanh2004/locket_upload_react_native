@@ -27,7 +27,6 @@ interface SelectFriendDialogProps {
 
 const SelectFriendDialog: React.FC<SelectFriendDialogProps> = ({
   onDismiss,
-  onConfirm,
   visible,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
