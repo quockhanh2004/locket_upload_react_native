@@ -1,11 +1,23 @@
 import {View, Text, Button, Colors, LoaderScreen} from 'react-native-ui-lib';
 import React from 'react';
 
-const MainButton = ({isLoading, label, onPress}) => {
+interface MainButtonProps {
+  isLoading?: boolean;
+  label?: string;
+  onPress?: () => void;
+  backgroundColor?: string;
+}
+
+const MainButton: React.FC<MainButtonProps> = ({
+  isLoading,
+  label,
+  onPress,
+  backgroundColor,
+}) => {
   return (
     <Button
       label={!isLoading ? label : ''}
-      backgroundColor={Colors.primary}
+      backgroundColor={backgroundColor || Colors.primary}
       black
       onPress={onPress}
       borderRadius={8}

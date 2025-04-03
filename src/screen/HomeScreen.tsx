@@ -46,6 +46,8 @@ import {deleteAllMp4Files} from '../util/uploadVideo';
 import SelectMediaDialog from '../Dialog/SelectMediaDialog';
 import ViewMedia from '../components/ViewMedia';
 import {Asset} from 'react-native-image-picker';
+import SelectFriendDialog from '../Dialog/SelectFriendDialog';
+import MainButton from '../components/MainButton';
 
 let navigation: NavigationProp<any>;
 
@@ -72,12 +74,14 @@ const HomeScreen = () => {
     (state: RootState) => state.postMoment,
   );
   const {useCamera} = useSelector((state: RootState) => state.setting);
+  const {selected} = useSelector((state: RootState) => state.friends);
 
   //use state
   const [selectedMedia, setselectedMedia] = useState<MediaType | null>(null);
   const [caption, setCaption] = useState('');
   const [isVideo, setIsVideo] = useState(false);
   const [visibleSelectMedia, setVisibleSelectMedia] = useState(false);
+  const [visibleSelectFriend, setVisibleSelectFriend] = useState(false);
 
   useEffect(() => {
     clearAppCache();
@@ -172,6 +176,7 @@ const HomeScreen = () => {
           videoInfo: selectedMedia.uri,
           caption,
           refreshToken: user.refreshToken,
+          friend: selected,
         }),
       );
     } else {
@@ -182,6 +187,7 @@ const HomeScreen = () => {
           imageInfo: selectedMedia,
           caption,
           refreshToken: user.refreshToken,
+          friend: selected,
         }),
       );
     }
@@ -322,7 +328,21 @@ const HomeScreen = () => {
             </View>
           )}
         </Button>
+        <View center>
+          <MainButton
+            label="Select Friend"
+            onPress={() => {
+              setVisibleSelectFriend(true);
+            }}
+          />
+        </View>
       </View>
+      <SelectFriendDialog
+        visible={visibleSelectFriend}
+        onDismiss={() => {
+          setVisibleSelectFriend(false);
+        }}
+      />
       <SelectMediaDialog
         visible={visibleSelectMedia}
         onDismiss={handleCancelSelectMedia}

@@ -18,5 +18,6 @@ export const AssetsInit = () => {
     ic_flash_off: require('../assets/icons/ic_flash_off.png'),
     ic_save: require('../assets/icons/ic_save.png'),
     ic_check: require('../assets/icons/ic_check.png'),
+    ic_group: require('../assets/icons/ic_group.png'),
   });
 };

@@ -174,12 +174,13 @@ export const cretateBody = (
   caption: string,
   thumbnailUrl: string,
   downloadVideoUrl: string,
+  friends?: string[],
 ) => {
   const bodyPostMoment = {
     data: {
       thumbnail_url: thumbnailUrl,
       video_url: downloadVideoUrl,
-      recipients: [],
+      recipients: friends || [],
       analytics: {
         experiments: {
           flag_4: {

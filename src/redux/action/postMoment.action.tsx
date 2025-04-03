@@ -28,6 +28,7 @@ interface DataPostMoment {
   caption: string;
   refreshToken: string;
   videoInfo?: any;
+  friend?: string[];
 }
 
 export const uploadImageToFirebaseStorage = createAsyncThunk(
@@ -107,7 +108,7 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
         data: {
           caption,
           thumbnail_url: downloadUrl,
-          recipients: [],
+          recipients: data.friend || [],
         },
       };
 
@@ -284,6 +285,7 @@ export const uploadVideoToFirebase = createAsyncThunk(
         caption,
         thumbnailUrl,
         downloadVideoUrl,
+        data.friend || [],
       );
 
       const response: any = await axios.post(
