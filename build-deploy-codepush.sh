@@ -46,6 +46,9 @@ fi
 
 # Gửi thông báo qua Firebase Cloud Messaging (FCM)
 echo "📢 Đang gửi thông báo cập nhật..."
+if [ -z "$MESSAGE_VERSION" ]; then
+    read -p "🔹 Nhập phiên bản nhận thông báo: " MESSAGE_VERSION
+fi
 PROJECT_ID=$(node -p "require('./google-services.json').project_info.project_id")
 FCM_URL="https://fcm.googleapis.com/v1/projects/$PROJECT_ID/messages:send"
 ACCESS_TOKEN=$(gcloud auth application-default print-access-token)
@@ -65,7 +68,7 @@ curl -X POST "$FCM_URL" \
               "body": "'"$DESCRIPTION"'",
               "title": "Đã có bản cập nhật mới!"
             },
-          "topic": "'"$TARGET_VERSION"'"
+          "topic": "'"$MESSAGE_VERSION"'"
           }
         }'
 

@@ -48,6 +48,7 @@ import ViewMedia from '../components/ViewMedia';
 import {Asset} from 'react-native-image-picker';
 import SelectFriendDialog from '../Dialog/SelectFriendDialog';
 import MainButton from '../components/MainButton';
+import {ScrollView} from 'react-native';
 
 let navigation: NavigationProp<any>;
 
@@ -291,52 +292,58 @@ const HomeScreen = () => {
           </View>
         </TouchableOpacity>
       </View>
-      <View centerV flex gap-24>
-        <ViewMedia
-          selectedMedia={selectedMedia}
-          isVideo={isVideo}
-          onRemoveMedia={handleRemoveMedia}
-          onSelectMedia={handleSelectMedia}
-        />
-
-        <View flexS>
-          <InputView
-            placeholder={'Enter caption here...'}
-            placeholderTextColor={Colors.white}
-            bgColor={Colors.grey40}
-            borderColor={Colors.grey40}
-            borderWidth={1}
-            inputStyle={{color: Colors.white, ...Typography.text70BL}}
-            style={{paddingLeft: 10, borderRadius: 999}}
-            onChangeText={setCaption}
-            value={caption}
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: 'center',
+        }}>
+        <View centerV flex gap-24>
+          <ViewMedia
+            selectedMedia={selectedMedia}
+            isVideo={isVideo}
+            onRemoveMedia={handleRemoveMedia}
+            onSelectMedia={handleSelectMedia}
           />
-        </View>
 
-        <Button
-          label={!isLoading ? 'Send!' : ''}
-          backgroundColor={Colors.primary}
-          black
-          onPress={handlePost}
-          borderRadius={8}
-          disabled={isLoading}
-          text70BL>
-          {isLoading && (
-            <View row center>
-              <Text />
-              <LoaderScreen color={Colors.white} size={'small'} />
-            </View>
-          )}
-        </Button>
-        <View center>
-          <MainButton
-            label="Select Friend"
-            onPress={() => {
-              setVisibleSelectFriend(true);
-            }}
-          />
+          <View flexS>
+            <InputView
+              placeholder={'Enter caption here...'}
+              placeholderTextColor={Colors.white}
+              bgColor={Colors.grey40}
+              borderColor={Colors.grey40}
+              borderWidth={1}
+              inputStyle={{color: Colors.white, ...Typography.text70BL}}
+              style={{paddingLeft: 10, borderRadius: 999}}
+              onChangeText={setCaption}
+              value={caption}
+            />
+          </View>
+
+          <Button
+            label={!isLoading ? 'Send!' : ''}
+            backgroundColor={Colors.primary}
+            black
+            onPress={handlePost}
+            borderRadius={8}
+            disabled={isLoading}
+            text70BL>
+            {isLoading && (
+              <View row center>
+                <Text />
+                <LoaderScreen color={Colors.white} size={'small'} />
+              </View>
+            )}
+          </Button>
+          <View center>
+            <MainButton
+              label="Select Friend"
+              onPress={() => {
+                setVisibleSelectFriend(true);
+              }}
+            />
+          </View>
         </View>
-      </View>
+      </ScrollView>
       <SelectFriendDialog
         visible={visibleSelectFriend}
         onDismiss={() => {
