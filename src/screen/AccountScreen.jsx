@@ -2,19 +2,9 @@
 import {Colors, Icon, Text, TouchableOpacity, View} from 'react-native-ui-lib';
 import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  Dimensions,
-  Platform,
-  Linking,
-  RefreshControl,
-  ScrollView,
-  Alert,
-  PermissionsAndroid,
-  NativeModules,
-} from 'react-native';
+import {Dimensions, Linking, RefreshControl, ScrollView} from 'react-native';
 import codePush from 'react-native-code-push';
 import {checkUpdateApk} from '../util/update';
-import RNFetchBlob from 'rn-fetch-blob';
 
 import {
   // enableLocketGold,
@@ -201,98 +191,7 @@ const AccountScreen = () => {
 
   const handleCheckUpdateAPK = useCallback(async () => {
     console.log(updateAPKInfo);
-
-    if (Platform.OS === 'android') {
-      // Check for storage permission
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'Storage Permission',
-            message:
-              'Locket needs access to your storage to download the update',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          },
-        );
-        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-          Alert.alert(
-            'Permission Denied',
-            'Storage permission is required to download updates',
-          );
-          return;
-        }
-      } catch (err) {
-        console.error('Permission request error:', err);
-        return;
-      }
-    }
-
-    const downloadUrl = updateAPKInfo?.downloadUrl;
-    const {dirs} = RNFetchBlob.fs;
-    const apkPath = `${dirs.DownloadDir}/locket_${updateAPKInfo.latestVersion}.apk`;
-
-    //xin cấp quyền cài đặt apk
-    try {
-      const {InstallPermission} = NativeModules;
-
-      InstallPermission.hasInstallPermission(granted => {
-        if (granted) {
-          console.log('Quyền đã được cấp');
-        } else {
-          console.log('Chưa có quyền, cần hướng dẫn cấp quyền');
-        }
-      });
-    } catch (err) {
-      console.error('Permission request error:', err);
-      return;
-    }
-
-    // Kiểm tra xem tệp APK đã tồn tại chưa
-    const fileExists = await RNFetchBlob.fs.exists(apkPath);
-    if (fileExists) {
-      RNFetchBlob.android.actionViewIntent(
-        apkPath,
-        'application/vnd.android.package-archive',
-      );
-      return;
-    }
-
-    setUpdateInfo('DOWNLOADING_PACKAGE');
-
-    RNFetchBlob.config({
-      fileCache: true,
-      // Sử dụng thư mục ứng dụng thay vì DownloadDir
-      path: `${RNFetchBlob.fs.dirs.DocumentDir}/locket_update.apk`,
-      addAndroidDownloads: {
-        useDownloadManager: true,
-        title: 'Locket Update',
-        description: 'Downloading new version...',
-        mime: 'application/vnd.android.package-archive',
-        mediaScannable: true,
-        notification: true,
-        // Thêm điều này để cải thiện khả năng tương thích
-        path: apkPath,
-      },
-    })
-      .fetch('GET', downloadUrl)
-      .progress((received, total) => {
-        setDownloadProgress(received / total);
-      })
-      .then(res => {
-        setUpdateInfo('UPDATE_INSTALLED');
-        if (Platform.OS === 'android') {
-          RNFetchBlob.android.actionViewIntent(
-            apkPath,
-            'application/vnd.android.package-archive',
-          );
-        }
-      })
-      .catch(error => {
-        console.error('APK download failed:', error);
-        setUpdateInfo('ERROR');
-      });
+    Linking.openURL(updateAPKInfo.downloadUrl);
   }, [updateAPKInfo]);
 
   const onPostpone = useCallback(() => {
