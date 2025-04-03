@@ -154,7 +154,7 @@ const SelectFriendDialog: React.FC<SelectFriendDialogProps> = ({
           />
         </View>
         <View flex>
-          <MainButton label="Done" onPress={onConfirm} />
+          <MainButton label="Done" onPress={onDismiss} />
         </View>
       </View>
     </CustomDialog>
