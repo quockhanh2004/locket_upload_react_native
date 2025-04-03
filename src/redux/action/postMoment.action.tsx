@@ -136,7 +136,7 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
       } else {
         thunkApi.dispatch(
           setMessage({
-            message: `Error: ${response?.data?.error?.message}`,
+            message: `Error: ${JSON.stringify(response?.data?.error?.message)}`,
             type: 'Error',
           }),
         );
@@ -307,7 +307,9 @@ export const uploadVideoToFirebase = createAsyncThunk(
       console.log('error', error.response.data);
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${error.response.data || error.message}`,
+          message: `Error: ${
+            JSON.stringify(error.response.data) || JSON.stringify(error.message)
+          }`,
           type: 'Error',
         }),
       );
