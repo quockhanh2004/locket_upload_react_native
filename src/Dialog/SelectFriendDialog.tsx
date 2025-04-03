@@ -50,10 +50,15 @@ const SelectFriendDialog: React.FC<SelectFriendDialogProps> = ({
   };
 
   const handleItemSelect = (uid: string) => {
+    const isSelected = selected.includes(uid);
     if (uid === 'all') {
       handleSelectAll();
     } else {
-      dispatch(setSelectedFriend([...selected, uid]));
+      if (isSelected) {
+        dispatch(setSelectedFriend(selected.filter(id => id !== uid)));
+      } else {
+        dispatch(setSelectedFriend([...selected, uid]));
+      }
     }
   };
 
