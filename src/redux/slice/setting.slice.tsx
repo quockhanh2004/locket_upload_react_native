@@ -1,9 +1,9 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
 export interface CameraSetting {
-  cameraId: string;
-  format: number;
-  flash: boolean;
+  cameraId?: string;
+  format?: number;
+  flash?: boolean;
 }
 
 const initialState: {

@@ -11,6 +11,7 @@ import {
   uploadImage,
 } from '../../util/uploadImage';
 import {readFileAsBytes} from '../../util/getBufferFile';
+import {fetchUser} from '../../api/user.api';
 
 interface DataLogin {
   email: string;
@@ -115,9 +116,13 @@ export const getAccountInfo = createAsyncThunk(
           headers: {...loginHeader},
         },
       );
-      if (response.status < 400) {
-        return response.data;
-      }
+
+      const fullName = await fetchUser(response.data.users[0].localId, idToken);
+      // thêm firsName và lastName vào response.data.users[0]
+      const user = response.data.users[0];
+      user.firstName = fullName.data.result.data.first_name;
+      user.lastName = fullName.data.result.data.last_name;
+      return user;
     } catch (error) {
       thunkApi.rejectWithValue(error);
     }
@@ -183,16 +188,14 @@ export const updateDisplayName = createAsyncThunk(
         },
       });
 
-      if (response.status < 400) {
-        thunkApi.dispatch(
-          setMessage({
-            message: 'Display Name updated successfully',
-            type: 'Success',
-          }),
-        );
-        thunkApi.dispatch(getAccountInfo({idToken, refreshToken}));
-        return response.data;
-      }
+      thunkApi.dispatch(
+        setMessage({
+          message: 'Display Name updated successfully',
+          type: 'Success',
+        }),
+      );
+      thunkApi.dispatch(getAccountInfo({idToken, refreshToken}));
+      return response.data;
     } catch (error: any) {
       thunkApi.dispatch(
         setMessage({

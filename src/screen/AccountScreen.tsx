@@ -3,7 +3,7 @@
 import {Colors, Icon, Text, TouchableOpacity, View} from 'react-native-ui-lib';
 import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {Dimensions, Linking, RefreshControl, ScrollView} from 'react-native';
+import {Linking, RefreshControl, ScrollView} from 'react-native';
 import codePush from 'react-native-code-push';
 import {checkUpdateApk} from '../util/update';
 
@@ -13,8 +13,6 @@ import {
   updateDisplayName,
 } from '../redux/action/user.action';
 import EditTextDialog from '../Dialog/EditTextDialog';
-import {splitName} from '../util/splitName';
-import {clearStatus} from '../redux/slice/user.slice';
 import Header from '../components/Header';
 import UpdatePopup from '../Dialog/UpdatePopup';
 import {CODEPUSH_DEPLOYMENTKEY, getStatusFromCodePush} from '../util/codepush';
@@ -24,49 +22,24 @@ import UserInfo from '../components/UserInfo';
 import {useRoute} from '@react-navigation/native';
 import {navigationTo} from './HomeScreen';
 import {nav} from '../navigation/navName';
+import {AppDispatch, RootState} from '../redux/store';
 
 const AccountScreen = () => {
-  const dispatch = useDispatch();
-  const params = useRoute().params;
+  const dispatch = useDispatch<AppDispatch>();
+  const params = useRoute<any>().params;
   const local_update = params?.local_update;
 
   const {userInfo, isLoading, user, updateAvatarLoading} = useSelector(
-    state => state.user,
+    (state: RootState) => state.user,
   );
-  const [dataUser, setdataUser] = useState(userInfo?.users[0]);
-
-  const [localFirstName, setlocalFirstName] = useState('');
-  const [localLastName, setlocalLastName] = useState('');
-  const [name, setName] = useState([]);
-
-  useEffect(() => {
-    if (userInfo?.users?.length > 0) {
-      setdataUser(userInfo?.users[0]);
-      setName(userInfo?.users[0]?.displayName?.split(' '));
-    }
-  }, [userInfo]);
-
-  useEffect(() => {
-    if (name.length === 0) {
-      return;
-    } else {
-      // console.log(name.length / 2);
-      dispatch(clearStatus());
-    }
-
-    const {first_name, last_name} = splitName(name);
-
-    setlocalFirstName(first_name);
-    setlocalLastName(last_name);
-  }, [name]);
 
   const [isEditName, setisEditName] = useState(false);
 
   const handleRefresh = () => {
     dispatch(
       getAccountInfo({
-        idToken: user?.idToken,
-        refreshToken: user?.refreshToken,
+        idToken: user?.idToken || '',
+        refreshToken: user?.refreshToken || '',
       }),
     );
   };
@@ -79,13 +52,13 @@ const AccountScreen = () => {
     setisEditName(false);
   };
 
-  const handleConfirmEditName = (firstName, lastName) => {
+  const handleConfirmEditName = (firstName: string, lastName: string) => {
     dispatch(
       updateDisplayName({
         first_name: firstName,
         last_name: lastName,
-        idToken: user?.idToken,
-        refreshToken: user?.refreshToken,
+        idToken: user?.idToken || '',
+        refreshToken: user?.refreshToken || '',
       }),
     );
   };
@@ -114,8 +87,8 @@ const AccountScreen = () => {
     }
   }, [local_update]);
 
-  const [updateInfo, setUpdateInfo] = useState(null);
-  const [updateAPKInfo, setupdateAPKInfo] = useState(null);
+  const [updateInfo, setUpdateInfo] = useState<any>(null);
+  const [updateAPKInfo, setupdateAPKInfo] = useState<any>(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [decriptionUpdate, setDecriptionUpdate] = useState('');
@@ -161,7 +134,7 @@ const AccountScreen = () => {
     setUpdateInfo('DOWNLOADING_PACKAGE');
     codePush.sync(
       {
-        updateDialog: false,
+        updateDialog: undefined,
         installMode: codePush.InstallMode.IMMEDIATE,
         deploymentKey: CODEPUSH_DEPLOYMENTKEY(),
       },
@@ -221,7 +194,7 @@ const AccountScreen = () => {
         }}>
         <View flex-1 bg-black centerV gap-24>
           <UserInfo
-            dataUser={dataUser}
+            dataUser={userInfo}
             handleEditName={handleEditName}
             handleUpdateAvatar={handleUpdateAvatar}
             updateAvatarLoading={updateAvatarLoading}
@@ -253,8 +226,8 @@ const AccountScreen = () => {
           isEditName={true}
           placeholder={'First Name'}
           placeholder2={'Last Name'}
-          value={localFirstName}
-          value2={localLastName}
+          value={userInfo?.firstName || ''}
+          value2={userInfo?.lastName || ''}
           isLoading={isLoading}
         />
         <UpdatePopup

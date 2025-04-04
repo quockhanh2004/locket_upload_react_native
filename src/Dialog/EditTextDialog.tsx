@@ -12,7 +12,7 @@ interface EditTextDialogProps {
   onDismiss: () => void;
   label: string;
   isLoading: boolean;
-  onConfirm: (text: string, text2?: string) => void;
+  onConfirm: (text: string, text2: string) => void;
   isEditName?: boolean;
   placeholder?: string;
   placeholder2?: string;
@@ -81,7 +81,7 @@ const EditTextDialog = ({
         <MainButton
           label={'Update'}
           onPress={() => {
-            onConfirm(text, isEditName ? text2 : undefined);
+            onConfirm(text, text2);
           }}
           isLoading={isLoading}
         />

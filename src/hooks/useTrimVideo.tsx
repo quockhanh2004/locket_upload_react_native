@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
 import {NativeEventEmitter, NativeModules} from 'react-native';
 import {clearAppCache} from '../util/uploadImage';
+import {clearNavigation} from '../screen/HomeScreen';
 
 const useTrimVideo = () => {
   const [videoOut, setVideoOut] = useState<string | null>(null);
@@ -34,14 +35,20 @@ const useTrimVideo = () => {
         }
         case 'onCancelTrimming': {
           console.log('onCancelTrimming', event);
+          clearNavigation();
+          clearAppCache();
           break;
         }
         case 'onCancel': {
           console.log('onCancel', event);
+          clearNavigation();
+          clearAppCache();
           break;
         }
         case 'onError': {
           console.log('onError', event);
+          clearNavigation();
+          clearAppCache();
           break;
         }
         case 'onLog': {

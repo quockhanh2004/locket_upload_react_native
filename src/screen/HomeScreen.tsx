@@ -118,18 +118,22 @@ const HomeScreen = () => {
         case nav.crop:
           if (route.params?.uri) {
             setselectedMedia({uri: route.params.uri});
-            navigation.setParams({uri: undefined});
+            navigation.setParams(undefined);
           }
           break;
         case nav.camera:
+          console.log(route.params);
+
           if (route.params?.camera) {
             compressMedia(route.params.camera);
-            navigation.setParams({uri: undefined});
+            navigation.setParams(undefined);
           }
           break;
 
         default:
-          navigation.setParams({uri: undefined});
+          console.log('here');
+
+          navigation.setParams(undefined);
           break;
       }
     });
@@ -260,6 +264,13 @@ const HomeScreen = () => {
   const uriVideo = useTrimVideo();
 
   useEffect(() => {
+    if (uriVideo === 'cancel') {
+      console.log('cancel');
+
+      setselectedMedia(null);
+      navigation.setParams(undefined);
+      return;
+    }
     if (uriVideo) {
       setselectedMedia({uri: uriVideo, type: 'video'});
     }
@@ -269,7 +280,7 @@ const HomeScreen = () => {
     <View flex bg-black padding-12>
       <View row spread centerV>
         <Avatar
-          source={{uri: userInfo?.users[0]?.photoUrl}}
+          source={{uri: userInfo?.photoUrl}}
           size={36}
           onPress={handleViewProfile}
         />
@@ -365,6 +376,10 @@ const HomeScreen = () => {
 
 export const navigationTo = (to: string, data?: any) => {
   navigation.navigate(to, data);
+};
+
+export const clearNavigation = () => {
+  navigation.setParams(undefined);
 };
 
 export default HomeScreen;

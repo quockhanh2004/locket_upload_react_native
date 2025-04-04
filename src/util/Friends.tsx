@@ -1,6 +1,7 @@
 /* eslint-disable no-async-promise-executor */
 import axios from 'axios';
 import {Friend} from '../redux/slice/friends.slice';
+import {fetchUser} from '../api/user.api';
 
 export const getListIdFriend = async (token: string, userId: string) => {
   const response = await axios.post(
@@ -20,20 +21,7 @@ export const getListFriend = (
   const friendPromises = listIdFriend.map(friendId => {
     return new Promise<Friend>(async (resolve, reject) => {
       try {
-        const response = await axios.post(
-          'https://api.locketcamera.com/fetchUserV2',
-          {
-            data: {
-              user_uid: friendId,
-            },
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        );
+        const response = await fetchUser(friendId, token);
 
         const data = response.data.result.data as Friend;
 

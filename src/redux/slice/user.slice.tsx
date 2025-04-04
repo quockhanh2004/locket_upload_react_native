@@ -21,6 +21,8 @@ export interface User {
   expiresIn?: string;
   timeExpires?: any;
 
+  firstName?: string;
+  lastName?: string;
   photoUrl?: string;
   passwordHash?: string;
   emailVerified?: boolean;
@@ -45,14 +47,9 @@ export interface ProviderUserInfo {
   email?: string;
 }
 
-export interface UserInfo {
-  kind: string;
-  users: User[];
-}
-
 interface TypeUserSlice {
   user: User | null | undefined;
-  userInfo: UserInfo | null | undefined;
+  userInfo: User | null | undefined;
   isLoading: boolean;
   resetPasswordLoading: boolean;
   updateAvatarLoading: boolean;
@@ -109,10 +106,10 @@ const userSlice = createSlice({
       })
       .addCase(
         getAccountInfo.fulfilled,
-        (state, action: PayloadAction<UserInfo>) => {
+        (state, action: PayloadAction<User>) => {
           state.isLoading = false;
           if (state.user) {
-            state.user.photoUrl = action.payload.users[0].photoUrl || '';
+            state.user.photoUrl = action.payload.photoUrl;
           }
 
           state.userInfo = action.payload;

@@ -25,31 +25,31 @@ import {nav} from '../navigation/navName';
 import Header from '../components/Header';
 import {setMessage} from '../redux/slice/message.slice';
 import Video from 'react-native-video';
+import {RootState} from '../redux/store';
 
 function CameraScreen() {
   const dispatch = useDispatch();
-  const camera = useRef(null);
+  const camera = useRef<any>(null);
   const devices = useCameraDevices();
 
-  const {cameraSettings} = useSelector(state => state.setting);
+  const {cameraSettings} = useSelector((state: RootState) => state.setting);
 
   const device =
     devices.find(cam => cam.position === cameraSettings?.cameraId) ||
     devices[0];
-  console.log(device);
 
   const format = useCameraFormat(device, [
     {videoResolution: {width: 1920, height: 1080}},
     {photoAspectRatio: 4 / 3},
   ]);
 
-  const timeoutRef = useRef(null);
-  const timeIntervalRef = useRef(null);
+  const timeoutRef = useRef<any>(null);
+  const timeIntervalRef = useRef<any>(null);
 
-  const [photo, setPhoto] = useState(null);
+  const [photo, setPhoto] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [timeRecording, setTimeRecording] = useState(0);
-  const [type, setType] = useState(null);
+  const [type, setType] = useState<string | null>(null);
 
   const handleSwitchCamera = () => {
     startRotation();
@@ -74,9 +74,9 @@ function CameraScreen() {
         .takePhoto({
           flash: cameraSettings.flash ? 'on' : 'off',
         })
-        .then(data => {
+        .then((data: {path: string}) => {
           console.log(data);
-          setPhoto('file://' + data.path);
+          setPhoto('file://' + data?.path);
           setType('image');
         });
     }
@@ -89,12 +89,12 @@ function CameraScreen() {
         videoCodec: 'h264',
         fileType: 'mp4',
         flash: cameraSettings.flash ? 'on' : 'off',
-        onRecordingFinished: video => {
+        onRecordingFinished: (video: {path: string}) => {
           console.log('Recording finished', video);
           setPhoto('file://' + video.path);
           setType('video');
         },
-        onRecordingError: error => {
+        onRecordingError: (error: any) => {
           dispatch(
             setMessage({
               message: JSON.stringify(error),
@@ -137,11 +137,11 @@ function CameraScreen() {
         console.log('Saved to camera roll:', newUri);
         dispatch(
           setMessage({
-            message: `${type.toUpperCase()} saved to camera roll`,
+            message: `${type?.toUpperCase()} saved to camera roll`,
             type: 'success',
           }),
         );
-      } catch (error) {
+      } catch (error: any) {
         console.error('error saving camera roll', error);
         dispatch(
           setMessage({
@@ -192,7 +192,7 @@ function CameraScreen() {
   //xử lý sự kiện back
   useEffect(() => {
     const backAction = () => {
-      handleClearMedia();
+      return handleClearMedia() || false;
     };
 
     BackHandler.addEventListener('hardwareBackPress', backAction);
@@ -214,25 +214,33 @@ function CameraScreen() {
             type === 'image' ? (
               <Image
                 source={{uri: photo}}
-                style={{aspectRatio: format?.photoHeight / format?.photoWidth}}
+                style={{
+                  aspectRatio:
+                    (format?.photoHeight || 4) / (format?.photoWidth || 3),
+                }}
               />
             ) : (
               <Video
                 source={{uri: photo}}
-                style={{aspectRatio: format?.photoHeight / format?.photoWidth}}
+                style={{
+                  aspectRatio:
+                    (format?.photoHeight || 16) / (format?.photoWidth || 9),
+                }}
                 resizeMode="cover"
               />
             )
           ) : (
             <Camera
               ref={camera}
-              style={{aspectRatio: format?.photoHeight / format?.photoWidth}}
+              style={{
+                aspectRatio:
+                  (format?.photoHeight || 4) / (format?.photoWidth || 3),
+              }}
               preview={true}
               isActive={true}
               photo={true}
               video={true}
               resizeMode="cover"
-              captureAudio={true}
               device={device}
               format={format}
             />
@@ -268,11 +276,18 @@ function CameraScreen() {
               <View row center>
                 <TouchableOpacity onPress={handleTakePicture}>
                   <View
-                    borderRadius={99}
-                    borderWidth={2}
-                    padding-5
-                    borderColor={Colors.grey40}>
-                    <View width={50} height={50} borderRadius={50} bg-grey40 />
+                    style={{
+                      borderRadius: 99,
+                      borderWidth: 2,
+                      borderColor: Colors.grey40,
+                    }}
+                    padding-5>
+                    <View
+                      width={50}
+                      height={50}
+                      style={{borderRadius: 50}}
+                      bg-grey40
+                    />
                   </View>
                 </TouchableOpacity>
 
@@ -282,10 +297,10 @@ function CameraScreen() {
                     borderBottomRightRadius: 99,
                     marginLeft: -9,
                     borderLeftWidth: 0,
+                    borderWidth: 2,
+                    borderColor: Colors.grey40,
                   }}
-                  borderWidth={2}
-                  padding-5
-                  borderColor={Colors.grey40}>
+                  padding-5>
                   <TouchableOpacity
                     onPress={!isRecording ? handleRecordVideo : stopRecording}>
                     {!isRecording ? (
@@ -293,7 +308,9 @@ function CameraScreen() {
                         marginL-8
                         width={30}
                         height={30}
-                        borderRadius={50}
+                        style={{
+                          borderRadius: 50,
+                        }}
                         bg-red40
                       />
                     ) : (
@@ -301,7 +318,9 @@ function CameraScreen() {
                         marginL-8
                         width={30}
                         height={30}
-                        borderRadius={50}
+                        style={{
+                          borderRadius: 50,
+                        }}
                         center
                         bg-grey40>
                         <View width={10} height={10} backgroundColor="black" />
@@ -345,16 +364,20 @@ function CameraScreen() {
               </TouchableOpacity>
               <TouchableOpacity onPress={handleReturnMedia}>
                 <View
-                  borderRadius={99}
-                  borderWidth={2}
+                  style={{
+                    borderRadius: 99,
+                    borderWidth: 2,
+                    borderColor: Colors.grey40,
+                  }}
                   padding-10
-                  bg-black
-                  borderColor={Colors.grey40}>
+                  bg-black>
                   <View
                     bg-grey40
                     width={50}
                     height={50}
-                    borderRadius={50}
+                    style={{
+                      borderRadius: 50,
+                    }}
                     center>
                     <Icon
                       assetGroup="icons"

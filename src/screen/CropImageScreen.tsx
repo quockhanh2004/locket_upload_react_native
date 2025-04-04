@@ -12,16 +12,16 @@ import {BackHandler} from 'react-native';
 import {navigationTo} from './HomeScreen';
 
 const CropImageScreen = () => {
-  const cropViewRef = useRef();
-  const route = useRoute();
-  const {imageUri} = route.params;
+  const cropViewRef = useRef<any>();
+  const route = useRoute<any>();
+  const imageUri = route.params?.imageUri;
 
   // Hàm xử lý khi cắt ảnh xong
   const handleCrop = async () => {
     cropViewRef.current.saveImage(true, 100); // Cắt ảnh, chất lượng 100%
   };
 
-  const onCrop = async res => {
+  const onCrop = async (res: {uri: string}) => {
     const croppedImageUri = `file://${res.uri}`;
 
     //giảm kích thước ảnh lại trước khi upload lên

@@ -65,3 +65,20 @@ export const getAccessToken = async data => {
     return null;
   }
 };
+
+export const fetchUser = async (user_uid, token) => {
+  return await axios.post(
+    'https://api.locketcamera.com/fetchUserV2',
+    {
+      data: {
+        user_uid,
+      },
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+};
