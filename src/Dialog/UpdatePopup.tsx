@@ -110,7 +110,6 @@ const UpdatePopup = ({
             label="Cập nhật apk"
             onPress={onUpdateApk}
             isLoading={false}
-            // style={{marginBottom: 12}}
           />
         ),
       },
