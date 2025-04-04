@@ -129,11 +129,9 @@ const HomeScreen = () => {
           break;
 
         default:
-          console.log('route.params', route.params);
           navigation.setParams({uri: undefined});
           break;
       }
-      console.log('focus');
     });
 
     return unsubscribe; // Hủy đăng ký listener khi component unmount
@@ -320,7 +318,13 @@ const HomeScreen = () => {
           </View>
 
           <Button
-            label={!isLoading ? 'Send!' : ''}
+            label={
+              !isLoading
+                ? `Send! (to ${
+                    selected.length > 0 ? selected.length : 'all'
+                  } friends)`
+                : ''
+            }
             backgroundColor={Colors.primary}
             black
             onPress={handlePost}
