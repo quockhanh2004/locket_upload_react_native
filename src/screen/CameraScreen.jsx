@@ -29,12 +29,14 @@ import Video from 'react-native-video';
 function CameraScreen() {
   const dispatch = useDispatch();
   const camera = useRef(null);
-  const devices = useCameraDevices('wide-angle-camera');
+  const devices = useCameraDevices();
 
   const {cameraSettings} = useSelector(state => state.setting);
 
   const device =
-    devices.find(cam => cam.id === cameraSettings?.cameraId) || devices[0];
+    devices.find(cam => cam.position === cameraSettings?.cameraId) ||
+    devices[0];
+  console.log(device);
 
   const format = useCameraFormat(device, [
     {videoResolution: {width: 1920, height: 1080}},
@@ -53,7 +55,7 @@ function CameraScreen() {
     startRotation();
     dispatch(
       setCameraSettings({
-        cameraId: cameraSettings.cameraId === '0' ? '1' : '0',
+        cameraId: cameraSettings.cameraId === 'front' ? 'back' : 'front',
       }),
     );
   };
@@ -202,30 +204,29 @@ function CameraScreen() {
   return (
     <>
       <Header />
-      <View flex bg-black paddingT-50 spread>
+      <View flex bg-black spread>
         <View
           style={{
             borderRadius: 20,
             overflow: 'hidden',
           }}>
-          {console.log(photo)}
           {photo ? (
             type === 'image' ? (
               <Image
                 source={{uri: photo}}
-                style={{aspectRatio: format.photoHeight / format.photoWidth}}
+                style={{aspectRatio: format?.photoHeight / format?.photoWidth}}
               />
             ) : (
               <Video
                 source={{uri: photo}}
-                style={{aspectRatio: format.photoHeight / format.photoWidth}}
+                style={{aspectRatio: format?.photoHeight / format?.photoWidth}}
                 resizeMode="cover"
               />
             )
           ) : (
             <Camera
               ref={camera}
-              style={{aspectRatio: format.photoHeight / format.photoWidth}}
+              style={{aspectRatio: format?.photoHeight / format?.photoWidth}}
               preview={true}
               isActive={true}
               photo={true}
@@ -234,16 +235,10 @@ function CameraScreen() {
               captureAudio={true}
               device={device}
               format={format}
-              androidCameraPermissionOptions={{
-                title: 'Permission to use camera',
-                message: 'We need your permission to use your camera',
-                buttonPositive: 'Okay',
-                buttonNegative: 'Cancel',
-              }}
             />
           )}
         </View>
-        <View width={'100%'} marginB-40>
+        <View width={'100%'} absB>
           {isRecording && (
             <View center width={'100%'}>
               <Text white text50BL>
