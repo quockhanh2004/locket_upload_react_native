@@ -81,6 +81,13 @@ const userSlice = createSlice({
         state.user.refreshToken = action.payload.refresh_token;
       }
     },
+
+    setUser: (state, action) => {
+      const data = JSON.parse(action.payload);
+
+      state.user = data.user;
+      state.userInfo = data.userInfo;
+    },
   },
 
   extraReducers: builder => {
@@ -109,7 +116,7 @@ const userSlice = createSlice({
         (state, action: PayloadAction<User>) => {
           state.isLoading = false;
           if (state.user) {
-            state.user.photoUrl = action.payload.photoUrl;
+            state.user.photoUrl = action.payload?.photoUrl;
           }
 
           state.userInfo = action.payload;
@@ -183,6 +190,6 @@ const userSlice = createSlice({
   },
 });
 
-export const {logout, clearStatus, setToken} = userSlice.actions;
+export const {logout, clearStatus, setToken, setUser} = userSlice.actions;
 
 export default userSlice.reducer;

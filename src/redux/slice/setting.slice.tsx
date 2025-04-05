@@ -38,10 +38,22 @@ const settingSlice = createSlice({
     setCurrentVersion(state, action: PayloadAction<string>) {
       state.appVersion = action.payload;
     },
+
+    setSetting(state, action) {
+      const data = JSON.parse(action.payload);
+
+      state.useCamera = data.useCamera;
+      state.cameraSettings = data.cameraSettings;
+      state.appVersion = data.appVersion;
+    },
   },
 });
 
-export const {setUseCameraSetting, setCameraSettings, setCurrentVersion} =
-  settingSlice.actions;
+export const {
+  setUseCameraSetting,
+  setCameraSettings,
+  setCurrentVersion,
+  setSetting,
+} = settingSlice.actions;
 
 export default settingSlice.reducer;

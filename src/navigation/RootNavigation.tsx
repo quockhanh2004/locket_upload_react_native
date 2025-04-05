@@ -1,20 +1,27 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect} from 'react';
 
 import {nav} from './navName';
 import LoginScreen from '../screen/LoginScreen';
 import HomeScreen from '../screen/HomeScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import AccountScreen from '../screen/AccountScreen';
 import CropImageScreen from '../screen/CropImageScreen';
 import SettingScreen from '../screen/SettingScreen';
 import CameraScreen from '../screen/CameraScreen';
-import {RootState} from '../redux/store';
+import {AppDispatch, RootState} from '../redux/store';
+import {restoreOldData} from '../util/migrateOldPersist';
 
 const Stack = createNativeStackNavigator();
 
 const AuthNavigator = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    restoreOldData(dispatch);
+  }, []);
   return (
     <Stack.Navigator
       initialRouteName={nav.login}
@@ -37,14 +44,12 @@ const HomeNavigator = () => {
 };
 
 const RootNavigation = () => {
-  const isLoggedIn = useSelector(
-    (state: RootState) => state.user?.user?.localId,
-  );
+  const isLoggedIn = useSelector((state: RootState) => state.user);
 
   return (
     <>
       <NavigationContainer>
-        {isLoggedIn ? <HomeNavigator /> : <AuthNavigator />}
+        {isLoggedIn.user ? <HomeNavigator /> : <AuthNavigator />}
       </NavigationContainer>
     </>
   );

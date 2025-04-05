@@ -33,6 +33,12 @@ const friendsSlice = createSlice({
     setSelectedFriend(state, action: PayloadAction<string[]>) {
       state.selected = action.payload;
     },
+    restoreFriends(state, action) {
+      const data = JSON.parse(action.payload);
+
+      state.friends = data.friends;
+      state.selected = data.selected;
+    },
   },
 
   extraReducers: builder => {
@@ -50,7 +56,7 @@ const friendsSlice = createSlice({
   },
 });
 
-export const {setFriends, setIsLoadFriend, setSelectedFriend} =
+export const {setFriends, setIsLoadFriend, setSelectedFriend, restoreFriends} =
   friendsSlice.actions;
 
 export default friendsSlice.reducer;

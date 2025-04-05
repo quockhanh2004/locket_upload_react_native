@@ -11,33 +11,44 @@ import friendsReducer from './slice/friends.slice';
 
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
-
-const rootReducer = combineReducers({
-  user: userReducer,
-  message: messageReducer,
-  postMoment: postMomentReducer,
-  setting: settingReducer,
-  friends: friendsReducer,
-});
-
-let persistConfig: PersistConfig<RootState>;
-persistConfig = {
-  key: 'root',
+// Persist config cho từng slice
+const userPersistConfig: PersistConfig<ReturnType<typeof userReducer>> = {
+  key: 'user',
   storage: AsyncStorage,
-  whitelist: ['user', 'setting', 'friends'],
   stateReconciler: autoMergeLevel2,
 };
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const settingPersistConfig: PersistConfig<ReturnType<typeof settingReducer>> = {
+  key: 'setting',
+  storage: AsyncStorage,
+  stateReconciler: autoMergeLevel2,
+};
 
+const friendsPersistConfig: PersistConfig<ReturnType<typeof friendsReducer>> = {
+  key: 'friends',
+  storage: AsyncStorage,
+  stateReconciler: autoMergeLevel2,
+};
+
+// Kết hợp reducer với từng persistReducer
+const rootReducer = combineReducers({
+  user: persistReducer(userPersistConfig, userReducer),
+  setting: persistReducer(settingPersistConfig, settingReducer),
+  friends: persistReducer(friendsPersistConfig, friendsReducer),
+  message: messageReducer,
+  postMoment: postMomentReducer,
+});
+
+// Tạo store
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootReducer,
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }).concat(),
+    }),
 });
 
+// Tạo persistor
 export const persistor = persistStore(store);
 
 export default {store, persistor};

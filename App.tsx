@@ -15,10 +15,8 @@ import {NotificationService} from './src/services/Notification';
 import {CODEPUSH_DEPLOYMENTKEY} from './src/util/codepush';
 
 const App = () => {
-  // useEffect(() => {
   AssetsInit();
   ColorsInit();
-  // }, []);
 
   return (
     <Provider store={store}>
