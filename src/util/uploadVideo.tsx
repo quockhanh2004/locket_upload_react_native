@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {getVideoMetaData, Video} from 'react-native-compressor';
-import {createThumbnail, Thumbnail} from 'react-native-create-thumbnail';
+import {
+  createVideoThumbnail,
+  getVideoMetaData,
+  Video,
+} from 'react-native-compressor';
 import RNFS from 'react-native-fs';
 import axios from 'axios';
 
 import {uploadHeaders} from './header';
-import {readFileAsBytes} from './getBufferFile';
+import {FFmpegKit} from 'ffmpeg-kit-react-native';
 
 export const compressVideo = async (
   videoUri: string,
@@ -17,21 +20,52 @@ export const compressVideo = async (
   size: number;
   duration: number;
   uri: any;
+  thumbnail: string;
   type: any;
 }> => {
   console.log('debug here', videoUri);
-  // const uriNewVideo = videoUri;
+
+  // Nén video ban đầu (đầu vào)
   const uriNewVideo = await Video.compress(
     videoUri,
     {
-      maxSize: 1020,
-      compressionMethod: 'auto',
-      getCancellationId: cancelid,
+      maxSize: 1020, // Giới hạn kích thước tối đa cho video nén
+      compressionMethod: 'auto', // Phương thức nén tự động
+      getCancellationId: cancelid, // Truyền callback hủy bỏ (nếu có)
     },
-    progress,
+    progress, // Tiến độ nén
   );
 
-  return await getInfoVideo(uriNewVideo, 'video/mp4');
+  console.log('Video after compression: ', uriNewVideo);
+
+  //tạo tên output ngẫu nhiên
+  const randomNumber = Math.floor(Math.random() * 1000000);
+  const ffmpegCommand = `-i ${uriNewVideo} -c:v hevc /data/user/0/com.locket_upload/files/${randomNumber}.mp4`;
+
+  // Thực thi lệnh FFmpeg và chờ kết quả
+  const session = await FFmpegKit.execute(ffmpegCommand);
+  const returnCode = await session.getReturnCode();
+
+  // Kiểm tra mã trả về sử dụng FFmpegKitReturnCode
+  if (returnCode.isValueSuccess()) {
+    console.log('Video conversion successful');
+  } else {
+    console.error('Error during video conversion:', returnCode);
+    throw new Error('Video conversion failed');
+  }
+
+  // Trả về thông tin video đã chuyển đổi
+  const videoInfo = await getInfoVideo(
+    `file:///data/user/0/com.locket_upload/files/${randomNumber}.mp4`,
+    'video/mp4',
+  );
+
+  const thumbnail = await getVideoThumbnail(videoUri);
+
+  return {
+    ...videoInfo,
+    thumbnail: thumbnail.path,
+  };
 };
 
 export const deleteAllMp4Files = async (directoryPath: string) => {
@@ -159,13 +193,8 @@ export const getDownloadVideoUrl = async (
   return `${getUrl}?alt=media&token=${downloadToken}`;
 };
 
-export const getVideoThumbnail = async (
-  videoUri: string,
-): Promise<Thumbnail> => {
-  const response = await createThumbnail({
-    url: videoUri,
-    timeStamp: 1000, // Lấy thumbnail tại giây thứ 1 (1000ms)
-  });
+export const getVideoThumbnail = async (videoUri: string): Promise<any> => {
+  const response = await createVideoThumbnail(videoUri);
 
   return response; // Trả về đường dẫn ảnh thumbnail
 };
@@ -236,7 +265,6 @@ export const cretateBody = (
         },
         platform: 'ios',
       },
-      sent_to_all: true,
       caption: caption,
       overlays: [
         {
