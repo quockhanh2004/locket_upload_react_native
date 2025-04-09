@@ -17,6 +17,12 @@
 
 [![GitHub Releases](https://img.shields.io/github/downloads/quockhanh2004/locket_upload_react_native/total?label=Downloads&style=flat&logo=android)](https://github.com/quockhanh2004/locket_upload_react_native/releases)
 
+<p align="left">
+  <a href="https://buymeacoffee.com/quockhanh2004" target="_blank">
+    <img src="./images/buymeacoffe.png" alt="Image">
+  </a>
+</p>
+
 ## 📷 Hình ảnh minh họa
 <details>
   <summary>📷 Xem hình ảnh minh họa (nhấn để mở)</summary>
