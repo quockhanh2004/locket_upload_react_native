@@ -77,7 +77,8 @@ export const compressVideo = async (
         }
 
         //trong log sẽ có dòng "Duration: "
-        if (message.trim() === 'Duration:') {
+        const durationLineMatch = message.match(/Duration:/);
+        if (durationLineMatch) {
           pendingDurationNextLine = true;
           return;
         }

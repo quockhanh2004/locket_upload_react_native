@@ -205,7 +205,7 @@ export const uploadVideoToFirebase = createAsyncThunk(
               type: 'Error',
             }),
           );
-          thunkApi.rejectWithValue(err);
+          return thunkApi.rejectWithValue(err);
         },
       );
 
