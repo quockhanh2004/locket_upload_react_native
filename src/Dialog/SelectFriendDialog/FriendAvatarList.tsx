@@ -34,17 +34,16 @@ const FriendAvatarList: React.FC<Props> = ({
             center
             width={50}
             height={50}
-            style={[
-              (selected.length === 0 ||
-                selected.length === friends.length ||
-                customListFriends.length === 0 ||
-                customListFriends.length === friends.length) && {
+            style={
+              ((optionSend === 'manual' && selected.length === 0) ||
+                (optionSend === 'custom_list' &&
+                  customListFriends.length === 0)) && {
                 borderWidth: 2,
                 borderColor: Colors.primary,
                 borderRadius: 99,
                 padding: 2,
-              },
-            ]}>
+              }
+            }>
             <Icon
               assetGroup="icons"
               assetName="ic_group"
@@ -61,8 +60,9 @@ const FriendAvatarList: React.FC<Props> = ({
       renderItem={({item}) => {
         const isSelected =
           optionSend === 'custom_list'
-            ? customListFriends.includes(item.uid)
-            : selected.includes(item.uid);
+            ? customListFriends.includes(item.uid) ||
+              customListFriends.length === 0
+            : selected.includes(item.uid) || selected.length === 0;
         return (
           <FriendAvatarItem
             item={item}

@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 // components/SelectFriendDialog/index.tsx
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View, Colors, Typography, Dialog} from 'react-native-ui-lib';
 import CustomDialog from '../CustomDialog';
 import {useDispatch, useSelector} from 'react-redux';
@@ -29,6 +30,7 @@ const SelectFriendDialog: React.FC<SelectFriendDialogProps> = ({
   const {friends, isLoadFriends, selected, optionSend, customListFriends} =
     useSelector((state: RootState) => state.friends);
   const {user} = useSelector((state: RootState) => state.user);
+  const {optionFriend} = useSelector((state: RootState) => state.setting);
 
   const handleSelectTypeSend = (value: 'all' | 'custom_list' | 'manual') => {
     dispatch(setOptionSend(value));
@@ -76,6 +78,12 @@ const SelectFriendDialog: React.FC<SelectFriendDialogProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (!optionFriend) {
+      handleSelectTypeSend('manual');
+    }
+  }, [optionFriend]);
+
   return (
     <CustomDialog
       visible={visible}
@@ -102,11 +110,13 @@ const SelectFriendDialog: React.FC<SelectFriendDialogProps> = ({
         borderRadius: 10,
         paddingBottom: 24,
       }}>
-      <FriendOptionList
-        value={optionSend}
-        selected={selected}
-        onChange={handleSelectTypeSend}
-      />
+      {optionFriend && (
+        <FriendOptionList
+          value={optionSend}
+          selected={selected}
+          onChange={handleSelectTypeSend}
+        />
+      )}
       {optionSend !== 'all' && (
         <FriendAvatarList
           friends={friends}
