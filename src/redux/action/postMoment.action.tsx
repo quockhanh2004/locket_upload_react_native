@@ -170,57 +170,67 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
 export const uploadVideoToFirebase = createAsyncThunk(
   'upload-video',
   async (data: DataPostMoment, thunkApi) => {
-    const {idUser, idToken, videoInfo, caption} = data;
-    thunkApi.dispatch(
-      setMessage({
-        message: `${UPLOAD_VIDEO_PROGRESS_STAGE.PROCESSING}`,
-        type: 'info',
-        hideButton: true,
-        progress: 0,
-      }),
-    );
-
-    const newVideo = await compressVideo(
-      videoInfo,
-      id => {
-        console.log('cancel id', id);
-      },
-      progress => {
-        thunkApi.dispatch(
-          setMessage({
-            message: UPLOAD_VIDEO_PROGRESS_STAGE.PROCESSING,
-            type: 'info',
-            hideButton: true,
-            progress: progress * 100,
-          }),
-        );
-      },
-    );
-
-    const videoBlob = await readFileAsBytes(newVideo.uri);
-
-    if (!videoBlob) {
+    try {
+      const {idUser, idToken, videoInfo, caption} = data;
       thunkApi.dispatch(
         setMessage({
-          message: 'Error read video file',
-          type: 'Error',
+          message: `${UPLOAD_VIDEO_PROGRESS_STAGE.PROCESSING}`,
+          type: 'info',
+          hideButton: true,
+          progress: 0,
         }),
       );
-      throw new Error('Error read video file');
-    }
 
-    const nameVideo = `${Date.now()}_vtd182.mp4`;
+      const newVideo = await compressVideo(
+        videoInfo,
+        id => {
+          console.log('cancel id', id);
+        },
+        progress => {
+          thunkApi.dispatch(
+            setMessage({
+              message: UPLOAD_VIDEO_PROGRESS_STAGE.PROCESSING,
+              type: 'info',
+              hideButton: true,
+              progress: progress, //không cần * 100 nữa vì func đã tự tính toán
+            }),
+          );
+        },
+        err => {
+          console.log('error', err);
 
-    thunkApi.dispatch(
-      setMessage({
-        message: UPLOAD_VIDEO_PROGRESS_STAGE.INITIATING_UPLOAD,
-        type: 'info',
-        hideButton: true,
-        progress: 10,
-      }),
-    );
+          thunkApi.dispatch(
+            setMessage({
+              message: `Error: ${JSON.stringify(err)}`,
+              type: 'Error',
+            }),
+          );
+          return thunkApi.rejectWithValue(err);
+        },
+      );
 
-    try {
+      const videoBlob = await readFileAsBytes(newVideo.uri);
+
+      if (!videoBlob) {
+        thunkApi.dispatch(
+          setMessage({
+            message: 'Error read video file',
+            type: 'Error',
+          }),
+        );
+        throw new Error('Error read video file');
+      }
+
+      const nameVideo = `${Date.now()}_vtd182.mp4`;
+
+      thunkApi.dispatch(
+        setMessage({
+          message: UPLOAD_VIDEO_PROGRESS_STAGE.INITIATING_UPLOAD,
+          type: 'info',
+          hideButton: true,
+          progress: 10,
+        }),
+      );
       const uploadUrl = await initiateUploadVideo(
         idUser,
         idToken,
