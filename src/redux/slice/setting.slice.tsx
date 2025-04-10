@@ -10,6 +10,7 @@ const initialState: {
   useCamera: boolean;
   cameraSettings: CameraSetting;
   appVersion: string;
+  optionFriend: boolean;
 } = {
   useCamera: false,
   cameraSettings: {
@@ -18,6 +19,7 @@ const initialState: {
     flash: false,
   },
   appVersion: '',
+  optionFriend: false,
 };
 
 const settingSlice = createSlice({
@@ -39,9 +41,12 @@ const settingSlice = createSlice({
       state.appVersion = action.payload;
     },
 
+    setOptionFriend(state, action: PayloadAction<boolean>) {
+      state.optionFriend = action.payload;
+    },
+
     setSetting(state, action) {
       const data = JSON.parse(action.payload);
-
       state.useCamera = data.useCamera;
       state.cameraSettings = data.cameraSettings;
       state.appVersion = data.appVersion;
@@ -53,6 +58,7 @@ export const {
   setUseCameraSetting,
   setCameraSettings,
   setCurrentVersion,
+  setOptionFriend,
   setSetting,
 } = settingSlice.actions;
 

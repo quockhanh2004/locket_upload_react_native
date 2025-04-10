@@ -6,10 +6,6 @@ import {
   TouchableOpacity,
   Icon,
   Colors,
-  Typography,
-  Button,
-  LoaderScreen,
-  Text,
 } from 'react-native-ui-lib';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
@@ -19,36 +15,33 @@ import {
   NavigationProp,
   RouteProp,
 } from '@react-navigation/native';
-import {RootState} from '../redux/store';
-import {AppDispatch} from '../redux/store';
 
-import {logout} from '../redux/slice/user.slice';
-import {selectMedia} from '../util/selectImage';
-import InputView from '../components/InputView';
-import {getAccountInfo, getToken} from '../redux/action/user.action';
-import {nav} from '../navigation/navName';
-import {
-  uploadImageToFirebaseStorage,
-  uploadVideoToFirebase,
-} from '../redux/action/postMoment.action';
-import {setMessage} from '../redux/slice/message.slice';
-import {clearPostMoment} from '../redux/slice/postMoment.slice';
-import {clearAppCache} from '../util/uploadImage';
 import {
   getInitialNotification,
   getMessaging,
 } from '@react-native-firebase/messaging';
 import {getApp} from '@react-native-firebase/app';
-import {handleNotificationClick} from '../services/Notification';
 import {showEditor} from 'react-native-video-trim';
-import useTrimVideo from '../hooks/useTrimVideo';
-import {deleteAllMp4Files} from '../util/uploadVideo';
-import SelectMediaDialog from '../Dialog/SelectMediaDialog';
-import ViewMedia from '../components/ViewMedia';
 import {Asset} from 'react-native-image-picker';
-import SelectFriendDialog from '../Dialog/SelectFriendDialog';
-import MainButton from '../components/MainButton';
 import {ScrollView} from 'react-native';
+import PostForm from './PostForm';
+import {AppDispatch, RootState} from '../../redux/store';
+import {logout} from '../../redux/slice/user.slice';
+import {nav} from '../../navigation/navName';
+import {selectMedia} from '../../util/selectImage';
+import {clearAppCache} from '../../util/uploadImage';
+import {handleNotificationClick} from '../../services/Notification';
+import {getAccountInfo, getToken} from '../../redux/action/user.action';
+import {setMessage} from '../../redux/slice/message.slice';
+import {clearPostMoment} from '../../redux/slice/postMoment.slice';
+import {deleteAllMp4Files} from '../../util/uploadVideo';
+import useTrimVideo from '../../hooks/useTrimVideo';
+import SelectFriendDialog from '../../Dialog/SelectFriendDialog';
+import SelectMediaDialog from '../../Dialog/SelectMediaDialog';
+import {
+  uploadImageToFirebaseStorage,
+  uploadVideoToFirebase,
+} from '../../redux/action/postMoment.action';
 
 let navigation: NavigationProp<any>;
 
@@ -75,7 +68,9 @@ const HomeScreen = () => {
     (state: RootState) => state.postMoment,
   );
   const {useCamera} = useSelector((state: RootState) => state.setting);
-  const {selected} = useSelector((state: RootState) => state.friends);
+  const {selected, optionSend, customListFriends} = useSelector(
+    (state: RootState) => state.friends,
+  );
 
   //use state
   const [selectedMedia, setselectedMedia] = useState<MediaType | null>(null);
@@ -179,7 +174,12 @@ const HomeScreen = () => {
           videoInfo: selectedMedia.uri,
           caption,
           refreshToken: user.refreshToken,
-          friend: selected,
+          friend:
+            optionSend === 'all'
+              ? []
+              : optionSend === 'custom_list'
+              ? customListFriends
+              : selected,
         }),
       );
     } else {
@@ -190,7 +190,12 @@ const HomeScreen = () => {
           imageInfo: selectedMedia,
           caption,
           refreshToken: user.refreshToken,
-          friend: selected,
+          friend:
+            optionSend === 'all'
+              ? []
+              : optionSend === 'custom_list'
+              ? customListFriends
+              : selected,
         }),
       );
     }
@@ -302,62 +307,25 @@ const HomeScreen = () => {
         </TouchableOpacity>
       </View>
       <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: 'center',
-        }}>
-        <View centerV flex gap-24>
-          <ViewMedia
-            selectedMedia={selectedMedia}
-            isVideo={isVideo}
-            onRemoveMedia={handleRemoveMedia}
-            onSelectMedia={handleSelectMedia}
-          />
-
-          <View flexS>
-            <InputView
-              placeholder={'Enter caption here...'}
-              placeholderTextColor={Colors.white}
-              bgColor={Colors.grey40}
-              borderColor={Colors.grey40}
-              borderWidth={1}
-              inputStyle={{color: Colors.white, ...Typography.text70BL}}
-              style={{paddingLeft: 10, borderRadius: 999}}
-              onChangeText={setCaption}
-              value={caption}
-            />
-          </View>
-
-          <Button
-            label={
-              !isLoading
-                ? `Send! (to ${
-                    selected.length > 0 ? selected.length : 'all'
-                  } friends)`
-                : ''
-            }
-            backgroundColor={Colors.primary}
-            black
-            onPress={handlePost}
-            borderRadius={8}
-            disabled={isLoading}
-            text70BL>
-            {isLoading && (
-              <View row center>
-                <Text />
-                <LoaderScreen color={Colors.white} size={'small'} />
-              </View>
-            )}
-          </Button>
-          <View center>
-            <MainButton
-              label="Select Friend"
-              onPress={() => {
-                setVisibleSelectFriend(true);
-              }}
-            />
-          </View>
-        </View>
+        contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}>
+        <PostForm
+          selectedMedia={selectedMedia}
+          isVideo={isVideo}
+          onRemoveMedia={handleRemoveMedia}
+          onSelectMedia={handleSelectMedia}
+          caption={caption}
+          setCaption={setCaption}
+          isLoading={isLoading}
+          onPost={handlePost}
+          onSelectFriend={() => setVisibleSelectFriend(true)}
+          selectedCount={
+            optionSend === 'all'
+              ? 0
+              : optionSend === 'custom_list'
+              ? customListFriends.length
+              : selected.length
+          }
+        />
       </ScrollView>
       <SelectFriendDialog
         visible={visibleSelectFriend}
