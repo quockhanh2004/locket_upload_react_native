@@ -1,7 +1,7 @@
 import axios, {AxiosProgressEvent} from 'axios';
 import {uploadHeaders} from './header';
 import RNFS from 'react-native-fs';
-import {Image} from 'react-native-compressor';
+import {FFmpegKit} from 'ffmpeg-kit-react-native';
 
 export const UPLOAD_PROGRESS_STAGE = {
   PROCESSING_IMAGE: 'Processing image', // Xử lý ảnh (resize, convert, v.v.)
@@ -99,23 +99,27 @@ export const getDownloadUrl = async (
   return `${getUrl}?alt=media&token=${downloadToken}`;
 };
 
-export const resizeImage = async (uri: string) => {
+export const resizeImage = async (
+  uri: string,
+): Promise<{uri: string} | null> => {
   if (!uri) {
     return null;
   }
 
-  const result = await Image.compress(uri, {
-    compressionMethod: 'manual',
-    maxWidth: 1020,
-    quality: 0.8,
-    output: 'jpg',
-  });
+  const inputPath = uri.replace('file://', '');
+  const outputPath = `${RNFS.CachesDirectoryPath}/resized_${Date.now()}.jpg`;
 
-  // return;
+  const ffmpegCommand = `-y -i "${inputPath}" -vf scale=w=1020:h=-2:force_original_aspect_ratio=decrease -q:v 5 "${outputPath}"`;
 
-  return {
-    uri: result,
-  };
+  const session = await FFmpegKit.execute(ffmpegCommand);
+  const returnCode = await session.getReturnCode();
+
+  if (!returnCode?.isValueSuccess()) {
+    console.error('❌ Resize image failed');
+    return null;
+  }
+
+  return {uri: `file://${outputPath}`};
 };
 
 export const clearAppCache = async () => {

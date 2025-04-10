@@ -1,19 +1,30 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  createVideoThumbnail,
-  getVideoMetaData,
-  Video,
-} from 'react-native-compressor';
 import RNFS from 'react-native-fs';
 import axios from 'axios';
+import MD5 from 'crypto-js/md5';
 
 import {uploadHeaders} from './header';
-import {FFmpegKit} from 'ffmpeg-kit-react-native';
+import {
+  FFmpegKit,
+  FFmpegKitConfig,
+  FFprobeKit,
+  MediaInformation,
+  StreamInformation,
+} from 'ffmpeg-kit-react-native';
+
+export type VideoInfo = {
+  extension: string;
+  size: number; // in bytes
+  duration: number; // in seconds
+  width: number;
+  height: number;
+};
 
 export const compressVideo = async (
   videoUri: string,
   cancelid?: (cancellationId: string) => void,
   progress?: (progress: number) => void,
+  onError?: (error: string) => void,
 ): Promise<{
   width: number;
   height: number;
@@ -23,49 +34,82 @@ export const compressVideo = async (
   thumbnail: string;
   type: any;
 }> => {
-  console.log('debug here', videoUri);
+  FFmpegKitConfig.enableLogs();
 
-  // Nén video ban đầu (đầu vào)
-  const uriNewVideo = await Video.compress(
-    videoUri,
-    {
-      maxSize: 1020, // Giới hạn kích thước tối đa cho video nén
-      compressionMethod: 'auto', // Phương thức nén tự động
-      getCancellationId: cancelid, // Truyền callback hủy bỏ (nếu có)
-    },
-    progress, // Tiến độ nén
-  );
-
-  console.log('Video after compression: ', uriNewVideo);
-
-  //tạo tên output ngẫu nhiên
   const randomNumber = Math.floor(Math.random() * 1000000);
-  const ffmpegCommand = `-i ${uriNewVideo} -c:v hevc /data/user/0/com.locket_upload/files/${randomNumber}.mp4`;
+  const outputPath = `/data/user/0/com.locket_upload/files/${randomNumber}.mp4`;
+  const ffmpegCommand = `-hide_banner -i "${videoUri}" -c:v h264 -b:v 5800k -maxrate 5800k -bufsize 5800k -an "${outputPath}"`;
 
-  // Thực thi lệnh FFmpeg và chờ kết quả
-  const session = await FFmpegKit.execute(ffmpegCommand);
-  const returnCode = await session.getReturnCode();
+  let totalDuration = 0;
+  let pendingDurationNextLine = false;
 
-  // Kiểm tra mã trả về sử dụng FFmpegKitReturnCode
-  if (returnCode.isValueSuccess()) {
-    console.log('Video conversion successful');
-  } else {
-    console.error('Error during video conversion:', returnCode);
-    throw new Error('Video conversion failed');
+  const cancelId = `compress_${randomNumber}`;
+  if (cancelid) {
+    cancelid(cancelId);
   }
 
-  // Trả về thông tin video đã chuyển đổi
-  const videoInfo = await getInfoVideo(
-    `file:///data/user/0/com.locket_upload/files/${randomNumber}.mp4`,
-    'video/mp4',
-  );
+  return new Promise((resolve, reject) => {
+    FFmpegKit.executeAsync(
+      ffmpegCommand,
+      async session => {
+        const returnCode = await session.getReturnCode();
+        if (returnCode?.isValueSuccess()) {
+          const fileUri = `file://${outputPath}`;
+          const videoInfo = await getInfoVideo(fileUri);
+          const thumbnail = await getVideoThumbnail(videoUri);
 
-  const thumbnail = await getVideoThumbnail(videoUri);
+          resolve({
+            ...videoInfo,
+            uri: fileUri,
+            type: 'video/mp4',
+            thumbnail: thumbnail.path,
+          });
+        } else {
+          reject(new Error('Video compression failed'));
+        }
+      },
+      log => {
+        const message = log.getMessage();
+        console.log('[FFmpeg LOG]', message);
 
-  return {
-    ...videoInfo,
-    thumbnail: thumbnail.path,
-  };
+        if (message.includes(': No such file or directory') && onError) {
+          onError('No such file or directory');
+        }
+
+        // 📌 Gặp dòng "Duration:" → đánh dấu để xử lý dòng tiếp theo
+        if (message.trim() === 'Duration:') {
+          pendingDurationNextLine = true;
+          return;
+        }
+
+        // 📌 Nếu dòng trước là "Duration:" → parse dòng này
+        if (pendingDurationNextLine) {
+          const durationMatch = message.match(/(\d{2}):(\d{2}):([\d.]+)/);
+          if (durationMatch) {
+            const hours = parseInt(durationMatch[1], 10);
+            const minutes = parseInt(durationMatch[2], 10);
+            const seconds = parseFloat(durationMatch[3]);
+            totalDuration = hours * 3600 + minutes * 60 + seconds;
+            console.log('✅ Parsed duration:', totalDuration, 'seconds');
+          }
+          pendingDurationNextLine = false; // reset lại
+        }
+
+        // 🎯 Parse progress từ dòng: time=00:00:01.36
+        const timeMatch = message.match(/time=(\d{2}):(\d{2}):([\d.]+)/);
+        if (progress && totalDuration > 0 && timeMatch) {
+          const h = parseInt(timeMatch[1], 10);
+          const m = parseInt(timeMatch[2], 10);
+          const s = parseFloat(timeMatch[3]);
+          const currentTime = h * 3600 + m * 60 + s;
+
+          const percent = Math.min((currentTime / totalDuration) * 100, 100);
+          progress(Math.round(percent));
+          console.log(`📊 Progress: ${Math.round(percent)}%`);
+        }
+      },
+    );
+  });
 };
 
 export const deleteAllMp4Files = async (directoryPath: string) => {
@@ -98,10 +142,6 @@ export const deleteAllMp4Files = async (directoryPath: string) => {
   }
 };
 
-export const cancelCompressVideo = (cancelId: string): void => {
-  Video.cancelCompression(cancelId);
-};
-
 export const UPLOAD_VIDEO_PROGRESS_STAGE = {
   PROCESSING: 'Processing video', // Xử lý video (resize, convert, v.v.)
   INITIATING_UPLOAD: 'Initiating upload', // Khởi tạo link upload
@@ -113,14 +153,54 @@ export const UPLOAD_VIDEO_PROGRESS_STAGE = {
   FAILED: 'Upload failed', // Thất bại
 };
 
-export const getInfoVideo = async (videoUri: string, videoType: string) => {
-  const videoMetaData = await getVideoMetaData(videoUri);
+export const getInfoVideo = async (uri: string): Promise<VideoInfo> => {
+  try {
+    FFmpegKitConfig.disableLogs();
+    const filePath = uri.startsWith('file://')
+      ? uri.replace('file://', '')
+      : uri;
 
-  return {
-    ...videoMetaData,
-    uri: videoUri,
-    type: videoType,
-  };
+    // Lấy extension
+    const extension = filePath.split('.').pop() || '';
+
+    // Lấy kích thước file
+    const stat = await RNFS.stat(filePath);
+    const size = Number(stat.size);
+
+    // Lấy thông tin media từ FFmpeg
+    const session = await FFprobeKit.getMediaInformation(filePath);
+    const info: MediaInformation | null = session.getMediaInformation();
+
+    if (!info) {
+      throw new Error('Không thể lấy thông tin video');
+    }
+
+    const rawDuration = info.getDuration();
+    const duration =
+      typeof rawDuration === 'string'
+        ? parseFloat(rawDuration)
+        : typeof rawDuration === 'number'
+        ? rawDuration
+        : 0;
+
+    // Tìm stream video
+    const streams: StreamInformation[] = info.getStreams() ?? [];
+    const videoStream = streams.find(stream => stream.getType() === 'video');
+
+    const width = videoStream?.getWidth() ?? 0;
+    const height = videoStream?.getHeight() ?? 0;
+
+    return {
+      extension,
+      size,
+      duration,
+      width,
+      height,
+    };
+  } catch (error) {
+    console.error('❌ Lỗi khi lấy thông tin video:', error);
+    throw error;
+  }
 };
 
 export const initiateUploadVideo = async (
@@ -138,7 +218,7 @@ export const initiateUploadVideo = async (
     'x-goog-upload-protocol': 'resumable',
     accept: '*/*',
     'x-goog-upload-command': 'start',
-    'x-goog-upload-content-length': fileSize,
+    'x-goog-upload-content-length': `${fileSize}`,
     'accept-language': 'vi-VN,vi;q=0.9',
     'x-firebase-storage-version': 'ios/10.13.0',
     'user-agent':
@@ -147,12 +227,12 @@ export const initiateUploadVideo = async (
     'x-firebase-gmpid': '1:641029076083:ios:cc8eb46290d69b234fa609',
   };
 
-  const body = {
+  const body = JSON.stringify({
     name: `users/${idUser}/moments/videos/${nameVideo}`,
     contentType: 'video/mp4',
     bucket: '',
     metadata: {creator: idUser, visibility: 'private'},
-  };
+  });
 
   const response = await axios.post(url, body, {
     headers: headers,
@@ -193,10 +273,53 @@ export const getDownloadVideoUrl = async (
   return `${getUrl}?alt=media&token=${downloadToken}`;
 };
 
-export const getVideoThumbnail = async (videoUri: string): Promise<any> => {
-  const response = await createVideoThumbnail(videoUri);
+export const getVideoThumbnail = async (
+  videoUri: string,
+): Promise<{path: string}> => {
+  FFmpegKitConfig.disableLogs();
+  const filePath = videoUri.replace('file://', '');
+  const outputPath = `${RNFS.CachesDirectoryPath}/thumb_${Date.now()}.jpg`;
 
-  return response; // Trả về đường dẫn ảnh thumbnail
+  // Lấy thông tin video để tính fps
+  const probeSession = await FFprobeKit.getMediaInformation(filePath);
+  const mediaInfo: MediaInformation | null = probeSession.getMediaInformation();
+  if (!mediaInfo) {
+    throw new Error('Không thể lấy thông tin video để tạo thumbnail.');
+  }
+
+  const streams: StreamInformation[] = mediaInfo.getStreams() ?? [];
+  const videoStream = streams.find(s => s.getType() === 'video');
+
+  if (!videoStream) {
+    throw new Error('Không tìm thấy stream video.');
+  }
+
+  const fpsStr =
+    videoStream.getAverageFrameRate() || videoStream.getRealFrameRate() || '30';
+  const [numerator, denominator] = fpsStr.split('/').map(Number);
+  const fps = denominator ? numerator / denominator : Number(fpsStr);
+
+  if (!fps || isNaN(fps)) {
+    throw new Error('Không thể xác định FPS.');
+  }
+
+  const timestamp = 7 / fps; // giây
+  const formattedTime = timestamp.toFixed(2);
+
+  // Tạo thumbnail bằng FFmpeg
+  const ffmpegCmd = `-y -ss ${formattedTime} -i "${filePath}" -frames:v 1 -q:v 2 "${outputPath}"`;
+  const session = await FFmpegKit.execute(ffmpegCmd);
+  const returnCode = await session.getReturnCode();
+
+  if (!returnCode?.isValueSuccess()) {
+    throw new Error('Không thể tạo thumbnail.');
+  }
+
+  return {path: `file://${outputPath}`};
+};
+
+const getMd5Hash = (str: string) => {
+  return MD5(str).toString();
 };
 
 export const cretateBody = (
@@ -209,6 +332,7 @@ export const cretateBody = (
     data: {
       thumbnail_url: thumbnailUrl,
       video_url: downloadVideoUrl,
+      md5: getMd5Hash(downloadVideoUrl),
       recipients: friends || [],
       analytics: {
         experiments: {
@@ -225,20 +349,20 @@ export const cretateBody = (
             value: '400',
           },
           flag_22: {
-            value: '1203',
             '@type': 'type.googleapis.com/google.protobuf.Int64Value',
+            value: '1203',
           },
           flag_19: {
-            value: '52',
             '@type': 'type.googleapis.com/google.protobuf.Int64Value',
+            value: '52',
           },
           flag_18: {
             '@type': 'type.googleapis.com/google.protobuf.Int64Value',
             value: '1203',
           },
           flag_16: {
-            value: '303',
             '@type': 'type.googleapis.com/google.protobuf.Int64Value',
+            value: '303',
           },
           flag_15: {
             '@type': 'type.googleapis.com/google.protobuf.Int64Value',
@@ -265,6 +389,7 @@ export const cretateBody = (
         },
         platform: 'ios',
       },
+      sent_to_all: true,
       caption: caption,
       overlays: [
         {
@@ -276,7 +401,10 @@ export const cretateBody = (
               '@type': 'type.googleapis.com/google.protobuf.Int64Value',
               value: '4',
             },
-            background: {material_blur: 'ultra_thin', colors: []},
+            background: {
+              material_blur: 'ultra_thin',
+              colors: [],
+            },
           },
           alt_text: caption,
           overlay_id: 'caption:standard',
