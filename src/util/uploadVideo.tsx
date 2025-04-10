@@ -76,7 +76,7 @@ export const compressVideo = async (
           onError('No such file or directory');
         }
 
-        // 📌 Gặp dòng "Duration:" → đánh dấu để xử lý dòng tiếp theo
+        //trong log sẽ có dòng "Duration: "
         if (message.trim() === 'Duration:') {
           pendingDurationNextLine = true;
           return;
@@ -303,7 +303,8 @@ export const getVideoThumbnail = async (
     throw new Error('Không thể xác định FPS.');
   }
 
-  const timestamp = 7 / fps; // giây
+  //vì video bị cắt giới hạn tối đa 7 giây
+  const timestamp = 7 / fps;
   const formattedTime = timestamp.toFixed(2);
 
   // Tạo thumbnail bằng FFmpeg

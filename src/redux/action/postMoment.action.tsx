@@ -192,7 +192,7 @@ export const uploadVideoToFirebase = createAsyncThunk(
               message: UPLOAD_VIDEO_PROGRESS_STAGE.PROCESSING,
               type: 'info',
               hideButton: true,
-              progress: progress,
+              progress: progress, //không cần * 100 nữa vì func đã tự tính toán
             }),
           );
         },
