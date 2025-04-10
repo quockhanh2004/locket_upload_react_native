@@ -12,7 +12,7 @@ import {
 import {loginHeader} from '../../util/header';
 import {
   compressVideo,
-  cretateBody,
+  createBody,
   getDownloadVideoUrl,
   getVideoThumbnail,
   initiateUploadVideo,
@@ -291,7 +291,7 @@ export const uploadVideoToFirebase = createAsyncThunk(
         authorization: `Bearer ${idToken}`,
       };
 
-      const bodyPostMoment = cretateBody(
+      const bodyPostMoment = createBody(
         caption,
         thumbnailUrl,
         downloadVideoUrl,

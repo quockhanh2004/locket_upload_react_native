@@ -324,7 +324,7 @@ const getMd5Hash = (str: string) => {
   return MD5(str).toString();
 };
 
-export const cretateBody = (
+export const createBody = (
   caption: string,
   thumbnailUrl: string,
   downloadVideoUrl: string,
