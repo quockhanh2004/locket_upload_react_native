@@ -13,6 +13,8 @@ interface InitialState {
   friends: Friend[];
   isLoadFriends: boolean;
   selected: string[];
+  customListFriends: string[];
+  optionSend: 'all' | 'custom_list' | 'manual';
 }
 
 const friendsSlice = createSlice({
@@ -21,21 +23,36 @@ const friendsSlice = createSlice({
     friends: [],
     isLoadFriends: false,
     selected: [],
+    customListFriends: [],
+    optionSend: 'all',
   } as InitialState,
   reducers: {
     setFriends(state, action: PayloadAction<Friend[]>) {
       state.friends = action.payload;
       state.isLoadFriends = true;
     },
+
     setIsLoadFriend(state, action: PayloadAction<boolean>) {
       state.isLoadFriends = action.payload;
     },
+
     setSelectedFriend(state, action: PayloadAction<string[]>) {
       state.selected = action.payload;
     },
+
+    setCustomListFriends(state, action: PayloadAction<string[]>) {
+      state.customListFriends = action.payload;
+    },
+
+    setOptionSend(
+      state,
+      action: PayloadAction<'all' | 'custom_list' | 'manual'>,
+    ) {
+      state.optionSend = action.payload;
+    },
+
     restoreFriends(state, action) {
       const data = JSON.parse(action.payload);
-
       state.friends = data.friends;
       state.selected = data.selected;
     },
@@ -56,7 +73,13 @@ const friendsSlice = createSlice({
   },
 });
 
-export const {setFriends, setIsLoadFriend, setSelectedFriend, restoreFriends} =
-  friendsSlice.actions;
+export const {
+  setFriends,
+  setIsLoadFriend,
+  setSelectedFriend,
+  restoreFriends,
+  setCustomListFriends,
+  setOptionSend,
+} = friendsSlice.actions;
 
 export default friendsSlice.reducer;
