@@ -54,7 +54,7 @@ react {
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = true
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC)
@@ -82,6 +82,17 @@ android {
         versionCode(versionMajor * 10000 + versionMinor * 100 + versionPatch)
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
     }
+
+    // ✅ Đặt splits ở đây, đúng vị trí
+    splits {
+        abi {
+            enable true
+            reset()
+            include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+            universalApk true
+        }
+    }
+
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -90,19 +101,25 @@ android {
             keyPassword 'android'
         }
     }
+
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
+            shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
 }
+
+// ✅ Đặt ngoài block android
+project.ext.react = [
+    enableHermes: true
+]
+
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
