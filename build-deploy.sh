@@ -49,7 +49,11 @@ git push origin main || { echo "Lỗi: Push Git thất bại!"; exit 1; }
 # Release GitHub
 release_notes="Release version ${version}
 Changelog:
-${changelog}"
+${changelog}
+
+Note: 
+- hầu hết các thiết bị hiện nay đều là arm64-v8a
+- nếu bạn không chắc chắn về thiết bị của mình thì có thể cài đặt bản universal (điều này làm tăng kích thước của ứng dụng)"
 
 release_id=$(gh release view "v${version}" --json id -q .id 2>/dev/null || true)
 
