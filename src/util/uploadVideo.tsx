@@ -37,8 +37,8 @@ export const compressVideo = async (
   FFmpegKitConfig.enableLogs();
 
   const randomNumber = Math.floor(Math.random() * 1000000);
-  const outputPath = `/data/user/0/com.locket_upload/files/${randomNumber}.mp4`;
-  const ffmpegCommand = `-hide_banner -i "${videoUri}" -c:v h264 -b:v 5800k -maxrate 5800k -bufsize 5800k -an "${outputPath}"`;
+  const outputPath = `${RNFS.DocumentDirectoryPath}/${randomNumber}.mp4`;
+  const ffmpegCommand = `-hide_banner -i "${videoUri}" -vf "scale='min(720,iw)':-2" -c:v h264_mediacodec -b:v 5000k -maxrate 5000k -bufsize 5000k -crf 18 -an "${outputPath}"`;
 
   let totalDuration = 0;
   let pendingDurationNextLine = false;

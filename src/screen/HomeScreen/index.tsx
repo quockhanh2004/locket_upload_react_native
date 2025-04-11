@@ -24,6 +24,8 @@ import {getApp} from '@react-native-firebase/app';
 import {showEditor} from 'react-native-video-trim';
 import {Asset} from 'react-native-image-picker';
 import {ScrollView} from 'react-native';
+import RNFS from 'react-native-fs';
+
 import PostForm from './PostForm';
 import {AppDispatch, RootState} from '../../redux/store';
 import {logout} from '../../redux/slice/user.slice';
@@ -261,7 +263,7 @@ const HomeScreen = () => {
 
       //xóa cache của app sau khi upload thành công
       clearAppCache();
-      deleteAllMp4Files('/data/user/0/com.locket_upload/files/');
+      deleteAllMp4Files(RNFS.DocumentDirectoryPath);
       setCaption('');
     }
   }, [postMoment]);

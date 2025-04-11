@@ -2,6 +2,7 @@ import React, {useCallback} from 'react';
 import {FlatList, ToastAndroid} from 'react-native';
 import {View, Text, Switch} from 'react-native-ui-lib';
 import {useDispatch, useSelector} from 'react-redux';
+import RNFS from 'react-native-fs';
 
 import Header from '../components/Header';
 import MainButton from '../components/MainButton';
@@ -42,10 +43,8 @@ const SettingScreen = () => {
 
   const handleClearCache = useCallback(async () => {
     let totalSize = 0;
-    totalSize +=
-      (await deleteAllMp4Files('/data/user/0/com.locket_upload/files/')) || 0;
-    totalSize +=
-      (await deleteAllMp4Files('/data/user/0/com.locket_upload/cache/')) || 0;
+    totalSize += (await deleteAllMp4Files(RNFS.DocumentDirectoryPath)) || 0;
+    totalSize += (await deleteAllMp4Files(RNFS.CachesDirectoryPath)) || 0;
 
     dispatch(clearPostMoment());
     ToastAndroid.show(
