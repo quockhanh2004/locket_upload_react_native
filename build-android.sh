@@ -28,7 +28,7 @@ for abi in "${abis[@]}"; do
     output_name="locket_upload_${current_time}_${abi}.apk"
     output_path="android/app/build/outputs/apk/release/${output_name}"
 
-    cp "$input_path" "$output_path"
+    mv "$input_path" "$output_path"
     echo "✅ APK tạo: $output_path"
 
     # Nếu ABI khớp thiết bị thì cài đặt

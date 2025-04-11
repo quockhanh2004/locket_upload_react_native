@@ -31,7 +31,7 @@ for abi in "${abis[@]}"; do
   input_path="android/app/build/outputs/apk/release/app-${abi}-release.apk"
   if [[ -f "$input_path" ]]; then
     output_path="android/app/build/outputs/apk/release/locket_upload_${current_time}_${abi}.apk"
-    cp "$input_path" "$output_path"
+    mv "$input_path" "$output_path"
     apk_paths+=("$output_path")
 
     if [[ "$abi" == "$device_abi" ]]; then
