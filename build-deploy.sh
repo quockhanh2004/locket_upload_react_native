@@ -23,6 +23,9 @@ cd ..
 # Lấy danh sách ABI
 abis=("arm64-v8a" "armeabi-v7a" "x86" "x86_64" "universal")
 
+# Cài APK vào thiết bị nếu kiến trúc khớp
+device_abi=$(adb shell getprop ro.product.cpu.abi | tr -d '\r')
+
 apk_paths=()
 for abi in "${abis[@]}"; do
   input_path="android/app/build/outputs/apk/release/app-${abi}-release.apk"
@@ -31,8 +34,6 @@ for abi in "${abis[@]}"; do
     cp "$input_path" "$output_path"
     apk_paths+=("$output_path")
 
-    # Cài APK vào thiết bị nếu kiến trúc khớp
-    device_abi=$(adb shell getprop ro.product.cpu.abi | tr -d '\r')
     if [[ "$abi" == "$device_abi" ]]; then
       echo "📱 Installing: $output_path"
       adb install -r "$output_path" || echo "Cảnh báo: Cài đặt APK thất bại!"
