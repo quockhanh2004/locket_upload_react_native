@@ -36,9 +36,24 @@ export const compressVideo = async (
 }> => {
   FFmpegKitConfig.enableLogs();
 
+  const MAX_SIZE_MB = 5;
+  const rawVideoInfo = await getInfoVideo(videoUri);
+  const duration =
+    typeof rawVideoInfo.duration === 'string'
+      ? parseFloat(rawVideoInfo.duration)
+      : typeof rawVideoInfo.duration === 'number'
+      ? rawVideoInfo.duration
+      : 0;
+
+  if (!duration || isNaN(duration)) {
+    throw new Error('Không thể lấy thời lượng video');
+  }
+  const bitrate = Math.floor((MAX_SIZE_MB * 1024 * 1024 * 8) / duration); // bit/s
+  const bitrateKbps = Math.floor(bitrate / 1000); // chuyển sang kbps
+
   const randomNumber = Math.floor(Math.random() * 1000000);
   const outputPath = `${RNFS.DocumentDirectoryPath}/${randomNumber}.mp4`;
-  const ffmpegCommand = `-hide_banner -i "${videoUri}" -vf "scale='min(720,iw)':-2" -c:v h264_mediacodec -b:v 5000k -maxrate 5000k -bufsize 5000k -crf 18 -an "${outputPath}"`;
+  const ffmpegCommand = `-hide_banner -i "${videoUri}" -vf "scale='min(720,iw)':-2" -c:v h264_mediacodec -b:v ${bitrateKbps}k -maxrate ${bitrateKbps}k -bufsize ${bitrateKbps}k -crf 18 -an "${outputPath}"`;
 
   let totalDuration = 0;
   let pendingDurationNextLine = false;

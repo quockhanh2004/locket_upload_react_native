@@ -11,6 +11,7 @@ const initialState: {
   cameraSettings: CameraSetting;
   appVersion: string;
   optionFriend: boolean;
+  unlimitedTrimVideo: boolean;
 } = {
   useCamera: false,
   cameraSettings: {
@@ -20,6 +21,7 @@ const initialState: {
   },
   appVersion: '',
   optionFriend: false,
+  unlimitedTrimVideo: false,
 };
 
 const settingSlice = createSlice({
@@ -45,6 +47,10 @@ const settingSlice = createSlice({
       state.optionFriend = action.payload;
     },
 
+    setUnlimitedTrimVideo(state, action: PayloadAction<boolean>) {
+      state.unlimitedTrimVideo = action.payload;
+    },
+
     setSetting(state, action) {
       const data = JSON.parse(action.payload);
       state.useCamera = data.useCamera;
@@ -59,6 +65,7 @@ export const {
   setCameraSettings,
   setCurrentVersion,
   setOptionFriend,
+  setUnlimitedTrimVideo,
   setSetting,
 } = settingSlice.actions;
 

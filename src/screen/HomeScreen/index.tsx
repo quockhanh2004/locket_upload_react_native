@@ -69,7 +69,9 @@ const HomeScreen = () => {
   const {postMoment, isLoading} = useSelector(
     (state: RootState) => state.postMoment,
   );
-  const {useCamera} = useSelector((state: RootState) => state.setting);
+  const {useCamera, unlimitedTrimVideo} = useSelector(
+    (state: RootState) => state.setting,
+  );
   const {selected, optionSend, customListFriends} = useSelector(
     (state: RootState) => state.friends,
   );
@@ -240,8 +242,17 @@ const HomeScreen = () => {
     } else if (media?.type?.startsWith('video')) {
       if (media.uri) {
         showEditor(media.uri, {
-          maxDuration: 7,
-          saveButtonText: 'Save',
+          maxDuration: unlimitedTrimVideo ? undefined : 7,
+          saveButtonText: 'Lưu',
+          cancelButtonText: 'Hủy',
+          autoplay: true,
+          cancelDialogMessage: 'Bạn có muốn hủy cắt video không?',
+          cancelDialogConfirmText: 'Có',
+          cancelDialogCancelText: 'Không',
+          enableSaveDialog: false,
+          enableHapticFeedback: true,
+          type: 'video',
+          trimmingText: 'Đang xử lý...',
         });
         setIsVideo(true);
         return;

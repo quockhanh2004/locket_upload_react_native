@@ -10,6 +10,7 @@ import {deleteAllMp4Files} from '../util/uploadVideo';
 import {
   setUseCameraSetting,
   setOptionFriend,
+  setUnlimitedTrimVideo,
 } from '../redux/slice/setting.slice';
 import {clearPostMoment} from '../redux/slice/postMoment.slice';
 import {RootState} from '../redux/store';
@@ -17,7 +18,7 @@ import {RootState} from '../redux/store';
 const SettingScreen = () => {
   const dispatch = useDispatch();
 
-  const {useCamera, optionFriend} = useSelector(
+  const {useCamera, optionFriend, unlimitedTrimVideo} = useSelector(
     (state: RootState) => state.setting,
   );
 
@@ -31,6 +32,12 @@ const SettingScreen = () => {
       title: 'Nhiều lựa chọn bạn bè',
       value: optionFriend,
       action: setOptionFriend,
+    },
+    {
+      title:
+        'Cắt video nhiều hơn 7 giây (có thể làm giảm chất lượng rất nhiều)',
+      value: unlimitedTrimVideo,
+      action: setUnlimitedTrimVideo,
     },
   ];
 
@@ -63,7 +70,7 @@ const SettingScreen = () => {
           renderItem={({item}) => (
             <>
               <View row spread paddingV-8>
-                <Text white text70BL>
+                <Text white text70BL flexS>
                   {item.title}
                 </Text>
                 <Switch
