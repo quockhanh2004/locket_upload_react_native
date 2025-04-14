@@ -26,6 +26,7 @@ const postMomentSlice = createSlice({
     clearPostMoment: state => {
       state.postMoment = null;
       state.isLoading = false;
+      state.progressUpload = null;
     },
     setProgressUpload: (state, action) => {
       state.progressUpload = action.payload;

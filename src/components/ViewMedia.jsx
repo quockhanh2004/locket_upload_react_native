@@ -1,12 +1,20 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
+import {ActivityIndicator} from 'react-native';
 import {View, TouchableOpacity, Colors, Image, Icon} from 'react-native-ui-lib';
 import Video from 'react-native-video';
 
-const ViewMedia = ({selectedMedia, isVideo, onSelectMedia, onRemoveMedia}) => {
+const ViewMedia = ({
+  selectedMedia,
+  isVideo,
+  onSelectMedia,
+  onRemoveMedia,
+  localLoading,
+}) => {
   return (
     <View center>
       <TouchableOpacity
+        disabled={localLoading}
         style={{
           borderRadius: 8,
           borderWidth: 2,
@@ -52,6 +60,12 @@ const ViewMedia = ({selectedMedia, isVideo, onSelectMedia, onRemoveMedia}) => {
               </View>
             </View>
           )
+        ) : localLoading ? (
+          <ActivityIndicator
+            size={64}
+            style={{margin: 100}}
+            color={Colors.primary}
+          />
         ) : (
           <Icon
             assetGroup="icons"

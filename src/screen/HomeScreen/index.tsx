@@ -34,7 +34,7 @@ import {selectMedia} from '../../util/selectImage';
 import {clearAppCache} from '../../util/uploadImage';
 import {handleNotificationClick} from '../../services/Notification';
 import {getAccountInfo, getToken} from '../../redux/action/user.action';
-import {setMessage} from '../../redux/slice/message.slice';
+import {setMessage, setTask} from '../../redux/slice/message.slice';
 import {clearPostMoment} from '../../redux/slice/postMoment.slice';
 import {deleteAllMp4Files} from '../../util/uploadVideo';
 import useTrimVideo from '../../hooks/useTrimVideo';
@@ -82,10 +82,9 @@ const HomeScreen = () => {
   const [isVideo, setIsVideo] = useState(false);
   const [visibleSelectMedia, setVisibleSelectMedia] = useState(false);
   const [visibleSelectFriend, setVisibleSelectFriend] = useState(false);
+  const [localLoading, setLocalLoading] = useState(false);
 
   useEffect(() => {
-    clearAppCache();
-
     getInitialNotification(messaging).then(async remoteMessage => {
       handleNotificationClick(remoteMessage?.data || {});
     });
@@ -130,8 +129,6 @@ const HomeScreen = () => {
           break;
 
         default:
-          console.log('here');
-
           navigation.setParams(undefined);
           break;
       }
@@ -146,11 +143,11 @@ const HomeScreen = () => {
   };
 
   //kiểm tra cài đặt, nếu có bật cho phép chụp ảnh từ camera thì thêm option chụp ảnh nữa
-  const handleSelectMedia = () => {
+  const handleSelectMedia = async () => {
     if (useCamera) {
       setVisibleSelectMedia(true);
     } else {
-      handleConfirmSelectMedia('gallery');
+      await handleConfirmSelectMedia('gallery');
     }
   };
 
@@ -171,7 +168,7 @@ const HomeScreen = () => {
     }
 
     if (selectedMedia?.type === 'video') {
-      dispatch(
+      const task = dispatch(
         uploadVideoToFirebase({
           idUser: user.localId,
           idToken: user.idToken,
@@ -186,8 +183,10 @@ const HomeScreen = () => {
               : selected,
         }),
       );
+
+      dispatch(setTask(task));
     } else {
-      dispatch(
+      const task = dispatch(
         uploadImageToFirebaseStorage({
           idUser: user.localId,
           idToken: user.idToken,
@@ -202,6 +201,8 @@ const HomeScreen = () => {
               : selected,
         }),
       );
+
+      dispatch(setTask(task));
     }
   };
 
@@ -211,8 +212,10 @@ const HomeScreen = () => {
   };
 
   //event chọn cách lấy file media (thư viện, camera)
-  const handleConfirmSelectMedia = (value: 'gallery' | 'camera') => {
-    onSelectMedia(value);
+  const handleConfirmSelectMedia = async (value: 'gallery' | 'camera') => {
+    setLocalLoading(true);
+    await onSelectMedia(value);
+    setLocalLoading(false);
   };
 
   //xử lý option sau khi chọn
@@ -253,6 +256,7 @@ const HomeScreen = () => {
           enableHapticFeedback: true,
           type: 'video',
           trimmingText: 'Đang xử lý...',
+          alertOnFailToLoad: true,
         });
         setIsVideo(true);
         return;
@@ -331,6 +335,7 @@ const HomeScreen = () => {
           isLoading={isLoading}
           onPost={handlePost}
           onSelectFriend={() => setVisibleSelectFriend(true)}
+          localLoading={localLoading}
           selectedCount={
             optionSend === 'all'
               ? 0

@@ -5,6 +5,7 @@ interface TypeMessageSlice {
   type: string | null | undefined;
   hideButton: boolean | null | undefined;
   progress: number | null | undefined;
+  task: any | undefined | null;
 }
 
 const messageSlice = createSlice({
@@ -14,6 +15,7 @@ const messageSlice = createSlice({
     type: null,
     hideButton: null,
     progress: null,
+    task: null,
   } as TypeMessageSlice,
 
   reducers: {
@@ -34,6 +36,9 @@ const messageSlice = createSlice({
       state.hideButton = action.payload.hideButton || false;
       state.progress = action.payload.progress || null;
     },
+    setTask(state, action) {
+      state.task = action.payload;
+    },
     clearMessage(state) {
       state.message = null;
       state.type = '';
@@ -43,6 +48,6 @@ const messageSlice = createSlice({
   },
 });
 
-export const {setMessage, clearMessage} = messageSlice.actions;
+export const {setMessage, clearMessage, setTask} = messageSlice.actions;
 
 export default messageSlice.reducer;

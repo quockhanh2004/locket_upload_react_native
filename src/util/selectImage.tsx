@@ -19,6 +19,7 @@ export const selectMedia = async (
     if (result.didCancel) {
       return undefined;
     }
+    console.log('here');
 
     return result.assets;
   } catch (error) {

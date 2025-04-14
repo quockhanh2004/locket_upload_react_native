@@ -9,14 +9,14 @@ import {
 } from 'react-native-ui-lib';
 import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {clearMessage} from '../redux/slice/message.slice';
+import {clearMessage, setTask} from '../redux/slice/message.slice';
 import CustomDialog from './CustomDialog';
 import {ScrollView} from 'react-native';
-import {RootState} from '../redux/store';
+import {AppDispatch, RootState} from '../redux/store';
 
 const MessageDialog = () => {
-  const dispatch = useDispatch();
-  const {message, type, hideButton, progress} = useSelector(
+  const dispatch = useDispatch<AppDispatch>();
+  const {message, type, hideButton, progress, task} = useSelector(
     (state: RootState) => state.message,
   );
 
@@ -65,7 +65,21 @@ const MessageDialog = () => {
         />
       )}
       {typeof progress === 'number' && (
-        <ProgressBar progress={progress} progressColor={Colors.primary} />
+        <>
+          <ProgressBar progress={progress} progressColor={Colors.primary} />
+        </>
+      )}
+      {task && (
+        <Button
+          label="Cancel"
+          onPress={() => {
+            task.abort();
+            dispatch(setTask(null));
+          }}
+          borderRadius={8}
+          text70BL
+          backgroundColor={Colors.red30}
+        />
       )}
     </CustomDialog>
   );

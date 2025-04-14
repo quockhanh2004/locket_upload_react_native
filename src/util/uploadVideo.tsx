@@ -9,6 +9,7 @@ import {
   FFmpegKitConfig,
   FFprobeKit,
   MediaInformation,
+  Statistics,
   StreamInformation,
 } from 'ffmpeg-kit-react-native';
 
@@ -22,9 +23,10 @@ export type VideoInfo = {
 
 export const compressVideo = async (
   videoUri: string,
-  cancelid?: (cancellationId: string) => void,
+  cancelid?: (cancellationId: number) => void,
   progress?: (progress: number) => void,
   onError?: (error: string) => void,
+  signal?: AbortSignal,
 ): Promise<{
   width: number;
   height: number;
@@ -34,9 +36,8 @@ export const compressVideo = async (
   thumbnail: string;
   type: any;
 }> => {
-  FFmpegKitConfig.enableLogs();
-
   const MAX_SIZE_MB = 5;
+  let cancelId: number | null;
   const rawVideoInfo = await getInfoVideo(videoUri);
   const duration =
     typeof rawVideoInfo.duration === 'string'
@@ -53,14 +54,19 @@ export const compressVideo = async (
 
   const randomNumber = Math.floor(Math.random() * 1000000);
   const outputPath = `${RNFS.DocumentDirectoryPath}/${randomNumber}.mp4`;
-  const ffmpegCommand = `-hide_banner -i "${videoUri}" -vf "scale='min(720,iw)':-2" -c:v h264_mediacodec -b:v ${bitrateKbps}k -maxrate ${bitrateKbps}k -bufsize ${bitrateKbps}k -crf 18 -an "${outputPath}"`;
+  const ffmpegCommand = `-hide_banner -i "${videoUri}" -vf "scale='min(720,iw)':-2" -c:v h264_mediacodec -b:v ${bitrateKbps}k -maxrate ${bitrateKbps}k -bufsize ${bitrateKbps}k -threads 0 -an "${outputPath}"`;
 
   let totalDuration = 0;
   let pendingDurationNextLine = false;
 
-  const cancelId = `compress_${randomNumber}`;
-  if (cancelid) {
-    cancelid(cancelId);
+  FFmpegKitConfig.enableLogs();
+
+  if (signal) {
+    signal.addEventListener('abort', () => {
+      if (cancelId) {
+        FFmpegKit.cancel(cancelId);
+      }
+    });
   }
 
   return new Promise((resolve, reject) => {
@@ -79,8 +85,18 @@ export const compressVideo = async (
             type: 'video/mp4',
             thumbnail: thumbnail.path,
           });
+
+          //khi hủy
+        } else if (returnCode?.isValueCancel()) {
+          if (onError) {
+            onError('Video compression was cancelled');
+          }
+
+          //khi có lỗi
         } else {
-          reject(new Error('Video compression failed'));
+          if (onError) {
+            onError('Video compression failed');
+          }
         }
       },
       log => {
@@ -122,6 +138,12 @@ export const compressVideo = async (
           const percent = Math.min((currentTime / totalDuration) * 100, 100);
           progress(Math.round(percent));
           console.log(`📊 Progress: ${Math.round(percent)}%`);
+        }
+      },
+      (statistics: Statistics) => {
+        cancelId = statistics.getSessionId();
+        if (cancelid) {
+          cancelid(cancelId);
         }
       },
     );

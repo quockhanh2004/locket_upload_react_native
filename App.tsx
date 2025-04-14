@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View} from 'react-native-ui-lib';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {StatusBar} from 'react-native';
@@ -13,10 +13,14 @@ import MessageDialog from './src/Dialog/MessageDialog';
 import CodePush from 'react-native-code-push';
 import {NotificationService} from './src/services/Notification';
 import {CODEPUSH_DEPLOYMENTKEY} from './src/util/codepush';
+import {clearAppCache} from './src/util/uploadImage';
 
 const App = () => {
-  AssetsInit();
-  ColorsInit();
+  useEffect(() => {
+    AssetsInit();
+    ColorsInit();
+    clearAppCache();
+  }, []);
 
   return (
     <Provider store={store}>

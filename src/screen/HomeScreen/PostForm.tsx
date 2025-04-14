@@ -16,6 +16,7 @@ import MainButton from '../../components/MainButton';
 interface Props {
   selectedMedia: any;
   isVideo: boolean;
+  localLoading?: boolean;
   onRemoveMedia: () => void;
   onSelectMedia: () => void;
   caption: string;
@@ -31,6 +32,7 @@ const PostForm: React.FC<Props> = ({
   isVideo,
   onRemoveMedia,
   onSelectMedia,
+  localLoading,
   caption,
   setCaption,
   isLoading,
@@ -45,6 +47,7 @@ const PostForm: React.FC<Props> = ({
         isVideo={isVideo}
         onRemoveMedia={onRemoveMedia}
         onSelectMedia={onSelectMedia}
+        localLoading={localLoading}
       />
 
       <View flexS>
