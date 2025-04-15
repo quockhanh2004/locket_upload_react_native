@@ -30,6 +30,8 @@ export const getTrySoftwareEncode = async () => {
   const setting = await AsyncStorage.getItem('persist:setting');
   if (setting) {
     const parsed: SettingState = JSON.parse(setting);
-    return parsed.trySoftwareEncode;
+    return parsed.trySoftwareEncode.toString() === 'true';
+  } else {
+    return false;
   }
 };

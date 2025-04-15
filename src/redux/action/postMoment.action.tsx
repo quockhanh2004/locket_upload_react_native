@@ -1,6 +1,6 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
-import {setMessage} from '../slice/message.slice';
+import {setMessage, setTask} from '../slice/message.slice';
 import {
   getDownloadUrl,
   initiateUpload,
@@ -108,9 +108,11 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
 
       // Hiển thị hoàn tất
       showProgress(thunkApi, UPLOAD_PROGRESS_STAGE.CREATING_MOMENT, 100);
+      thunkApi.dispatch(setTask(null));
       return response.data;
     } catch (error: any) {
       // Nếu có lỗi thì hiển thị lỗi và reject thunk
+      thunkApi.dispatch(setTask(null));
       thunkApi.dispatch(
         setMessage({
           message: `Error: ${
@@ -239,9 +241,11 @@ export const uploadVideoToFirebase = createAsyncThunk(
 
       // Nếu thành công, cập nhật tiến trình hoàn tất
       showProgress(thunkApi, UPLOAD_PROGRESS_STAGE.CREATING_MOMENT, 100);
+      thunkApi.dispatch(setTask(null));
       return response.data;
     } catch (error: any) {
       // Xử lý lỗi và hiển thị thông báo lỗi
+      thunkApi.dispatch(setTask(null));
       thunkApi.dispatch(
         setMessage({
           message: `Error: ${
