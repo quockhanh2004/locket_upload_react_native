@@ -303,7 +303,7 @@ const logErrorAndUpload = async (session: any, errorMessage: string) => {
   Error: ${errorMessage}
   Device Info: ${deviceInfo}
   Device Model: ${deviceModel}
-  Log: ${session}}
+  Log: ${session}
   `;
 
   await writeFile(logFilePath, errorDetails);
