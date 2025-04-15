@@ -6,13 +6,16 @@ export interface CameraSetting {
   flash?: boolean;
 }
 
-const initialState: {
+export interface SettingState {
   useCamera: boolean;
   cameraSettings: CameraSetting;
   appVersion: string;
   optionFriend: boolean;
   unlimitedTrimVideo: boolean;
-} = {
+  trySoftwareEncode: boolean;
+}
+
+const initialState: SettingState = {
   useCamera: false,
   cameraSettings: {
     cameraId: '0',
@@ -22,6 +25,7 @@ const initialState: {
   appVersion: '',
   optionFriend: false,
   unlimitedTrimVideo: false,
+  trySoftwareEncode: false,
 };
 
 const settingSlice = createSlice({
@@ -51,6 +55,10 @@ const settingSlice = createSlice({
       state.unlimitedTrimVideo = action.payload;
     },
 
+    setTrySoftwareEncode(state, action: PayloadAction<boolean>) {
+      state.trySoftwareEncode = action.payload;
+    },
+
     setSetting(state, action) {
       const data = JSON.parse(action.payload);
       state.useCamera = data.useCamera;
@@ -66,6 +74,7 @@ export const {
   setCurrentVersion,
   setOptionFriend,
   setUnlimitedTrimVideo,
+  setTrySoftwareEncode,
   setSetting,
 } = settingSlice.actions;
 

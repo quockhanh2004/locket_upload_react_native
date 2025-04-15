@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import RNFS from 'react-native-fs';
+import RNFS, {writeFile} from 'react-native-fs';
 import axios from 'axios';
 import MD5 from 'crypto-js/md5';
+import {Platform} from 'react-native';
 
 import {uploadHeaders} from './header';
 import {
@@ -12,6 +13,8 @@ import {
   Statistics,
   StreamInformation,
 } from 'ffmpeg-kit-react-native';
+import {uploadLogToServer} from '../api/error.api';
+import {getTrySoftwareEncode} from './migrateOldPersist';
 
 export type VideoInfo = {
   extension: string;
@@ -54,8 +57,10 @@ export const compressVideo = async (
 
   const randomNumber = Math.floor(Math.random() * 1000000);
   const outputPath = `${RNFS.DocumentDirectoryPath}/${randomNumber}.mp4`;
-  const ffmpegCommand = `-hide_banner -i "${videoUri}" -vf "scale='min(720,iw)':-2" -c:v h264_mediacodec -b:v ${bitrateKbps}k -maxrate ${bitrateKbps}k -bufsize ${bitrateKbps}k -threads 0 -an "${outputPath}"`;
+  const codec = await getAvailableVideoEncoderCodec();
+  // const codec = 'mpeg4';
 
+  const ffmpegCommand = `-hide_banner -i "${videoUri}" -vf "scale='min(720,iw)':-2" -c:v ${codec} -b:v ${bitrateKbps}k -maxrate ${bitrateKbps}k -bufsize ${bitrateKbps}k -threads 0 -an "${outputPath}"`;
   let totalDuration = 0;
   let pendingDurationNextLine = false;
 
@@ -69,6 +74,7 @@ export const compressVideo = async (
     });
   }
 
+  let logs = '';
   return new Promise((resolve, reject) => {
     FFmpegKit.executeAsync(
       ffmpegCommand,
@@ -85,15 +91,13 @@ export const compressVideo = async (
             type: 'video/mp4',
             thumbnail: thumbnail.path,
           });
-
-          //khi hủy
         } else if (returnCode?.isValueCancel()) {
           if (onError) {
             onError('Video compression was cancelled');
           }
-
-          //khi có lỗi
         } else {
+          // Ghi lại lỗi vào file log
+          await logErrorAndUpload(logs, 'Video compression failed');
           if (onError) {
             onError('Video compression failed');
           }
@@ -102,19 +106,17 @@ export const compressVideo = async (
       log => {
         const message = log.getMessage();
         console.log('[FFmpeg LOG]', message);
-
+        logs += message + '\n';
         if (message.includes(': No such file or directory') && onError) {
           onError('No such file or directory');
         }
 
-        //trong log sẽ có dòng "Duration: "
         const durationLineMatch = message.match(/Duration:/);
         if (durationLineMatch) {
           pendingDurationNextLine = true;
           return;
         }
 
-        // 📌 Nếu dòng trước là "Duration:" → parse dòng này
         if (pendingDurationNextLine) {
           const durationMatch = message.match(/(\d{2}):(\d{2}):([\d.]+)/);
           if (durationMatch) {
@@ -124,10 +126,9 @@ export const compressVideo = async (
             totalDuration = hours * 3600 + minutes * 60 + seconds;
             console.log('✅ Parsed duration:', totalDuration, 'seconds');
           }
-          pendingDurationNextLine = false; // reset lại
+          pendingDurationNextLine = false;
         }
 
-        // 🎯 Parse progress từ dòng: time=00:00:01.36
         const timeMatch = message.match(/time=(\d{2}):(\d{2}):([\d.]+)/);
         if (progress && totalDuration > 0 && timeMatch) {
           const h = parseInt(timeMatch[1], 10);
@@ -148,6 +149,173 @@ export const compressVideo = async (
       },
     );
   });
+};
+
+export const getAvailableVideoEncoderCodec = async (): Promise<
+  string | null
+> => {
+  console.log('Checking available FFmpeg video encoders...');
+  const softwareEncoders = await getTrySoftwareEncode();
+  if (softwareEncoders) {
+    return 'mpeg4';
+  }
+  FFmpegKitConfig.enableLogs();
+
+  const session = await FFmpegKit.execute('-codecs');
+  const output = await session.getLogsAsString();
+
+  const lines = output.split('\n');
+
+  const findVideoEncodersInternal = (
+    codecLines: string[],
+    preferHardware = true,
+  ): string[] => {
+    const separator = ' -------';
+    const startIndex = codecLines.findIndex(
+      line => line.trim() === separator.trim(),
+    );
+
+    if (startIndex === -1) {
+      console.error(
+        "Không tìm thấy dòng phân cách codec '-------' trong output FFmpeg.",
+      );
+      return [];
+    }
+
+    const videoEncoders = new Set<string>();
+    const hardwareKeywords = ['mediacodec', 'v4l2m2m'];
+
+    for (let i = startIndex + 1; i < codecLines.length; i++) {
+      const line = codecLines[i].trim();
+
+      if (!line || line.length < 8 || line.startsWith('-')) {
+        continue;
+      }
+
+      const flags = line.substring(0, 7);
+      const canEncode = flags[1] === 'E';
+      const isVideo = flags[2] === 'V';
+
+      if (canEncode && isVideo) {
+        const descriptionPart = line.substring(7).trim();
+        const codecNameMatch = descriptionPart.match(/^(\S+)/);
+        const mainCodecName = codecNameMatch ? codecNameMatch[1] : null;
+
+        if (!mainCodecName) {
+          continue;
+        }
+
+        let addedSpecificEncoder = false;
+
+        if (preferHardware) {
+          const encodersMatch = descriptionPart.match(/\(encoders:(.*?)\)/);
+          if (encodersMatch && encodersMatch[1]) {
+            const specificEncoders = encodersMatch[1].trim().split(/\s+/);
+            specificEncoders.forEach(encoder => {
+              if (hardwareKeywords.some(keyword => encoder.includes(keyword))) {
+                videoEncoders.add(encoder);
+                addedSpecificEncoder = true;
+              }
+            });
+          }
+          if (
+            hardwareKeywords.some(keyword => mainCodecName.includes(keyword))
+          ) {
+            if (!videoEncoders.has(mainCodecName)) {
+              videoEncoders.add(mainCodecName);
+              addedSpecificEncoder = true;
+            }
+          }
+        }
+
+        if (!addedSpecificEncoder) {
+          const encodersMatch = descriptionPart.match(/\(encoders:(.*?)\)/);
+          if (encodersMatch && encodersMatch[1]) {
+            const specificEncoders = encodersMatch[1].trim().split(/\s+/);
+            if (specificEncoders.length > 0 && specificEncoders[0]) {
+              videoEncoders.add(specificEncoders[0]);
+            } else {
+              videoEncoders.add(mainCodecName);
+            }
+          } else {
+            videoEncoders.add(mainCodecName);
+          }
+        }
+      }
+    }
+    return Array.from(videoEncoders);
+  };
+
+  const availableEncoders = findVideoEncodersInternal(lines, true);
+
+  if (availableEncoders.length === 0) {
+    console.log('No available video encoders found.');
+    return null; // Trả về null nếu không tìm thấy encoder nào
+  }
+
+  console.log(
+    'Available video encoders (prioritizing hardware):',
+    availableEncoders,
+  );
+
+  const priorityOrder = [
+    'h264_mediacodec',
+    'h264_v4l2m2m',
+    'hevc_mediacodec',
+    'hevc_v4l2m2m',
+    'amf',
+    'nvenc',
+    'qsv',
+    'libx264',
+    'libvpx-vp9',
+    'vp8_v4l2m2m',
+    'mpeg4_v4l2m2m',
+    'libtheora',
+    'mpeg4',
+    'h263_v4l2m2m',
+    'h263p',
+    'h263',
+  ];
+
+  for (const preferredCodec of priorityOrder) {
+    if (availableEncoders.includes(preferredCodec)) {
+      console.log(`Selected preferred video encoder: ${preferredCodec}`);
+      return preferredCodec; // Trả về codec đầu tiên tìm thấy trong danh sách ưu tiên
+    }
+  }
+
+  // Nếu không có codec nào trong danh sách ưu tiên được tìm thấy,
+  // dùng encode software
+  const fallbackCodec = 'h264';
+  console.log(
+    `No preferred codec found, falling back to the first available: ${fallbackCodec}`,
+  );
+  return fallbackCodec;
+};
+
+// Ghi log lỗi vào file và upload
+const logErrorAndUpload = async (session: any, errorMessage: string) => {
+  //lấy device branch và device model
+  const deviceInfo = `${Platform.OS} ${Platform.Version}`;
+  const deviceModel = 's20 fe';
+  const logFilePath = `${RNFS.DocumentDirectoryPath}/error_log_locket_upload_${deviceModel}.txt`;
+  const errorDetails = `
+  Error: ${errorMessage}
+  Device Info: ${deviceInfo}
+  Device Model: ${deviceModel}
+  Log: ${session}
+  `;
+
+  await writeFile(logFilePath, errorDetails);
+
+  try {
+    uploadLogToServer(
+      logFilePath,
+      `error_log_locket_upload_${deviceModel}.txt`,
+    ); // Giả sử bạn có API này
+  } catch (uploadError) {
+    console.error('Error uploading log:', uploadError);
+  }
 };
 
 export const deleteAllMp4Files = async (directoryPath: string) => {

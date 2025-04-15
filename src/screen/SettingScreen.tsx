@@ -11,6 +11,7 @@ import {
   setUseCameraSetting,
   setOptionFriend,
   setUnlimitedTrimVideo,
+  setTrySoftwareEncode,
 } from '../redux/slice/setting.slice';
 import {clearPostMoment} from '../redux/slice/postMoment.slice';
 import {RootState} from '../redux/store';
@@ -18,9 +19,8 @@ import {RootState} from '../redux/store';
 const SettingScreen = () => {
   const dispatch = useDispatch();
 
-  const {useCamera, optionFriend, unlimitedTrimVideo} = useSelector(
-    (state: RootState) => state.setting,
-  );
+  const {useCamera, optionFriend, unlimitedTrimVideo, trySoftwareEncode} =
+    useSelector((state: RootState) => state.setting);
 
   const settingOptions = [
     {
@@ -35,9 +35,15 @@ const SettingScreen = () => {
     },
     {
       title:
-        'Cắt video nhiều hơn 7 giây (có thể làm giảm chất lượng rất nhiều)',
+        'Cắt video nhiều hơn 7 giây \n(có thể làm giảm chất lượng rất nhiều)',
       value: unlimitedTrimVideo,
       action: setUnlimitedTrimVideo,
+    },
+    {
+      title:
+        'Sử dụng phần mềm mã hóa video \n(có thể 1 số thiết bị sẽ không xem được video)',
+      value: trySoftwareEncode,
+      action: setTrySoftwareEncode,
     },
   ];
 
