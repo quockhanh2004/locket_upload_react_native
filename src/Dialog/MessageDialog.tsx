@@ -69,7 +69,7 @@ const MessageDialog = () => {
           <ProgressBar progress={progress} progressColor={Colors.primary} />
         </>
       )}
-      {task && (
+      {((task && type?.toUpperCase() !== 'ERROR') || type !== '') && (
         <Button
           label="Cancel"
           onPress={() => {
