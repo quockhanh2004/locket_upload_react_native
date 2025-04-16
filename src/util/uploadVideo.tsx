@@ -99,7 +99,7 @@ export const compressVideo = async (
           // Ghi lại lỗi vào file log
           await logErrorAndUpload(logs, 'Video compression failed');
           if (onError) {
-            onError('Video compression failed');
+            onError('Video compression failed, try again with encode software');
           }
         }
       },
