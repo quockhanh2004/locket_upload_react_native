@@ -2,7 +2,6 @@
 import RNFS, {writeFile} from 'react-native-fs';
 import axios from 'axios';
 import MD5 from 'crypto-js/md5';
-import {Platform} from 'react-native';
 
 import {uploadHeaders} from './header';
 import {
@@ -15,6 +14,7 @@ import {
 } from 'ffmpeg-kit-react-native';
 import {uploadLogToServer} from '../api/error.api';
 import {getTrySoftwareEncode} from './migrateOldPersist';
+import {getDeviceInfo} from './deviceInfo';
 
 export type VideoInfo = {
   extension: string;
@@ -296,13 +296,13 @@ export const getAvailableVideoEncoderCodec = async (): Promise<
 // Ghi log lỗi vào file và upload
 const logErrorAndUpload = async (session: any, errorMessage: string) => {
   //lấy device branch và device model
-  const deviceInfo = `${Platform.OS} ${Platform.Version}`;
-  const deviceModel = 's20 fe';
-  const logFilePath = `${RNFS.DocumentDirectoryPath}/error_log_locket_upload_${deviceModel}.txt`;
+  const deviceInfo = getDeviceInfo();
+  const logFilePath = `${RNFS.DocumentDirectoryPath}/error_log_locket_upload_${
+    deviceInfo.model + deviceInfo.fingerprint
+  }.txt`;
   const errorDetails = `
   Error: ${errorMessage}
   Device Info: ${deviceInfo}
-  Device Model: ${deviceModel}
   Log: ${session}
   `;
 
@@ -311,7 +311,9 @@ const logErrorAndUpload = async (session: any, errorMessage: string) => {
   try {
     uploadLogToServer(
       logFilePath,
-      `error_log_locket_upload_${deviceModel}.txt`,
+      `error_log_locket_upload_${
+        deviceInfo.model + deviceInfo.fingerprint
+      }.txt`,
     ); // Giả sử bạn có API này
   } catch (uploadError) {
     console.error('Error uploading log:', uploadError);
