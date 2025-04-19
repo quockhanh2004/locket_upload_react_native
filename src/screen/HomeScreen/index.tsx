@@ -28,7 +28,6 @@ import RNFS from 'react-native-fs';
 
 import PostForm from './PostForm';
 import {AppDispatch, RootState} from '../../redux/store';
-import {logout} from '../../redux/slice/user.slice';
 import {nav} from '../../navigation/navName';
 import {selectMedia} from '../../util/selectImage';
 import {clearAppCache} from '../../util/uploadImage';
@@ -44,6 +43,11 @@ import {
   uploadImageToFirebaseStorage,
   uploadVideoToFirebase,
 } from '../../redux/action/postMoment.action';
+import {
+  getLatestPosts,
+  getOldPosts,
+} from '../../redux/action/getOldPost.action';
+import {getFriends} from '../../redux/action/getFriend.action';
 
 let navigation: NavigationProp<any>;
 
@@ -75,6 +79,8 @@ const HomeScreen = () => {
   const {selected, optionSend, customListFriends} = useSelector(
     (state: RootState) => state.friends,
   );
+  const {posts} = useSelector((state: RootState) => state.oldPosts);
+  const {friends} = useSelector((state: RootState) => state.friends);
 
   //use state
   const [selectedMedia, setselectedMedia] = useState<MediaType | null>(null);
@@ -105,6 +111,26 @@ const HomeScreen = () => {
             refreshToken: user.refreshToken || '',
           }),
         );
+
+        if (posts.length === 0) {
+          dispatch(
+            getOldPosts({
+              userId: user.localId,
+              token: user.idToken || '',
+            }),
+          );
+        } else {
+          dispatch(getLatestPosts({sync_token: posts[0].canonical_uid}));
+        }
+
+        if (friends.length === 0) {
+          dispatch(
+            getFriends({
+              idUser: user.localId,
+              idToken: user.idToken || '',
+            }),
+          );
+        }
       }
     }
   }, []);
@@ -138,8 +164,9 @@ const HomeScreen = () => {
   }, [navigation, route]);
 
   //event đăng xuất
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleViewPost = () => {
+    // dispatch(logout());
+    navigationTo(nav.posts);
   };
 
   //kiểm tra cài đặt, nếu có bật cho phép chụp ảnh từ camera thì thêm option chụp ảnh nữa
@@ -306,7 +333,7 @@ const HomeScreen = () => {
           size={36}
           onPress={handleViewProfile}
         />
-        <TouchableOpacity onPress={handleLogout}>
+        <TouchableOpacity onPress={handleViewPost}>
           <View
             padding-8
             style={{
@@ -316,7 +343,7 @@ const HomeScreen = () => {
             }}>
             <Icon
               assetGroup="icons"
-              assetName="ic_logout"
+              assetName="ic_menu"
               size={24}
               tintColor={Colors.grey40}
             />

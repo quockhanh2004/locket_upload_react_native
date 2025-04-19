@@ -2,8 +2,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {AppDispatch} from '../redux/store';
 import {setUser} from '../redux/slice/user.slice';
-import {setSetting, SettingState} from '../redux/slice/setting.slice';
+import {setSetting} from '../redux/slice/setting.slice';
 import {restoreFriends} from '../redux/slice/friends.slice';
+import {SettingState} from '../models/setting.model';
 
 export const restoreOldData = async (dispatch: AppDispatch) => {
   const oldData = await AsyncStorage.getItem('persist:root');

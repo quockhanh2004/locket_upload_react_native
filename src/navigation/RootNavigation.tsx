@@ -13,6 +13,7 @@ import SettingScreen from '../screen/SettingScreen';
 import CameraScreen from '../screen/CameraScreen';
 import {AppDispatch, RootState} from '../redux/store';
 import {restoreOldData} from '../util/migrateOldPersist';
+import PostScreen from '../screen/PostScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,7 @@ const HomeNavigator = () => {
       <Stack.Screen name={nav.crop} component={CropImageScreen} />
       <Stack.Screen name={nav.setting} component={SettingScreen} />
       <Stack.Screen name={nav.camera} component={CameraScreen} />
+      <Stack.Screen name={nav.posts} component={PostScreen} />
     </Stack.Navigator>
   );
 };

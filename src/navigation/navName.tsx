@@ -6,4 +6,5 @@ export const nav = {
   crop: 'crop',
   setting: 'setting',
   camera: 'camera',
+  posts: 'posts',
 };

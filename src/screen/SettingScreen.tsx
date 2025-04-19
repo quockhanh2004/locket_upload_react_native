@@ -15,6 +15,9 @@ import {
 } from '../redux/slice/setting.slice';
 import {clearPostMoment} from '../redux/slice/postMoment.slice';
 import {RootState} from '../redux/store';
+import {logout} from '../redux/slice/user.slice';
+import {setOldPosts} from '../redux/slice/oldPosts.slice';
+import {setFriends} from '../redux/slice/friends.slice';
 
 const SettingScreen = () => {
   const dispatch = useDispatch();
@@ -94,6 +97,14 @@ const SettingScreen = () => {
           }
         />
       </View>
+      <MainButton
+        label="Đăng xuất"
+        onPress={() => {
+          dispatch(logout());
+          dispatch(setOldPosts([]));
+          dispatch(setFriends([]));
+        }}
+      />
     </View>
   );
 };

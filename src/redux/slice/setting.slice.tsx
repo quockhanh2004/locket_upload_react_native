@@ -1,19 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-
-export interface CameraSetting {
-  cameraId?: string;
-  format?: number;
-  flash?: boolean;
-}
-
-export interface SettingState {
-  useCamera: boolean;
-  cameraSettings: CameraSetting;
-  appVersion: string;
-  optionFriend: boolean;
-  unlimitedTrimVideo: boolean;
-  trySoftwareEncode: boolean;
-}
+import {CameraSetting, SettingState} from '../../models/setting.model';
 
 const initialState: SettingState = {
   useCamera: false,

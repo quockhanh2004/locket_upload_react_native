@@ -1,7 +1,7 @@
 /* eslint-disable no-async-promise-executor */
 import axios from 'axios';
-import {Friend} from '../redux/slice/friends.slice';
 import {fetchUser} from '../api/user.api';
+import {Friend} from '../models/friend.model';
 
 export const getListIdFriend = async (token: string, userId: string) => {
   const response = await axios.post(

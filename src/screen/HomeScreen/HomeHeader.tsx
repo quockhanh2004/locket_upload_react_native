@@ -8,7 +8,7 @@ import {
   Icon,
   Colors,
 } from 'react-native-ui-lib';
-import {ProviderUserInfo} from '../../redux/slice/user.slice';
+import {ProviderUserInfo} from '../../models/user.model';
 
 interface Props {
   userInfo: ProviderUserInfo;

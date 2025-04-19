@@ -1,13 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {getFriends} from '../action/getFriend.action';
-
-export interface Friend {
-  uid: string;
-  username?: string;
-  first_name?: string;
-  last_name?: string;
-  profile_picture_url?: string;
-}
+import {Friend} from '../../models/friend.model';
 
 interface InitialState {
   friends: Friend[];

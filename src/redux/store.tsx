@@ -8,6 +8,7 @@ import messageReducer from './slice/message.slice';
 import postMomentReducer from './slice/postMoment.slice';
 import settingReducer from './slice/setting.slice';
 import friendsReducer from './slice/friends.slice';
+import {oldPostsReducer} from './slice/oldPosts.slice';
 
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
@@ -30,11 +31,19 @@ const friendsPersistConfig: PersistConfig<ReturnType<typeof friendsReducer>> = {
   stateReconciler: autoMergeLevel2,
 };
 
+const oldPostsPersistConfig: PersistConfig<ReturnType<typeof oldPostsReducer>> =
+  {
+    key: 'oldPosts',
+    storage: AsyncStorage,
+    stateReconciler: autoMergeLevel2,
+  };
+
 // Kết hợp reducer với từng persistReducer
 const rootReducer = combineReducers({
   user: persistReducer(userPersistConfig, userReducer),
   setting: persistReducer(settingPersistConfig, settingReducer),
   friends: persistReducer(friendsPersistConfig, friendsReducer),
+  oldPosts: persistReducer(oldPostsPersistConfig, oldPostsReducer),
   message: messageReducer,
   postMoment: postMomentReducer,
 });
