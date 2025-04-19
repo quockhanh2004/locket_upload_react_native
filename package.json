@@ -1,6 +1,6 @@
 {
   "name": "locket_upload",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
