@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react';
 import {FlatList, ToastAndroid} from 'react-native';
-import {View, Text, Switch} from 'react-native-ui-lib';
+import {View, Text, Switch, Colors} from 'react-native-ui-lib';
 import {useDispatch, useSelector} from 'react-redux';
 import RNFS from 'react-native-fs';
 
@@ -70,7 +70,7 @@ const SettingScreen = () => {
   }, [dispatch]);
 
   return (
-    <View flex>
+    <View flex bg-black paddingB-16>
       <Header title="Setting" />
       <View bg-black flex paddingT-40 paddingH-12>
         <FlatList
@@ -99,6 +99,8 @@ const SettingScreen = () => {
       </View>
       <MainButton
         label="Đăng xuất"
+        backgroundColor={Colors.red30}
+        lableColor={Colors.white}
         onPress={() => {
           dispatch(logout());
           dispatch(setOldPosts([]));

@@ -27,7 +27,6 @@ export const getListFriend = (
 
         // Kiểm tra dữ liệu hợp lệ trước khi resolve promise
         if (data && data.uid) {
-          console.log(data);
           resolve(data); // Resolve với dữ liệu bạn bè
         } else {
           reject(new Error(`Friend data for ${friendId} is invalid.`));

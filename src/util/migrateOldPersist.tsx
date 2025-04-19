@@ -7,9 +7,9 @@ import {restoreFriends} from '../redux/slice/friends.slice';
 import {SettingState} from '../models/setting.model';
 
 export const restoreOldData = async (dispatch: AppDispatch) => {
-  const oldData = await AsyncStorage.getItem('persist:root');
-  if (oldData) {
-    const parsed = JSON.parse(oldData);
+  const oldDataRoot = await AsyncStorage.getItem('persist:root');
+  if (oldDataRoot) {
+    const parsed = JSON.parse(oldDataRoot);
     if (parsed.user) {
       dispatch(setUser(parsed.user));
     }
@@ -22,8 +22,12 @@ export const restoreOldData = async (dispatch: AppDispatch) => {
       dispatch(restoreFriends(parsed.friends));
     }
 
-    // Xóa oldData sau khi đã khôi phục
     await AsyncStorage.removeItem('persist:root');
+  }
+
+  const oldPosts = await AsyncStorage.getItem('persist:oldPosts');
+  if (oldPosts) {
+    await AsyncStorage.removeItem('persist:oldPosts');
   }
 };
 

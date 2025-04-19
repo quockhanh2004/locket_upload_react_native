@@ -1,18 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect} from 'react';
-
-import {nav} from './navName';
-import LoginScreen from '../screen/LoginScreen';
-import HomeScreen from '../screen/HomeScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
-import AccountScreen from '../screen/AccountScreen';
+
+import {AppDispatch, RootState} from '../redux/store';
+import {restoreOldData} from '../util/migrateOldPersist';
+import {nav} from './navName';
+
+import LoginScreen from '../screen/LoginScreen';
+import HomeScreen from '../screen/HomeScreen';
+import AccountScreen from '../screen/AccountScreen/AccountScreen';
 import CropImageScreen from '../screen/CropImageScreen';
 import SettingScreen from '../screen/SettingScreen';
 import CameraScreen from '../screen/CameraScreen';
-import {AppDispatch, RootState} from '../redux/store';
-import {restoreOldData} from '../util/migrateOldPersist';
 import PostScreen from '../screen/PostScreen';
 
 const Stack = createNativeStackNavigator();

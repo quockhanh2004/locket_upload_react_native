@@ -153,7 +153,7 @@ notifee.onBackgroundEvent(async event => {
 
 async function subscribeTopic(appVersion: string, dispatch: any) {
   await subscribeToTopic(messaging, 'new_update');
-  if (appVersion !== version) {
+  if (appVersion && appVersion !== version) {
     try {
       await unsubscribeFromTopic(messaging, appVersion);
       console.log('Thiết bị đã hủy đăng ký topic ' + appVersion);

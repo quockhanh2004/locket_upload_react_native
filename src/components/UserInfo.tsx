@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {
   View,
@@ -10,7 +11,14 @@ import {
 } from 'react-native-ui-lib';
 import {converTime} from '../util/convertTime';
 
-const UserInfo = ({
+interface UserInfoProps {
+  dataUser: any;
+  updateAvatarLoading: boolean;
+  handleUpdateAvatar: () => void;
+  handleEditName: () => void;
+}
+
+const UserInfo: React.FC<UserInfoProps> = ({
   dataUser,
   updateAvatarLoading,
   handleUpdateAvatar,
@@ -38,7 +46,7 @@ const UserInfo = ({
           animate
         />
       ) : (
-        <LoaderScreen color={Colors.white} size={'medium'} />
+        <LoaderScreen color={Colors.white} size={'large'} />
       )}
       <View row centerV marginT-20>
         <Text text50BL color={Colors.white}>

@@ -6,6 +6,7 @@ import Video from 'react-native-video';
 import {Post} from '../../models/post.model';
 import {Friend} from '../../models/friend.model';
 import Header from '../../components/Header';
+import {timeDiffFromNow} from '../../util/convertTime';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -23,9 +24,9 @@ const PostPagerItem: React.FC<PostPagerItemProps> = React.memo(
     const videoRef = useRef<any>(null);
 
     const onVideoLoad = useCallback(() => {
-      console.log(`Video loaded for item ${item.id}`);
       setIsVideoReady(true);
       setVideoError(false);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [item.id]);
 
     const onVideoError = useCallback(
@@ -84,7 +85,7 @@ const PostPagerItem: React.FC<PostPagerItemProps> = React.memo(
               }}
               paddingH-16
               paddingV-8>
-              <Text white text50BL center>
+              <Text white text60BO center>
                 {item.caption}
               </Text>
             </View>
@@ -93,6 +94,11 @@ const PostPagerItem: React.FC<PostPagerItemProps> = React.memo(
             <Avatar source={{uri: user?.profile_picture_url}} size={32} />
             <Text marginL-8 white text60BL>
               {user?.first_name}
+            </Text>
+            <Text marginL-8 grey40 text70BL>
+              {timeDiffFromNow(
+                typeof item.date === 'number' ? item.date : item.date._seconds,
+              )}
             </Text>
           </View>
         </View>
@@ -118,7 +124,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
   },
   modalItemContainer: {
-    height: screenHeight - 32,
+    height: screenHeight - 45,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 16,

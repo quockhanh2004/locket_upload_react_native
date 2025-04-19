@@ -7,13 +7,14 @@ import {
   Icon,
   Colors,
 } from 'react-native-ui-lib';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   useNavigation,
   useRoute,
   NavigationProp,
   RouteProp,
+  useFocusEffect,
 } from '@react-navigation/native';
 
 import {
@@ -43,10 +44,7 @@ import {
   uploadImageToFirebaseStorage,
   uploadVideoToFirebase,
 } from '../../redux/action/postMoment.action';
-import {
-  getLatestPosts,
-  getOldPosts,
-} from '../../redux/action/getOldPost.action';
+import {getOldPosts} from '../../redux/action/getOldPost.action';
 import {getFriends} from '../../redux/action/getFriend.action';
 
 let navigation: NavigationProp<any>;
@@ -79,7 +77,6 @@ const HomeScreen = () => {
   const {selected, optionSend, customListFriends} = useSelector(
     (state: RootState) => state.friends,
   );
-  const {posts} = useSelector((state: RootState) => state.oldPosts);
   const {friends} = useSelector((state: RootState) => state.friends);
 
   //use state
@@ -101,34 +98,21 @@ const HomeScreen = () => {
           refreshToken: user.refreshToken || '',
         }),
       );
-    } else {
-      if (user) {
+    } else if (user) {
+      dispatch(
+        getAccountInfo({
+          idToken: user.idToken || '',
+          refreshToken: user.refreshToken || '',
+        }),
+      );
+
+      if (friends.length === 0) {
         dispatch(
-          getAccountInfo({
+          getFriends({
+            idUser: user.localId,
             idToken: user.idToken || '',
-            refreshToken: user.refreshToken || '',
           }),
         );
-
-        if (posts.length === 0) {
-          dispatch(
-            getOldPosts({
-              userId: user.localId,
-              token: user.idToken || '',
-            }),
-          );
-        } else {
-          dispatch(getLatestPosts({sync_token: posts[0].canonical_uid}));
-        }
-
-        if (friends.length === 0) {
-          dispatch(
-            getFriends({
-              idUser: user.localId,
-              idToken: user.idToken || '',
-            }),
-          );
-        }
       }
     }
   }, []);
@@ -160,6 +144,18 @@ const HomeScreen = () => {
 
     return unsubscribe; // Hủy đăng ký listener khi component unmount
   }, [navigation, route]);
+
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(
+        getOldPosts({
+          userId: user?.localId || '',
+          token: user?.idToken || '',
+        }),
+      );
+      return;
+    }, [user?.localId, user?.idToken, dispatch]),
+  );
 
   //event đăng xuất
   const handleViewPost = () => {

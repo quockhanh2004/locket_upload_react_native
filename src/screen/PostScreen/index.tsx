@@ -8,14 +8,17 @@ import {
   InteractionManager,
   StyleSheet,
 } from 'react-native';
-import {View, Button, GridList, Card, Image} from 'react-native-ui-lib';
+import {View, GridList, Card, Image, Picker, Text} from 'react-native-ui-lib';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../redux/store';
 import {navigationTo} from '../HomeScreen';
 import {nav} from '../../navigation/navName';
 import PostPagerItem from './PostPagerItem';
-import {setOldPosts} from '../../redux/slice/oldPosts.slice';
 import Header from '../../components/Header';
+import {getOldPosts} from '../../redux/action/getOldPost.action';
+import MainButton from '../../components/MainButton';
+import {Friend} from '../../models/friend.model';
+import {Post} from '../../models/post.model';
 
 interface PostScreenProps {
   initialIndex?: number;
@@ -32,6 +35,8 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
 
   const [isViewerVisible, setIsViewerVisible] = useState<boolean>(true);
   const [indexToView, setIndexToView] = useState<number>(initialIndex);
+  const [filterFriendShow, setFilterFriendShow] = useState<Friend | null>(null);
+  const [listPostByFilter, setListPostByFilter] = useState<Post[]>(posts);
   const [selectedIndexInModal, setSelectedIndexInModal] =
     useState<number>(initialIndex);
 
@@ -50,11 +55,12 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
     navigationTo(nav.home);
   };
 
-  const filterFriends = () => {
-    const find = friends.find(
-      friend => friend.uid === posts[selectedIndexInModal]?.user,
-    );
-    if (!find && posts[selectedIndexInModal]?.user === user?.localId) {
+  const filterFriends = (item: Post) => {
+    const find = friends.find(friend => friend.uid === item.user);
+    if (
+      !find &&
+      listPostByFilter[selectedIndexInModal]?.user === user?.localId
+    ) {
       return {
         first_name: 'Bạn',
         profile_picture_url: user?.photoUrl,
@@ -65,7 +71,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   };
 
   useEffect(() => {
-    if (posts.length === 0) {
+    if (listPostByFilter.length === 0) {
       return;
     }
     if (isViewerVisible && flatListRef.current) {
@@ -88,7 +94,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
       });
       return () => interactionHandle.cancel();
     }
-  }, [isViewerVisible, indexToView, posts.length]);
+  }, [isViewerVisible, indexToView, listPostByFilter.length]);
 
   // --- Cập nhật Index hiện tại trong Modal khi người dùng cuộn ---
   const onViewableItemsChangedInModal = useCallback(
@@ -108,17 +114,61 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
     [],
   );
 
+  // --- Lọc danh sách bài viết theo bạn bè ---
+  useEffect(() => {
+    if (!filterFriendShow) {
+      setListPostByFilter(posts);
+      return;
+    }
+
+    const filteredPosts = posts.filter(
+      post => post.user === filterFriendShow?.uid,
+    );
+    setListPostByFilter(filteredPosts);
+  }, [filterFriendShow, posts]);
+
   const viewabilityConfig = useRef({
     itemVisiblePercentThreshold: 50,
   }).current;
 
+  //nếu không có bài post nào
+  if (listPostByFilter.length === 0) {
+    return (
+      <View flex bg-black useSafeArea>
+        <Header />
+        <View flex center>
+          <Text color="#fff">Không có bài viết nào</Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View flex bg-black useSafeArea>
-      <Header />
+      <Header
+        customCenter={
+          <Picker value={filterFriendShow?.uid || undefined} white text60BO>
+            {friends.map(item => {
+              return (
+                <Picker.Item
+                  key={item.uid}
+                  value={item.uid}
+                  label={
+                    item.uid === user?.localId
+                      ? 'Bạn'
+                      : `${item.first_name} ${item.last_name!}`
+                  }
+                  onPress={() => setFilterFriendShow(item)}
+                />
+              );
+            })}
+          </Picker>
+        }
+      />
       <View height={16} />
       {!isViewerVisible && (
         <GridList
-          data={posts}
+          data={listPostByFilter}
           numColumns={3}
           keyExtractor={item => item.id}
           renderItem={({item, index}) => (
@@ -144,13 +194,14 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         <View flex bg-black>
           <FlatList
             ref={flatListRef}
-            data={posts}
+            data={listPostByFilter}
             keyExtractor={item => item.id}
             renderItem={({item, index}) => (
               <PostPagerItem
                 item={item}
+                key={item.id}
                 isActive={index === selectedIndexInModal} // Chỉ active nếu index khớp
-                user={filterFriends()}
+                user={filterFriends(item)}
               />
             )}
             snapToInterval={screenHeight}
@@ -173,20 +224,19 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
             style={styles.modalFlatList}
           />
 
-          <View style={styles.modalOverlayButtons} gap-12>
-            {/* {posts.length > selectedIndexInModal &&
-              posts[selectedIndexInModal]?.user !== currentUserId && (
-                <View row spread marginB-10>
-                  <Button label="Comment" onPress={() => {}} />
-                </View>
-              )} */}
-            <Button
+          <View style={styles.modalOverlayButtons} gap-12 row spread>
+            <MainButton
               label="Refresh"
               onPress={() => {
-                dispatch(setOldPosts([]));
+                dispatch(
+                  getOldPosts({
+                    userId: user?.localId || '',
+                    token: user?.idToken || '',
+                  }),
+                );
               }}
             />
-            <Button label={'View all'} onPress={viewAll} />
+            <MainButton label={'View all'} onPress={viewAll} />
           </View>
         </View>
       </Modal>

@@ -6,7 +6,7 @@ export interface Post {
   user: string;
   canonical_uid: string;
   md5: string;
-  date: number;
+  date: number | DatePost;
   create_time: number;
   update_time: number;
   overlays?: OverlayPost[];
@@ -17,6 +17,11 @@ export interface OverlayPost {
   overlay_type: string;
   alt_text?: string;
   data?: DataPost;
+}
+
+export interface DatePost {
+  _nanoseconds: number;
+  _seconds: number;
 }
 
 export interface DataPost {

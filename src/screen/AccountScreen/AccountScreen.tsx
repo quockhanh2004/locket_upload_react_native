@@ -5,24 +5,28 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Linking, RefreshControl, ScrollView} from 'react-native';
 import codePush from 'react-native-code-push';
-import {checkUpdateApk} from '../util/update';
+import {checkUpdateApk} from '../../util/update';
 
 import {
   // enableLocketGold,
   getAccountInfo,
   updateDisplayName,
-} from '../redux/action/user.action';
-import EditTextDialog from '../Dialog/EditTextDialog';
-import Header from '../components/Header';
-import UpdatePopup from '../Dialog/UpdatePopup';
-import {CODEPUSH_DEPLOYMENTKEY, getStatusFromCodePush} from '../util/codepush';
-import MainButton from '../components/MainButton';
-import {setMessage} from '../redux/slice/message.slice';
-import UserInfo from '../components/UserInfo';
+} from '../../redux/action/user.action';
+import EditTextDialog from '../../Dialog/EditTextDialog';
+import Header from '../../components/Header';
+import UpdatePopup from '../../Dialog/UpdatePopup';
+import {
+  CODEPUSH_DEPLOYMENTKEY,
+  getStatusFromCodePush,
+} from '../../util/codepush';
+import MainButton from '../../components/MainButton';
+import {setMessage} from '../../redux/slice/message.slice';
+import UserInfo from '../../components/UserInfo';
 import {useRoute} from '@react-navigation/native';
-import {navigationTo} from './HomeScreen';
-import {nav} from '../navigation/navName';
-import {AppDispatch, RootState} from '../redux/store';
+import {navigationTo} from '../HomeScreen';
+import {nav} from '../../navigation/navName';
+import {AppDispatch, RootState} from '../../redux/store';
+import ModalImageViewBlur from './ModalImageViewBlur';
 
 const AccountScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -34,6 +38,7 @@ const AccountScreen = () => {
   );
 
   const [isEditName, setisEditName] = useState(false);
+  const [visibleBigAvatar, setvisibleBigAvatar] = useState(false);
 
   const handleRefresh = () => {
     dispatch(
@@ -64,22 +69,7 @@ const AccountScreen = () => {
   };
 
   const handleUpdateAvatar = async () => {
-    // const result = await selectMedia();
-    // let avatar;
-    // if (result?.length > 0) {
-    //   avatar = result[0];
-    // }
-    // if (!avatar) {
-    //   return;
-    // }
-    // dispatch(
-    //   updateAvatar({
-    //     imageInfo: avatar,
-    //     idUser: user?.localId,
-    //     idToken: user?.idToken,
-    //     refreshToken: user?.refreshToken,
-    //   }),
-    // );
+    setvisibleBigAvatar(true);
   };
   useEffect(() => {
     if (local_update) {
@@ -240,6 +230,13 @@ const AccountScreen = () => {
           onCheckUpdate={handleCodePushUpdate}
           apkUpdateInfo={updateAPKInfo}
           onUpdateApk={handleCheckUpdateAPK}
+        />
+        <ModalImageViewBlur
+          image={user?.profilePicture || ''}
+          visible={visibleBigAvatar}
+          onCancel={function (): void {
+            setvisibleBigAvatar(false);
+          }}
         />
       </ScrollView>
     </>

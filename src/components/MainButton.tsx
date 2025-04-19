@@ -6,6 +6,7 @@ interface MainButtonProps {
   label?: string;
   onPress?: () => void;
   backgroundColor?: string;
+  lableColor?: string;
 }
 
 const MainButton: React.FC<MainButtonProps> = ({
@@ -13,12 +14,13 @@ const MainButton: React.FC<MainButtonProps> = ({
   label,
   onPress,
   backgroundColor,
+  lableColor,
 }) => {
   return (
     <Button
       label={!isLoading ? label : ''}
       backgroundColor={backgroundColor || Colors.primary}
-      black
+      color={lableColor || Colors.black}
       onPress={onPress}
       borderRadius={8}
       disabled={isLoading}

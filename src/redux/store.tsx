@@ -31,19 +31,12 @@ const friendsPersistConfig: PersistConfig<ReturnType<typeof friendsReducer>> = {
   stateReconciler: autoMergeLevel2,
 };
 
-const oldPostsPersistConfig: PersistConfig<ReturnType<typeof oldPostsReducer>> =
-  {
-    key: 'oldPosts',
-    storage: AsyncStorage,
-    stateReconciler: autoMergeLevel2,
-  };
-
 // Kết hợp reducer với từng persistReducer
 const rootReducer = combineReducers({
   user: persistReducer(userPersistConfig, userReducer),
   setting: persistReducer(settingPersistConfig, settingReducer),
   friends: persistReducer(friendsPersistConfig, friendsReducer),
-  oldPosts: persistReducer(oldPostsPersistConfig, oldPostsReducer),
+  oldPosts: oldPostsReducer,
   message: messageReducer,
   postMoment: postMomentReducer,
 });

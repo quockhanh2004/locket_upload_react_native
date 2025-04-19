@@ -10,3 +10,21 @@ export function converTime(timestamp: string): string {
 
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 }
+
+export const timeDiffFromNow = (timestampInSeconds: number) => {
+  const now = new Date().getTime() / 1000;
+
+  const diffInMinutes = Math.abs(timestampInSeconds - now) / 60;
+
+  if (diffInMinutes < 60) {
+    return `${Math.round(diffInMinutes)}m`;
+  }
+
+  const diffInHours = diffInMinutes / 60;
+  if (diffInHours < 24) {
+    return `${Math.round(diffInHours)}h`;
+  }
+
+  const diffInDays = diffInHours / 24;
+  return `${Math.round(diffInDays)}d`;
+};

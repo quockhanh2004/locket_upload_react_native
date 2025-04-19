@@ -14,10 +14,14 @@ interface HeaderProps {
   rightIcon?: string;
   rightIconAction?: () => void;
   leftIconAction?: () => void;
+
+  //custom component
+  customCenter?: React.ReactNode;
 }
 
 const Header = ({
   title,
+  customCenter,
   rightIcon,
   rightIconAction,
   leftIconAction,
@@ -42,13 +46,17 @@ const Header = ({
           size={24}
         />
       </TouchableOpacity>
-      <Text
-        white
-        style={{
-          ...Typography.text60BL,
-        }}>
-        {title}
-      </Text>
+      {customCenter ? (
+        customCenter
+      ) : (
+        <Text
+          white
+          style={{
+            ...Typography.text60BL,
+          }}>
+          {title}
+        </Text>
+      )}
       {rightIcon ? (
         <TouchableOpacity onPress={rightIconAction}>
           <Icon

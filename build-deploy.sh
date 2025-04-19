@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -ex
 set -e  # Dừng ngay nếu có lỗi
 
 trap "echo 'Quá trình build bị hủy. Dừng tất cả.'; exit 1" SIGINT

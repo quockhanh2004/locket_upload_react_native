@@ -1,6 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {Post} from '../../models/post.model';
-import {getLatestPosts, getOldPosts} from '../action/getOldPost.action';
+import {getOldPosts} from '../action/getOldPost.action';
+import {savePostsToStorage} from '../../helper/post.storage';
 
 interface InitialState {
   posts: Post[];
@@ -35,23 +36,19 @@ const oldPostsSlice = createSlice({
         state.isLoadPosts = true;
       })
       .addCase(getOldPosts.fulfilled, (state, action) => {
-        state.posts = action.payload;
+        const incomingPosts = action.payload.post;
+        const currentUserId = action.payload.currentUserId;
+
+        const existingIds = new Set(state.posts.map(post => post.id));
+        const filteredNewPosts = incomingPosts.filter(
+          (post: {id: string}) => !existingIds.has(post.id),
+        );
+
+        state.posts = [...filteredNewPosts, ...state.posts];
         state.isLoadPosts = false;
+        savePostsToStorage('posts_' + currentUserId, state.posts);
       })
       .addCase(getOldPosts.rejected, state => {
-        state.isLoadPosts = false;
-      })
-
-      .addCase(getLatestPosts.pending, state => {
-        state.isLoadPosts = true;
-      })
-
-      .addCase(getLatestPosts.fulfilled, (state, action) => {
-        const newPosts = action.payload;
-        if (newPosts.sync_token === state.posts[0]?.canonical_uid) {
-          return;
-        }
-        state.posts = [...newPosts.data, ...state.posts];
         state.isLoadPosts = false;
       });
   },
