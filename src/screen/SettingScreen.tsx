@@ -18,9 +18,11 @@ import {RootState} from '../redux/store';
 import {logout} from '../redux/slice/user.slice';
 import {setOldPosts} from '../redux/slice/oldPosts.slice';
 import {setFriends} from '../redux/slice/friends.slice';
+import {useNavigation} from '@react-navigation/native';
 
 const SettingScreen = () => {
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const {useCamera, optionFriend, unlimitedTrimVideo, trySoftwareEncode} =
     useSelector((state: RootState) => state.setting);
@@ -71,7 +73,12 @@ const SettingScreen = () => {
 
   return (
     <View flex bg-black paddingB-16>
-      <Header title="Setting" />
+      <Header
+        title="Cài đặt"
+        leftIconAction={() => {
+          navigation.goBack();
+        }}
+      />
       <View bg-black flex paddingT-40 paddingH-12>
         <FlatList
           data={settingOptions}

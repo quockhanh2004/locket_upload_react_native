@@ -7,7 +7,8 @@ import {
   Text,
   Typography,
 } from 'react-native-ui-lib';
-import {useNavigation} from '@react-navigation/native';
+import {navigationTo} from '../screen/HomeScreen';
+import {nav} from '../navigation/navName';
 
 interface HeaderProps {
   title?: string;
@@ -26,14 +27,12 @@ const Header = ({
   rightIconAction,
   leftIconAction,
 }: HeaderProps) => {
-  const navigation = useNavigation();
-
   const handleBack = () => {
     if (leftIconAction) {
       leftIconAction();
       return;
     }
-    navigation.goBack();
+    navigationTo(nav.home);
   };
 
   return (
