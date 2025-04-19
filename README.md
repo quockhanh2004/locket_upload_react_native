@@ -13,9 +13,9 @@
 - 🧑‍🤝‍🧑 **Hiển thị danh sách bạn bè**: Xem và chọn người nhận trước khi upload.
 - 🚀 **Cập nhật trong app**: Nhận bản cập nhật mới trong app, hạn chế phải cài APK thủ công.
 
-## 📦 Bản dựng sẵn có thể tải
+## [📦 Bản dựng sẵn có thể tải](https://github.com/quockhanh2004/locket_upload_react_native/releases)
 
-[![GitHub Releases](https://img.shields.io/github/downloads/quockhanh2004/locket_upload_react_native/total?label=Downloads&style=flat&logo=android)](https://github.com/quockhanh2004/locket_upload_react_native/releases)
+[![GitHub Releases](https://img.shields.io/github/downloads/quockhanh2004/locket_upload_react_native/total?label=Downloads&logo=android)](https://github.com/quockhanh2004/locket_upload_react_native/releases)
 
 <p align="left">
   <a href="https://buymeacoffee.com/quockhanh2004" target="_blank">
