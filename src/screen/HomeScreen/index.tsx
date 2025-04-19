@@ -103,8 +103,6 @@ const HomeScreen = () => {
       );
     } else {
       if (user) {
-        console.log('get account info');
-
         dispatch(
           getAccountInfo({
             idToken: user.idToken || '',
