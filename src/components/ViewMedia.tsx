@@ -4,7 +4,15 @@ import {ActivityIndicator} from 'react-native';
 import {View, TouchableOpacity, Colors, Image, Icon} from 'react-native-ui-lib';
 import Video from 'react-native-video';
 
-const ViewMedia = ({
+interface ViewMediaProps {
+  selectedMedia: {uri: string} | null;
+  isVideo: boolean;
+  onSelectMedia: () => void;
+  onRemoveMedia: () => void;
+  localLoading: boolean;
+}
+
+const ViewMedia: React.FC<ViewMediaProps> = ({
   selectedMedia,
   isVideo,
   onSelectMedia,

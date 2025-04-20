@@ -116,7 +116,6 @@ const InputView = forwardRef<TextInput, InputViewProps>(
     inputRef: any,
   ) => {
     const [showPassword, setShowPassword] = useState(eyePassword);
-    // const [isFocus, setIsFocus] = useState(false);
 
     const toggleEye = () => setShowPassword(p => !p);
 
@@ -124,16 +123,6 @@ const InputView = forwardRef<TextInput, InputViewProps>(
       inputRef?.current?.clear?.();
       onChangeText?.('');
     };
-
-    // const handleFocus = () => {
-    //   setIsFocus(true);
-    //   onFocus?.(true);
-    // };
-
-    // const handleBlur = () => {
-    //   setIsFocus(false);
-    //   onBlur?.();
-    // };
 
     const renderLeftComponent = () =>
       !!iconLeft && (
@@ -164,18 +153,6 @@ const InputView = forwardRef<TextInput, InputViewProps>(
       );
 
     return (
-      // <WrapInput
-      //   title={title}
-      //   withColon={withColon}
-      //   required={required}
-      //   error={error}
-      //   description={description}
-      //   isFocus={isFocus}
-      //   enableShadow={enableShadow}
-      //   {...props}>
-
-      // </WrapInput>
-      // </View>
       <View style={{borderRadius: 12, maxHeight: maxHeight}}>
         <Card
           flex={flex}
@@ -183,15 +160,10 @@ const InputView = forwardRef<TextInput, InputViewProps>(
           centerH
           centerV
           style={style}
-          border={borderB ? 0 : 1}
-          borderB={borderB}
           gap-10
           enableShadow={enableShadow}
           backgroundColor={bgColor}
-          borderColor={borderColor}
-          borderWidth={borderWidth}
-          borderRadius={radius}
-          width={props.width}>
+          borderRadius={radius}>
           {renderLeft || renderLeftComponent()}
           <TextInput
             ref={inputRef}
@@ -213,14 +185,11 @@ const InputView = forwardRef<TextInput, InputViewProps>(
             maxLength={maxLength}
             placeholder={placeholder}
             placeholderTextColor={placeholderTextColor}
-            // onFocus={handleFocus}
-            // onBlur={handleBlur}
             onPressIn={onPressIn}
             onSubmitEditing={onSubmitEditing}
             keyboardType={keyboardType}
             secureTextEntry={showPassword}
             returnKeyType={returnKeyType}
-            textContentType={textContentType}
             onKeyPress={onKeyPress}
           />
           {showClear && !!value && (
@@ -246,7 +215,7 @@ const InputView = forwardRef<TextInput, InputViewProps>(
               />
             </Pressable>
           )}
-          {!!error && <Icon normal assetName={'error'} marginR-12 />}
+          {!!error && <Icon assetName={'error'} marginR-12 />}
           {renderRight || renderRightComponent()}
         </Card>
       </View>

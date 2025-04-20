@@ -8,17 +8,17 @@ import {
   InteractionManager,
   StyleSheet,
 } from 'react-native';
-import {View, GridList, Card, Image, Picker, Text} from 'react-native-ui-lib';
+import {View, GridList, Card, Image, Text} from 'react-native-ui-lib';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../redux/store';
 import {navigationTo} from '../HomeScreen';
 import {nav} from '../../navigation/navName';
 import PostPagerItem from './PostPagerItem';
-import Header from '../../components/Header';
 import {getOldPosts} from '../../redux/action/getOldPost.action';
 import MainButton from '../../components/MainButton';
 import {Friend} from '../../models/friend.model';
 import {Post} from '../../models/post.model';
+import PostScreenHeader from './PostScreenHeader';
 
 interface PostScreenProps {
   initialIndex?: number;
@@ -131,59 +131,33 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
     itemVisiblePercentThreshold: 50,
   }).current;
 
-  //nếu không có bài post nào
-  if (listPostByFilter.length === 0) {
-    return (
-      <View flex bg-black useSafeArea>
-        <Header />
-        <View flex center>
-          <Text color="#fff">Không có bài viết nào</Text>
-        </View>
-      </View>
-    );
-  }
-
   return (
     <View flex bg-black useSafeArea>
-      <Header
-        customCenter={
-          <Picker value={filterFriendShow?.uid || undefined} white text60BO>
-            {friends.map(item => {
-              return (
-                <Picker.Item
-                  key={item.uid}
-                  value={item.uid}
-                  label={
-                    item.uid === user?.localId
-                      ? 'Bạn'
-                      : `${item.first_name} ${item.last_name!}`
-                  }
-                  onPress={() => setFilterFriendShow(item)}
-                />
-              );
-            })}
-          </Picker>
-        }
+      <PostScreenHeader
+        friends={friends}
+        user={user}
+        filterFriendShow={filterFriendShow}
+        setFilterFriendShow={setFilterFriendShow}
       />
       <View height={16} />
-      {!isViewerVisible && (
-        <GridList
-          data={listPostByFilter}
-          numColumns={3}
-          keyExtractor={item => item.id}
-          renderItem={({item, index}) => (
-            <Card borderRadius={20}>
-              <Pressable onPress={() => openViewer(index)}>
-                <Image
-                  source={{uri: item.thumbnail_url}}
-                  style={styles.gridImage}
-                />
-              </Pressable>
-            </Card>
-          )}
-          contentContainerStyle={styles.gridContentContainer}
-        />
-      )}
+
+      <GridList
+        data={listPostByFilter}
+        numColumns={3}
+        keyExtractor={item => item.id}
+        itemSpacing={4}
+        renderItem={({item, index}) => (
+          <Card borderRadius={20}>
+            <Pressable onPress={() => openViewer(index)}>
+              <Image
+                source={{uri: item.thumbnail_url}}
+                style={styles.gridImage}
+              />
+            </Pressable>
+          </Card>
+        )}
+      />
+
       <Modal
         visible={isViewerVisible}
         onRequestClose={handleBackPress}
@@ -222,6 +196,19 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
             initialNumToRender={3}
             maxToRenderPerBatch={3}
             style={styles.modalFlatList}
+            ListEmptyComponent={
+              <View flex bg-black useSafeArea>
+                <PostScreenHeader
+                  friends={friends}
+                  user={user}
+                  filterFriendShow={filterFriendShow}
+                  setFilterFriendShow={setFilterFriendShow}
+                />
+                <View flex center>
+                  <Text color="#fff">Không có bài viết nào</Text>
+                </View>
+              </View>
+            }
           />
 
           <View style={styles.modalOverlayButtons} gap-12 row spread>
@@ -238,6 +225,14 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
             />
             <MainButton label={'View all'} onPress={viewAll} />
           </View>
+          <View absT width={screenWidth}>
+            <PostScreenHeader
+              friends={friends}
+              user={user}
+              filterFriendShow={filterFriendShow}
+              setFilterFriendShow={setFilterFriendShow}
+            />
+          </View>
         </View>
       </Modal>
     </View>
@@ -247,13 +242,9 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
 // --- StyleSheet ---
 const styles = StyleSheet.create({
   gridImage: {
-    width: screenWidth / 3,
-    height: screenWidth / 3,
+    aspectRatio: 1,
     backgroundColor: '#999',
     borderRadius: 20,
-  },
-  gridContentContainer: {
-    paddingBottom: 20,
   },
   modalItemContainer: {
     height: screenHeight,

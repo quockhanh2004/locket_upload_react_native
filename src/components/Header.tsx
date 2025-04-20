@@ -36,7 +36,7 @@ const Header = ({
   };
 
   return (
-    <View bg-black row spread paddingH-20 paddingT-20>
+    <View bg-black row spread paddingH-20 paddingT-20 centerV>
       <TouchableOpacity onPress={handleBack}>
         <Icon
           assetGroup="icons"

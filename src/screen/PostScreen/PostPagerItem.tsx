@@ -5,7 +5,6 @@ import {View, Text, Avatar, Image} from 'react-native-ui-lib';
 import Video from 'react-native-video';
 import {Post} from '../../models/post.model';
 import {Friend} from '../../models/friend.model';
-import Header from '../../components/Header';
 import {timeDiffFromNow} from '../../util/convertTime';
 
 const screenWidth = Dimensions.get('window').width;
@@ -49,7 +48,7 @@ const PostPagerItem: React.FC<PostPagerItemProps> = React.memo(
 
     return (
       <>
-        <Header />
+        {/* <Header /> */}
         <View style={styles.modalItemContainer} gap-12>
           <View>
             {showVideoComponent && (
@@ -124,7 +123,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
   },
   modalItemContainer: {
-    height: screenHeight - 45,
+    height: screenHeight,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 16,
