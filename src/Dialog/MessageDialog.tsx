@@ -69,18 +69,22 @@ const MessageDialog = () => {
           <ProgressBar progress={progress} progressColor={Colors.primary} />
         </>
       )}
-      {((task && type?.toUpperCase() !== 'ERROR') || type !== '') && (
-        <Button
-          label="Cancel"
-          onPress={() => {
-            task.abort();
-            dispatch(setTask(null));
-          }}
-          borderRadius={8}
-          text70BL
-          backgroundColor={Colors.red30}
-        />
-      )}
+      {task &&
+        type?.toUpperCase() !== 'ERROR' &&
+        type?.toUpperCase() !== 'SUCCESS' && (
+          <Button
+            label="Cancel"
+            onPress={() => {
+              if (task) {
+                task.abort();
+                dispatch(setTask(null));
+              }
+            }}
+            borderRadius={8}
+            text70BL
+            backgroundColor={Colors.red30}
+          />
+        )}
     </CustomDialog>
   );
 };

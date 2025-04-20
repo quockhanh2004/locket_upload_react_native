@@ -1,17 +1,9 @@
-/* eslint-disable react-native/no-inline-styles */
 // components/PostForm.tsx
 import React from 'react';
-import {
-  View,
-  Button,
-  Colors,
-  Typography,
-  Text,
-  LoaderScreen,
-} from 'react-native-ui-lib';
-import InputView from '../../components/InputView';
+import {View, Button, Colors, Text, LoaderScreen} from 'react-native-ui-lib';
 import ViewMedia from '../../components/ViewMedia';
 import MainButton from '../../components/MainButton';
+import PostPager from './PostPager';
 
 interface Props {
   selectedMedia: any;
@@ -19,7 +11,7 @@ interface Props {
   localLoading?: boolean;
   onRemoveMedia: () => void;
   onSelectMedia: () => void;
-  caption: string;
+  caption?: string;
   setCaption: (text: string) => void;
   isLoading: boolean;
   onPost: () => void;
@@ -47,22 +39,10 @@ const PostForm: React.FC<Props> = ({
         isVideo={isVideo}
         onRemoveMedia={onRemoveMedia}
         onSelectMedia={onSelectMedia}
-        localLoading={localLoading}
+        localLoading={localLoading || false}
       />
 
-      <View flexS>
-        <InputView
-          placeholder={'Enter caption here...'}
-          placeholderTextColor={Colors.white}
-          bgColor={Colors.grey40}
-          borderColor={Colors.grey40}
-          borderWidth={1}
-          inputStyle={{color: Colors.white, ...Typography.text70BL}}
-          style={{paddingLeft: 10, borderRadius: 999}}
-          onChangeText={setCaption}
-          value={caption}
-        />
-      </View>
+      <PostPager setCaption={setCaption} caption={caption} />
 
       <Button
         label={

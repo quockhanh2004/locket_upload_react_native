@@ -182,6 +182,7 @@ const InputView = forwardRef<TextInput, InputViewProps>(
                 letterSpacing,
               },
             ]}
+            cursorColor={Colors.primary}
             maxLength={maxLength}
             placeholder={placeholder}
             placeholderTextColor={placeholderTextColor}
