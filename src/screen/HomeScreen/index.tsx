@@ -147,14 +147,16 @@ const HomeScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(
-        getOldPosts({
-          userId: user?.localId || '',
-          token: user?.idToken || '',
-        }),
-      );
+      if (user?.timeExpires && +user.timeExpires > new Date().getTime()) {
+        dispatch(
+          getOldPosts({
+            userId: user?.localId || '',
+            token: user?.idToken || '',
+          }),
+        );
+      }
       return;
-    }, [user?.localId, user?.idToken, dispatch]),
+    }, [user?.localId, user?.idToken, user?.timeExpires, dispatch]),
   );
 
   //event đăng xuất
