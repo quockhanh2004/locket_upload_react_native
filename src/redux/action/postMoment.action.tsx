@@ -84,20 +84,25 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
 
       // Gửi yêu cầu tạo moment chứa ảnh
       showProgress(thunkApi, UPLOAD_PROGRESS_STAGE.CREATING_MOMENT, 80);
+      const bodyPostMoment = {
+        data: {
+          caption:
+            overlay && overlay?.overlay_type !== OverlayType.standard
+              ? undefined
+              : caption,
+          thumbnail_url: downloadUrl,
+          recipients: friend || [],
+          overlays:
+            overlay && overlay?.overlay_type !== OverlayType.standard
+              ? [createOverlay(overlay)]
+              : [],
+        },
+      };
+
       const response = await wrapCancelable(
         axios.post(
           'https://api.locketcamera.com/postMomentV2',
-          {
-            data: {
-              caption:
-                overlay && overlay?.overlay_type !== OverlayType.standard
-                  ? undefined
-                  : caption,
-              thumbnail_url: downloadUrl,
-              recipients: friend || [],
-              overlays: overlay ? [createOverlay(overlay)] : [],
-            },
-          },
+          bodyPostMoment,
           {
             headers: {
               ...loginHeader,
