@@ -7,6 +7,7 @@ import {
   Modal,
   InteractionManager,
   StyleSheet,
+  RefreshControl,
 } from 'react-native';
 import {View, GridList, Card, Image, Text} from 'react-native-ui-lib';
 import {useDispatch, useSelector} from 'react-redux';
@@ -29,7 +30,9 @@ const screenHeight = Dimensions.get('window').height;
 
 const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   const dispatch = useDispatch<AppDispatch>();
-  const posts = useSelector((state: RootState) => state.oldPosts.posts);
+  const {posts, isLoadPosts} = useSelector(
+    (state: RootState) => state.oldPosts,
+  );
   const friends = useSelector((state: RootState) => state.friends.friends);
   const user = useSelector((state: RootState) => state.user.user);
 
@@ -53,6 +56,16 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
 
   const handleBackPress = () => {
     navigationTo(nav.home);
+  };
+
+  const handleRefresh = () => {
+    dispatch(
+      getOldPosts({
+        userId: user?.localId || '',
+        token: user?.idToken || '',
+        timestamp: posts[posts.length - 1]?.date.toFixed(0),
+      }),
+    );
   };
 
   const filterFriends = (item: Post) => {
@@ -142,6 +155,9 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
       <View height={16} />
 
       <GridList
+        refreshControl={
+          <RefreshControl refreshing={isLoadPosts} onRefresh={handleRefresh} />
+        }
         data={listPostByFilter}
         numColumns={3}
         keyExtractor={item => item.id}
@@ -167,6 +183,12 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
       >
         <View flex bg-black>
           <FlatList
+            refreshControl={
+              <RefreshControl
+                refreshing={isLoadPosts}
+                onRefresh={handleRefresh}
+              />
+            }
             ref={flatListRef}
             data={listPostByFilter}
             keyExtractor={item => item.id}
@@ -212,17 +234,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
           />
 
           <View style={styles.modalOverlayButtons} gap-12 row spread>
-            <MainButton
-              label="Refresh"
-              onPress={() => {
-                dispatch(
-                  getOldPosts({
-                    userId: user?.localId || '',
-                    token: user?.idToken || '',
-                  }),
-                );
-              }}
-            />
+            <MainButton label="Refresh" onPress={handleRefresh} />
             <MainButton label={'View all'} onPress={viewAll} />
           </View>
           <View absT width={screenWidth}>

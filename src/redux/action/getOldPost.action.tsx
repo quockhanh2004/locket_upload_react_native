@@ -8,6 +8,7 @@ import {setOldPosts} from '../slice/oldPosts.slice';
 interface DataParam {
   token: string;
   userId: string;
+  timestamp?: number | string;
 }
 
 const urlGetPosts = 'https://locket.quockhanh020924.id.vn/posts';
@@ -24,6 +25,7 @@ export const getOldPosts = createAsyncThunk(
       return {
         post: listOldPosts,
         currentUserId: data.userId,
+        deleted: response.data.deleted,
       };
     } catch (error: any) {
       console.error('Error fetching list old posts', error);

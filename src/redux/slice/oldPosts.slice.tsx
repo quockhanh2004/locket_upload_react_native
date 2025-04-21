@@ -6,6 +6,7 @@ import {savePostsToStorage} from '../../helper/post.storage';
 interface InitialState {
   posts: Post[];
   isLoadPosts: boolean;
+  deleted: string[];
 }
 
 const oldPostsSlice = createSlice({
@@ -13,6 +14,7 @@ const oldPostsSlice = createSlice({
   initialState: {
     posts: [],
     isLoadPosts: false,
+    deleted: [],
   } as InitialState,
   reducers: {
     setOldPosts(state, action) {
@@ -38,13 +40,17 @@ const oldPostsSlice = createSlice({
       .addCase(getOldPosts.fulfilled, (state, action) => {
         const incomingPosts = action.payload.post;
         const currentUserId = action.payload.currentUserId;
+        const deletedPosts = action.payload.deleted;
 
         const existingIds = new Set(state.posts.map(post => post.id));
         const filteredNewPosts = incomingPosts.filter(
           (post: {id: string}) => !existingIds.has(post.id),
         );
 
-        state.posts = [...filteredNewPosts, ...state.posts];
+        const temp = [...filteredNewPosts, ...state.posts];
+        state.posts = temp.filter(
+          (post: {id: string}) => !deletedPosts.includes(post.id),
+        );
         state.isLoadPosts = false;
         savePostsToStorage('posts_' + currentUserId, state.posts);
       })

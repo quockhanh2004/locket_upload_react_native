@@ -78,6 +78,7 @@ const HomeScreen = () => {
     (state: RootState) => state.friends,
   );
   const {friends} = useSelector((state: RootState) => state.friends);
+  const {posts} = useSelector((state: RootState) => state.oldPosts);
 
   //use state
   const [selectedMedia, setselectedMedia] = useState<MediaType | null>(null);
@@ -153,6 +154,7 @@ const HomeScreen = () => {
           getOldPosts({
             userId: user?.localId || '',
             token: user?.idToken || '',
+            timestamp: posts[posts.length - 1]?.date.toFixed(0),
           }),
         );
       }
