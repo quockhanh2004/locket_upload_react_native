@@ -4,13 +4,16 @@ import {FlatList, Dimensions, ViewToken} from 'react-native'; // Import ViewToke
 import InputView from '../../components/InputView';
 import {Colors, Typography, View, Text} from 'react-native-ui-lib';
 import {getCurrentTime} from '../../util/convertTime';
+import {OverlayType} from '../../util/bodyMoment';
 
-const DATA = [{type: 'caption'}, {type: 'time'}];
+const DATA = [{type: OverlayType.standard}, {type: OverlayType.time}];
 const {width} = Dimensions.get('window');
 
 interface PostPagerProps {
   setCaption: (text: string) => void;
   caption?: string;
+  settype?: (type: OverlayType) => void;
+  setTextOverlay?: (text: string) => void;
 }
 
 interface RenderItemProps {
@@ -19,7 +22,12 @@ interface RenderItemProps {
   };
 }
 
-const PostPager: React.FC<PostPagerProps> = ({setCaption, caption = ''}) => {
+const PostPager: React.FC<PostPagerProps> = ({
+  setCaption,
+  caption = '',
+  settype = () => {},
+  setTextOverlay = () => {},
+}) => {
   const [localCaption, setlocalCaption] = useState(caption || '');
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -30,16 +38,19 @@ const PostPager: React.FC<PostPagerProps> = ({setCaption, caption = ''}) => {
       if (info.viewableItems.length > 0) {
         const index = info.viewableItems[0].index || 0;
         setCurrentIndex(index);
+
         if (setCaption) {
-          if (DATA[index].type === 'caption') {
+          if (DATA[index].type === OverlayType.standard) {
+            settype(OverlayType.standard);
             setCaption(localCaption);
-          } else if (DATA[index].type === 'time') {
-            setCaption(getCurrentTime());
+          } else if (DATA[index].type === OverlayType.time) {
+            settype(OverlayType.time);
+            setTextOverlay(getCurrentTime());
           }
         }
       }
     },
-    [localCaption, setCaption],
+    [localCaption, setCaption, setTextOverlay, settype],
   );
 
   const viewabilityConfig = {
@@ -53,7 +64,7 @@ const PostPager: React.FC<PostPagerProps> = ({setCaption, caption = ''}) => {
   }, [caption]);
 
   const renderItem = ({item}: RenderItemProps) => {
-    if (item.type === 'caption') {
+    if (item.type === OverlayType.standard) {
       return (
         <InputView
           placeholder={'Enter caption here...'}
@@ -75,14 +86,15 @@ const PostPager: React.FC<PostPagerProps> = ({setCaption, caption = ''}) => {
           value={localCaption}
         />
       );
-    } else if (item.type === 'time') {
+    } else if (item.type === OverlayType.time) {
       return (
         <View
           bg-grey30
           width={width - 24}
-          style={{padding: 14, borderRadius: 999, alignItems: 'center'}}>
+          center
+          style={{padding: 14, borderRadius: 999}}>
           <Text white text70BL center>
-            {getCurrentTime()}
+            {`🕒 ${getCurrentTime()}`}
           </Text>
         </View>
       );

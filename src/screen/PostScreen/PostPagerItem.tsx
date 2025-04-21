@@ -6,6 +6,7 @@ import Video from 'react-native-video';
 import {Post} from '../../models/post.model';
 import {Friend} from '../../models/friend.model';
 import {timeDiffFromNow} from '../../util/convertTime';
+import CaptionView from './CaptionView';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -76,28 +77,14 @@ const PostPagerItem: React.FC<PostPagerItemProps> = React.memo(
               />
             )}
           </View>
-          {item.caption && (
-            <View
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                borderRadius: 999,
-              }}
-              paddingH-16
-              paddingV-8>
-              <Text white text60BO center>
-                {item.caption}
-              </Text>
-            </View>
-          )}
+          <CaptionView post={item} />
           <View row center>
             <Avatar source={{uri: user?.profile_picture_url}} size={32} />
             <Text marginL-8 white text60BL>
               {user?.first_name}
             </Text>
             <Text marginL-8 grey40 text70BL>
-              {timeDiffFromNow(
-                typeof item.date === 'number' ? item.date : item.date._seconds,
-              )}
+              {timeDiffFromNow(item.date)}
             </Text>
           </View>
         </View>

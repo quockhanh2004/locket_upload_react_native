@@ -1,14 +1,17 @@
 // components/PostForm.tsx
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Button, Colors, Text, LoaderScreen} from 'react-native-ui-lib';
 import ViewMedia from '../../components/ViewMedia';
 import MainButton from '../../components/MainButton';
 import PostPager from './PostPager';
+import {OverLayCreate, OverlayType} from '../../util/bodyMoment';
 
 interface Props {
   selectedMedia: any;
   isVideo: boolean;
   localLoading?: boolean;
+  overlay?: OverLayCreate | null;
+  setOverlay?: (overlay: any) => void;
   onRemoveMedia: () => void;
   onSelectMedia: () => void;
   caption?: string;
@@ -31,7 +34,20 @@ const PostForm: React.FC<Props> = ({
   onPost,
   onSelectFriend,
   selectedCount,
+  setOverlay,
 }) => {
+  const [type, setType] = useState(OverlayType.standard);
+  const [textOverlay, setTextOverlay] = useState('');
+
+  useEffect(() => {
+    if (setOverlay) {
+      setOverlay({
+        overlay_type: type,
+        text: textOverlay,
+        text_color: '#FFFFFFE6',
+      });
+    }
+  }, [setOverlay, textOverlay, type]);
   return (
     <View centerV flex gap-24>
       <ViewMedia
@@ -42,7 +58,12 @@ const PostForm: React.FC<Props> = ({
         localLoading={localLoading || false}
       />
 
-      <PostPager setCaption={setCaption} caption={caption} />
+      <PostPager
+        setCaption={setCaption}
+        caption={caption}
+        settype={setType}
+        setTextOverlay={setTextOverlay}
+      />
 
       <Button
         label={

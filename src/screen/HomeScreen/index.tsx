@@ -82,6 +82,7 @@ const HomeScreen = () => {
   //use state
   const [selectedMedia, setselectedMedia] = useState<MediaType | null>(null);
   const [caption, setCaption] = useState('');
+  const [overlay, setOverlay] = useState(null);
   const [isVideo, setIsVideo] = useState(false);
   const [visibleSelectMedia, setVisibleSelectMedia] = useState(false);
   const [visibleSelectFriend, setVisibleSelectFriend] = useState(false);
@@ -197,6 +198,7 @@ const HomeScreen = () => {
           idToken: user.idToken,
           videoInfo: selectedMedia.uri,
           caption,
+          overlay: overlay || undefined,
           refreshToken: user.refreshToken,
           friend:
             optionSend === 'all'
@@ -215,6 +217,7 @@ const HomeScreen = () => {
           idToken: user.idToken,
           imageInfo: selectedMedia,
           caption,
+          overlay: overlay || undefined,
           refreshToken: user.refreshToken,
           friend:
             optionSend === 'all'
@@ -359,6 +362,8 @@ const HomeScreen = () => {
           onPost={handlePost}
           onSelectFriend={() => setVisibleSelectFriend(true)}
           localLoading={localLoading}
+          overlay={overlay}
+          setOverlay={setOverlay}
           selectedCount={
             optionSend === 'all'
               ? 0

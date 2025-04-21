@@ -10,7 +10,6 @@ import {
 import {loginHeader} from '../../util/header';
 import {
   compressVideo,
-  createBody,
   getDownloadVideoUrl,
   getVideoThumbnail,
   initiateUploadVideo,
@@ -19,6 +18,12 @@ import {
 } from '../../util/uploadVideo';
 import {readFileAsBytes} from '../../util/getBufferFile';
 import {wrapCancelable} from '../../helper/wrapCancelable';
+import {
+  createBodyVideo,
+  createOverlay,
+  OverLayCreate,
+  OverlayType,
+} from '../../util/bodyMoment';
 
 interface DataPostMoment {
   idUser: string;
@@ -28,13 +33,13 @@ interface DataPostMoment {
   refreshToken: string;
   videoInfo?: any;
   friend?: string[];
+  overlay?: OverLayCreate;
 }
 
 export const uploadImageToFirebaseStorage = createAsyncThunk(
   'uploadImage',
   async (data: DataPostMoment, thunkApi) => {
-    const {idUser, idToken, imageInfo, caption, friend} = data;
-
+    const {idUser, idToken, imageInfo, caption, friend, overlay} = data;
     try {
       // Bắt đầu xử lý ảnh (hiển thị tiến trình)
       showProgress(thunkApi, UPLOAD_PROGRESS_STAGE.PROCESSING_IMAGE, 0);
@@ -84,9 +89,13 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
           'https://api.locketcamera.com/postMomentV2',
           {
             data: {
-              caption,
+              caption:
+                overlay && overlay?.overlay_type !== OverlayType.standard
+                  ? undefined
+                  : caption,
               thumbnail_url: downloadUrl,
               recipients: friend || [],
+              overlays: overlay ? [createOverlay(overlay)] : [],
             },
           },
           {
@@ -132,7 +141,7 @@ export const uploadVideoToFirebase = createAsyncThunk(
   'upload-video',
   async (data: DataPostMoment, thunkApi) => {
     try {
-      const {idUser, idToken, videoInfo, caption, friend} = data;
+      const {idUser, idToken, videoInfo, caption, friend, overlay} = data;
 
       // Hiển thị bước bắt đầu xử lý video
       showProgress(thunkApi, UPLOAD_VIDEO_PROGRESS_STAGE.PROCESSING, 0.1);
@@ -223,11 +232,12 @@ export const uploadVideoToFirebase = createAsyncThunk(
         authorization: `Bearer ${idToken}`,
       };
 
-      const bodyPostMoment = createBody(
+      const bodyPostMoment = createBodyVideo(
         caption,
         thumbnailUrl,
         downloadVideoUrl,
         friend || [],
+        overlay,
       );
 
       const response = await wrapCancelable(

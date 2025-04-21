@@ -39,6 +39,6 @@ export const getCurrentTime = () => {
   const ampm = hours >= 12 ? 'CH' : 'SA';
   hours = hours % 12;
   hours = hours ? String(hours).padStart(1, '0') : '12'; // the hour '0' should be '12'
-  const strTime = `🕒 ${hours}:${String(minutes).padStart(2, '0')} ${ampm}`;
+  const strTime = `${hours}:${String(minutes).padStart(2, '0')} ${ampm}`;
   return strTime;
 };

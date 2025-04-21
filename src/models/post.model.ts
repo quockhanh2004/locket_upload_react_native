@@ -5,27 +5,22 @@ export interface Post {
   video_url?: string;
   user: string;
   canonical_uid: string;
-  md5: string;
-  date: number | DatePost;
+  md5?: string;
+  date: number;
   create_time: number;
   update_time: number;
-  overlays?: OverlayPost[];
+  overlays: Overlay[];
 }
 
-export interface OverlayPost {
-  overlay_id: string;
-  overlay_type: string;
-  alt_text?: string;
-  data?: DataPost;
+export interface Overlay {
+  overlay_id: OverlayID | string;
+  overlay_type: OverlayType | string;
+  alt_text: string;
+  data: Data;
 }
 
-export interface DatePost {
-  _nanoseconds: number;
-  _seconds: number;
-}
-
-export interface DataPost {
-  type: string;
+export interface Data {
+  type: Type | string;
   text: string;
   text_color: string;
   max_lines: number;
@@ -35,4 +30,20 @@ export interface DataPost {
 export interface Background {
   material_blur: string;
   colors: any[];
+}
+
+export enum Type {
+  Review = 'review',
+  Standard = 'standard',
+  Time = 'time',
+}
+
+export enum OverlayID {
+  CaptionReview = 'caption:review',
+  CaptionStandard = 'caption:standard',
+  CaptionTime = 'caption:time',
+}
+
+enum OverlayType {
+  Caption = 'caption',
 }
