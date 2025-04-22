@@ -113,7 +113,7 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
       );
 
       // Kiểm tra phản hồi từ server
-      if (response.data.result.status >= 400) {
+      if (!response.data.result || response.data.result.status >= 400) {
         throw new Error(
           JSON.stringify(response?.data?.result?.errors || 'Unknown error'),
         );
