@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-duplicate-props */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {useState, forwardRef} from 'react';
@@ -159,10 +160,13 @@ const InputView = forwardRef<TextInput, InputViewProps>(
           row
           centerH
           centerV
-          style={style}
           gap-10
           enableShadow={enableShadow}
           backgroundColor={bgColor}
+          style={[
+            style,
+            {borderColor: borderColor, borderWidth: borderWidth || undefined},
+          ]}
           borderRadius={radius}>
           {renderLeft || renderLeftComponent()}
           <TextInput
