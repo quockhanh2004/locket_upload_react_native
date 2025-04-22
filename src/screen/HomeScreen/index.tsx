@@ -46,6 +46,13 @@ import {
 } from '../../redux/action/postMoment.action';
 import {getOldPosts} from '../../redux/action/getOldPost.action';
 import {getFriends} from '../../redux/action/getFriend.action';
+import SelectColorDialog from '../../Dialog/SelectColorSwatchDialog';
+import {setPostStyle} from '../../redux/slice/setting.slice';
+import {
+  DefaultOverlayCreate,
+  OverLayCreate,
+  OverlayType,
+} from '../../util/bodyMoment';
 
 let navigation: NavigationProp<any>;
 
@@ -71,7 +78,7 @@ const HomeScreen = () => {
   const {postMoment, isLoading} = useSelector(
     (state: RootState) => state.postMoment,
   );
-  const {useCamera, unlimitedTrimVideo} = useSelector(
+  const {useCamera, unlimitedTrimVideo, postStyle} = useSelector(
     (state: RootState) => state.setting,
   );
   const {selected, optionSend, customListFriends} = useSelector(
@@ -83,11 +90,12 @@ const HomeScreen = () => {
   //use state
   const [selectedMedia, setselectedMedia] = useState<MediaType | null>(null);
   const [caption, setCaption] = useState('');
-  const [overlay, setOverlay] = useState(null);
+  const [overlay, setOverlay] = useState<OverLayCreate>(DefaultOverlayCreate);
   const [isVideo, setIsVideo] = useState(false);
   const [visibleSelectMedia, setVisibleSelectMedia] = useState(false);
   const [visibleSelectFriend, setVisibleSelectFriend] = useState(false);
   const [localLoading, setLocalLoading] = useState(false);
+  const [visibleSelectColor, setVisibleSelectColor] = useState(false);
 
   useEffect(() => {
     getInitialNotification(messaging).then(async remoteMessage => {
@@ -199,8 +207,13 @@ const HomeScreen = () => {
           idUser: user.localId,
           idToken: user.idToken,
           videoInfo: selectedMedia.uri,
-          caption,
-          overlay: overlay || undefined,
+          overlay:
+            overlay.overlay_type === OverlayType.standard
+              ? {
+                  ...overlay,
+                  text: caption,
+                }
+              : overlay,
           refreshToken: user.refreshToken,
           friend:
             optionSend === 'all'
@@ -218,8 +231,13 @@ const HomeScreen = () => {
           idUser: user.localId,
           idToken: user.idToken,
           imageInfo: selectedMedia,
-          caption,
-          overlay: overlay || undefined,
+          overlay:
+            overlay.overlay_type === OverlayType.standard
+              ? {
+                  ...overlay,
+                  text: caption,
+                }
+              : overlay,
           refreshToken: user.refreshToken,
           friend:
             optionSend === 'all'
@@ -326,6 +344,13 @@ const HomeScreen = () => {
     }
   }, [uriVideo]);
 
+  useEffect(() => {
+    setOverlay({
+      ...overlay,
+      postStyle: postStyle,
+    });
+  }, [postStyle]);
+
   return (
     <View flex bg-black padding-12>
       <View row spread centerV>
@@ -366,6 +391,9 @@ const HomeScreen = () => {
           localLoading={localLoading}
           overlay={overlay}
           setOverlay={setOverlay}
+          onLongPress={() => {
+            setVisibleSelectColor(true);
+          }}
           selectedCount={
             optionSend === 'all'
               ? 0
@@ -385,6 +413,16 @@ const HomeScreen = () => {
         visible={visibleSelectMedia}
         onDismiss={handleCancelSelectMedia}
         onConfirm={handleConfirmSelectMedia}
+      />
+      <SelectColorDialog
+        visible={visibleSelectColor}
+        value={postStyle}
+        onDismiss={() => {
+          setVisibleSelectColor(false);
+        }}
+        onSelectColor={val => {
+          dispatch(setPostStyle(val));
+        }}
       />
     </View>
   );

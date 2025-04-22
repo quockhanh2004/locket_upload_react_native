@@ -29,17 +29,16 @@ interface DataPostMoment {
   idUser: string;
   idToken: string;
   imageInfo?: any;
-  caption: string;
   refreshToken: string;
   videoInfo?: any;
   friend?: string[];
-  overlay?: OverLayCreate;
+  overlay: OverLayCreate;
 }
 
 export const uploadImageToFirebaseStorage = createAsyncThunk(
   'uploadImage',
   async (data: DataPostMoment, thunkApi) => {
-    const {idUser, idToken, imageInfo, caption, friend, overlay} = data;
+    const {idUser, idToken, imageInfo, friend, overlay} = data;
     try {
       // Bắt đầu xử lý ảnh (hiển thị tiến trình)
       showProgress(thunkApi, UPLOAD_PROGRESS_STAGE.PROCESSING_IMAGE, 0);
@@ -84,20 +83,22 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
 
       // Gửi yêu cầu tạo moment chứa ảnh
       showProgress(thunkApi, UPLOAD_PROGRESS_STAGE.CREATING_MOMENT, 80);
+
       const bodyPostMoment = {
         data: {
           caption:
             overlay && overlay?.overlay_type !== OverlayType.standard
               ? undefined
-              : caption,
+              : overlay?.text.length === 0
+              ? undefined
+              : overlay.text,
           thumbnail_url: downloadUrl,
           recipients: friend || [],
-          overlays:
-            overlay && overlay?.overlay_type !== OverlayType.standard
-              ? [createOverlay(overlay)]
-              : [],
+          overlays: overlay.text.length === 0 ? [] : [createOverlay(overlay)],
         },
       };
+
+      console.log(JSON.stringify(bodyPostMoment));
 
       const response = await wrapCancelable(
         axios.post(
@@ -114,9 +115,11 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
       );
 
       // Kiểm tra phản hồi từ server
-      if (response.status >= 400) {
+      console.log(JSON.stringify(response.data));
+
+      if (response.data.result.status >= 400) {
         throw new Error(
-          JSON.stringify(response?.data?.error?.message || 'Unknown error'),
+          JSON.stringify(response?.data?.result?.errors || 'Unknown error'),
         );
       }
 
@@ -146,7 +149,7 @@ export const uploadVideoToFirebase = createAsyncThunk(
   'upload-video',
   async (data: DataPostMoment, thunkApi) => {
     try {
-      const {idUser, idToken, videoInfo, caption, friend, overlay} = data;
+      const {idUser, idToken, videoInfo, friend, overlay} = data;
 
       // Hiển thị bước bắt đầu xử lý video
       showProgress(thunkApi, UPLOAD_VIDEO_PROGRESS_STAGE.PROCESSING, 0.1);
@@ -238,7 +241,6 @@ export const uploadVideoToFirebase = createAsyncThunk(
       };
 
       const bodyPostMoment = createBodyVideo(
-        caption,
         thumbnailUrl,
         downloadVideoUrl,
         friend || [],

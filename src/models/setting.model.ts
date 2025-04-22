@@ -4,6 +4,12 @@ export interface CameraSetting {
   flash?: boolean;
 }
 
+export interface PostStyle {
+  color_top?: string;
+  color_bot?: string;
+  text_color: string;
+}
+
 export interface SettingState {
   useCamera: boolean;
   cameraSettings: CameraSetting;
@@ -11,4 +17,5 @@ export interface SettingState {
   optionFriend: boolean;
   unlimitedTrimVideo: boolean;
   trySoftwareEncode: boolean;
+  postStyle: PostStyle;
 }

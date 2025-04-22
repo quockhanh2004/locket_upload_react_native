@@ -7,13 +7,13 @@ import {
   Colors,
   Typography,
   LoaderScreen,
+  TextField,
+  TextFieldRef,
 } from 'react-native-ui-lib';
 import React, {useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState, AppDispatch} from '../redux/store';
-import {TextInput} from 'react-native';
 
-import InputView from '../components/InputView';
 import {login, resetPassword} from '../redux/action/user.action';
 import {setMessage} from '../redux/slice/message.slice';
 import {checkEmail} from '../util/regex';
@@ -29,8 +29,8 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const emailRef = useRef<TextInput>(null);
-  const passwordRef = useRef<TextInput>(null);
+  const emailRef = useRef<TextFieldRef>(null);
+  const passwordRef = useRef<TextFieldRef>(null);
 
   const handleLogin = async () => {
     if (checkValue(false)) {
@@ -79,20 +79,30 @@ const LoginScreen = () => {
       <View gap-40>
         <View gap-8>
           <View gap-8>
-            <Text white text80BL>
-              Email
-            </Text>
-            <InputView
-              width={'100%'}
-              value={email}
-              onChangeText={setEmail}
-              showClear={email.length > 0}
-              bgColor={Colors.black}
-              borderColor={Colors.grey40}
-              borderWidth={1}
-              inputStyle={{color: Colors.grey40, ...Typography.text70BL}}
-              style={{paddingLeft: 10}}
+            <TextField
               ref={emailRef}
+              value={email}
+              cursorColor={Colors.primary}
+              paddingV-8
+              containerStyle={{
+                gap: 8,
+              }}
+              fieldStyle={{
+                paddingLeft: 10,
+                borderColor: Colors.grey20,
+                borderWidth: 2,
+                borderRadius: 10,
+              }}
+              label="Email"
+              labelColor={Colors.white}
+              labelStyle={{...Typography.text70BL}}
+              placeholder="Email"
+              placeholderTextColor={Colors.grey40}
+              onChangeText={setEmail}
+              color={Colors.grey60}
+              showClear={email.length > 0}
+              showClearButton
+              inputMode="email"
               onSubmitEditing={() => {
                 if (passwordRef.current) {
                   passwordRef.current.focus();
@@ -101,21 +111,32 @@ const LoginScreen = () => {
             />
           </View>
           <View gap-8>
-            <Text white text80BL>
-              Password
-            </Text>
-            <InputView
+            <TextField
               value={password}
               onChangeText={setPassword}
               eyePassword={true}
+              paddingV-8
+              containerStyle={{
+                gap: 8,
+              }}
+              fieldStyle={{
+                paddingLeft: 10,
+                borderColor: Colors.grey20,
+                borderWidth: 2,
+                borderRadius: 10,
+              }}
+              label="Password"
+              labelColor={Colors.white}
+              labelStyle={{...Typography.text70BL}}
+              placeholder="Password"
+              placeholderTextColor={Colors.grey40}
+              color={Colors.grey60}
               showClear={password.length > 0}
-              bgColor={Colors.black}
-              borderColor={Colors.grey40}
-              borderWidth={1}
-              inputStyle={{color: Colors.grey40, ...Typography.text70BL}}
-              style={{paddingLeft: 10}}
               ref={passwordRef}
               onSubmitEditing={handleLogin}
+              secureTextEntry
+              showClearButton
+              endAdornment
             />
           </View>
         </View>

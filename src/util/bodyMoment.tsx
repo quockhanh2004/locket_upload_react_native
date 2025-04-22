@@ -1,7 +1,8 @@
+import {PostStyle} from '../models/setting.model';
+import {ColorDefault} from './colors';
 import {getMd5Hash} from './uploadVideo';
 
 export const createBodyVideo = (
-  caption: string,
   thumbnailUrl: string,
   downloadVideoUrl: string,
   friends?: string[],
@@ -69,21 +70,18 @@ export const createBodyVideo = (
         platform: 'ios',
       },
       sent_to_all: true,
-      caption: overlay?.overlay_type === OverlayType.time ? undefined : caption,
+      caption:
+        overlay?.overlay_type !== OverlayType.standard
+          ? undefined
+          : overlay.text,
       overlays: [
         {
           overlay_id: `caption:${overlay?.overlay_type || 'standard'}`,
           overlay_type: 'caption',
-          alt_text:
-            overlay && overlay?.overlay_type !== OverlayType.standard
-              ? overlay.text
-              : caption,
+          alt_text: overlay?.text,
           data: {
-            text:
-              overlay && overlay?.overlay_type !== OverlayType.standard
-                ? overlay.text
-                : caption,
-            text_color: overlay?.text_color || '#FFFFFFE6',
+            text: overlay?.text,
+            text_color: overlay?.postStyle.text_color || '#FFFFFFE6',
             type: overlay?.overlay_type || OverlayType.standard,
             max_lines: {
               '@type': 'type.googleapis.com/google.protobuf.Int64Value',
@@ -91,7 +89,10 @@ export const createBodyVideo = (
             },
             background: {
               material_blur: 'ultra_thin',
-              colors: [],
+              colors: [
+                overlay?.postStyle?.color_top,
+                overlay?.postStyle?.color_bot,
+              ],
             },
           },
         },
@@ -112,14 +113,16 @@ export enum OverlayType {
 export interface OverLayCreate {
   overlay_type: OverlayType;
   text: string;
-  text_color: string;
+  postStyle: PostStyle;
 }
 
 export const createOverlay = ({
   overlay_type,
   text,
-  text_color,
+  postStyle,
 }: OverLayCreate) => {
+  console.log(postStyle);
+
   return {
     overlay_id: `caption:${overlay_type}`,
     overlay_type: 'caption',
@@ -127,12 +130,21 @@ export const createOverlay = ({
     data: {
       type: overlay_type,
       text,
-      text_color,
+      text_color: postStyle.text_color,
       max_lines: 4,
       background: {
         material_blur: 'ultra_thin',
-        colors: [],
+        colors:
+          postStyle?.color_top && postStyle?.color_bot
+            ? [postStyle?.color_top, postStyle?.color_bot]
+            : [],
       },
     },
   };
+};
+
+export const DefaultOverlayCreate: OverLayCreate = {
+  overlay_type: OverlayType.standard,
+  postStyle: ColorDefault,
+  text: '',
 };

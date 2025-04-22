@@ -1,10 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useRef, useState, useCallback, useEffect} from 'react';
-import {FlatList, Dimensions, ViewToken} from 'react-native'; // Import ViewToken
-import InputView from '../../components/InputView';
-import {Colors, Typography, View, Text} from 'react-native-ui-lib';
+import {FlatList, Dimensions, ViewToken} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import {Colors, View, Text, TextField, Typography} from 'react-native-ui-lib';
 import {getCurrentTime} from '../../util/convertTime';
 import {OverlayType} from '../../util/bodyMoment';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../redux/store';
 
 const DATA = [{type: OverlayType.standard}, {type: OverlayType.time}];
 const {width} = Dimensions.get('window');
@@ -28,6 +30,7 @@ const PostPager: React.FC<PostPagerProps> = ({
   settype = () => {},
   setTextOverlay = () => {},
 }) => {
+  const {postStyle} = useSelector((state: RootState) => state.setting);
   const [localCaption, setlocalCaption] = useState(caption || '');
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -66,36 +69,45 @@ const PostPager: React.FC<PostPagerProps> = ({
   const renderItem = ({item}: RenderItemProps) => {
     if (item.type === OverlayType.standard) {
       return (
-        <InputView
-          placeholder={'Enter caption here...'}
-          placeholderTextColor={Colors.white}
-          bgColor={Colors.grey30}
-          borderColor={Colors.grey30}
-          borderWidth={1}
-          inputStyle={{
-            color: Colors.white,
-            ...Typography.text70BL,
-          }}
-          style={{paddingLeft: 10, borderRadius: 999, width: width - 24}}
-          onChangeText={val => {
-            setlocalCaption(val);
-            if (setCaption) {
-              setCaption(val);
-            }
-          }}
-          value={localCaption}
-        />
+        <View width={width - 24}>
+          <LinearGradient
+            colors={[
+              postStyle.color_top || Colors.grey40,
+              postStyle.color_bot || Colors.grey40,
+            ]}
+            style={{borderRadius: 999}}>
+            <TextField
+              placeholder={'Enter caption here...'}
+              placeholderTextColor={postStyle.text_color}
+              paddingV-10
+              color={postStyle.text_color}
+              paddingH-16
+              cursorColor={Colors.primary}
+              style={{...Typography.text70BL}}
+              onChangeText={val => {
+                setlocalCaption(val);
+                if (setCaption) {
+                  setCaption(val);
+                }
+              }}
+              value={localCaption}
+            />
+          </LinearGradient>
+        </View>
       );
     } else if (item.type === OverlayType.time) {
       return (
-        <View
-          bg-grey30
-          width={width - 24}
-          center
-          style={{padding: 14, borderRadius: 999}}>
-          <Text white text70BL center>
-            {`🕒 ${getCurrentTime()}`}
-          </Text>
+        <View width={width - 24} center style={{borderRadius: 999}}>
+          <LinearGradient
+            colors={[
+              postStyle.color_top || Colors.grey40,
+              postStyle.color_bot || Colors.grey40,
+            ]}
+            style={{borderRadius: 999, padding: 14}}>
+            <Text white color={postStyle.text_color} center text70BL>
+              {`🕒 ${getCurrentTime()}`}
+            </Text>
+          </LinearGradient>
         </View>
       );
     }

@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {CameraSetting, SettingState} from '../../models/setting.model';
+import {ColorDefault} from '../../util/colors';
 
 const initialState: SettingState = {
   useCamera: false,
@@ -12,6 +13,7 @@ const initialState: SettingState = {
   optionFriend: false,
   unlimitedTrimVideo: false,
   trySoftwareEncode: false,
+  postStyle: ColorDefault,
 };
 
 const settingSlice = createSlice({
@@ -45,6 +47,10 @@ const settingSlice = createSlice({
       state.trySoftwareEncode = action.payload;
     },
 
+    setPostStyle(state, action) {
+      state.postStyle = action.payload;
+    },
+
     setSetting(state, action) {
       const data = JSON.parse(action.payload);
       state.useCamera = data.useCamera;
@@ -61,6 +67,7 @@ export const {
   setOptionFriend,
   setUnlimitedTrimVideo,
   setTrySoftwareEncode,
+  setPostStyle,
   setSetting,
 } = settingSlice.actions;
 
