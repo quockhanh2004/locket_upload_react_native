@@ -19,11 +19,10 @@ export const selectMedia = async (
     if (result.didCancel) {
       return undefined;
     }
-    console.log('here');
 
     return result.assets;
   } catch (error) {
-    console.log('error select image', error);
+    console.error('error select image', error);
     return undefined;
   }
 };
@@ -45,7 +44,7 @@ export const takePhoto = async (): Promise<Array<Asset> | undefined | null> => {
       return result.assets;
     }
   } catch (error) {
-    console.log('Error taking photo', error);
+    console.error('Error taking photo', error);
   }
   return null;
 };

@@ -1,12 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useRef, useState, useEffect, useCallback} from 'react';
 import {StyleSheet, Dimensions} from 'react-native';
-import {View, Text, Avatar, Image} from 'react-native-ui-lib';
+import {View, Text, Avatar, Image, Colors} from 'react-native-ui-lib';
 import Video from 'react-native-video';
 import {Post} from '../../models/post.model';
 import {Friend} from '../../models/friend.model';
 import {timeDiffFromNow} from '../../util/convertTime';
 import CaptionView from './CaptionView';
+import LinearGradient from 'react-native-linear-gradient';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -46,6 +47,10 @@ const PostPagerItem: React.FC<PostPagerItemProps> = React.memo(
 
     const showImage = !item.video_url || !isVideoReady || videoError;
     const showVideoComponent = item.video_url && !videoError;
+    const listColor =
+      item?.overlays[0]?.data?.background?.colors.length >= 2
+        ? item?.overlays[0]?.data?.background?.colors
+        : [Colors.grey40, Colors.grey40];
 
     return (
       <>
@@ -77,7 +82,16 @@ const PostPagerItem: React.FC<PostPagerItemProps> = React.memo(
               />
             )}
           </View>
-          <CaptionView post={item} />
+
+          <LinearGradient
+            colors={listColor}
+            style={{
+              borderRadius: 999,
+              padding: !item.caption || !item.overlays[0].alt_text ? 0 : 12,
+              justifyContent: 'center',
+            }}>
+            <CaptionView post={item} />
+          </LinearGradient>
           <View row center>
             <Avatar source={{uri: user?.profile_picture_url}} size={32} />
             <Text marginL-8 white text60BL>

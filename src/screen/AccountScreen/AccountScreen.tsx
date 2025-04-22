@@ -154,7 +154,6 @@ const AccountScreen = () => {
   }, []);
 
   const handleCheckUpdateAPK = useCallback(async () => {
-    console.log(updateAPKInfo);
     Linking.openURL(updateAPKInfo.downloadUrl);
   }, [updateAPKInfo]);
 

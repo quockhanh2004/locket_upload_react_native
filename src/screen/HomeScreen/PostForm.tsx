@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // components/PostForm.tsx
 import React, {useEffect, useState} from 'react';
 import {View, Button, Colors, Text, LoaderScreen} from 'react-native-ui-lib';
@@ -10,8 +11,8 @@ interface Props {
   selectedMedia: any;
   isVideo: boolean;
   localLoading?: boolean;
-  overlay?: OverLayCreate | null;
-  setOverlay?: (overlay: any) => void;
+  overlay: OverLayCreate;
+  setOverlay?: (overlay: OverLayCreate) => void;
   onRemoveMedia: () => void;
   onSelectMedia: () => void;
   caption?: string;
@@ -19,6 +20,7 @@ interface Props {
   isLoading: boolean;
   onPost: () => void;
   onSelectFriend: () => void;
+  onLongPress?: () => void;
   selectedCount: number;
 }
 
@@ -34,6 +36,8 @@ const PostForm: React.FC<Props> = ({
   onPost,
   onSelectFriend,
   selectedCount,
+  overlay,
+  onLongPress,
   setOverlay,
 }) => {
   const [type, setType] = useState(OverlayType.standard);
@@ -42,9 +46,9 @@ const PostForm: React.FC<Props> = ({
   useEffect(() => {
     if (setOverlay) {
       setOverlay({
+        ...overlay,
         overlay_type: type,
         text: textOverlay,
-        text_color: '#FFFFFFE6',
       });
     }
   }, [setOverlay, textOverlay, type]);
@@ -86,7 +90,11 @@ const PostForm: React.FC<Props> = ({
       </Button>
 
       <View center>
-        <MainButton label="Select Friend" onPress={onSelectFriend} />
+        <MainButton
+          label="Select Friend"
+          onPress={onSelectFriend}
+          onLongPress={onLongPress}
+        />
       </View>
     </View>
   );
