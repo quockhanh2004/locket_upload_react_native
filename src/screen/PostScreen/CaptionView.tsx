@@ -1,6 +1,5 @@
-/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {View, Text} from 'react-native-ui-lib';
+import {View, Text, Colors} from 'react-native-ui-lib';
 import {OverlayID, Post} from '../../models/post.model';
 import {parseAltText} from '../../util/regex';
 
@@ -11,14 +10,11 @@ interface CaptionViewProps {
 const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
   if (post.caption) {
     return (
-      <View
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.5)',
-          borderRadius: 999,
-        }}
-        paddingH-16
-        paddingV-8>
-        <Text white text60BO center>
+      <View>
+        <Text
+          color={post.overlays[0].data.text_color || Colors.white}
+          text60BO
+          center>
           {post.caption}
         </Text>
       </View>
@@ -29,14 +25,11 @@ const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
     const overLay = post.overlays[0];
     if (overLay.overlay_id === OverlayID.CaptionTime) {
       return (
-        <View
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.5)',
-            borderRadius: 999,
-          }}
-          paddingH-16
-          paddingV-8>
-          <Text white text60BO center>
+        <View>
+          <Text
+            color={post.overlays[0].data.text_color || Colors.white}
+            text60BO
+            center>
             {`🕒 ${overLay.alt_text}`}
           </Text>
         </View>
@@ -47,14 +40,11 @@ const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
       const rating = parseAltText(overLay.alt_text);
 
       return (
-        <View
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.5)',
-            borderRadius: 999,
-          }}
-          paddingH-16
-          paddingV-8>
-          <Text white text60BO center>
+        <View>
+          <Text
+            color={post.overlays[0].data.text_color || Colors.white}
+            text60BO
+            center>
             {`${rating?.rating}`}
             <Text primary text60BO>
               {'★'}

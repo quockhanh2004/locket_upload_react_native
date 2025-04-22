@@ -249,7 +249,7 @@ export const getAvailableVideoEncoderCodec = async (): Promise<
   const availableEncoders = findVideoEncodersInternal(lines, true);
 
   if (availableEncoders.length === 0) {
-    console.log('No available video encoders found.');
+    console.error('No available video encoders found.');
     return null; // Trả về null nếu không tìm thấy encoder nào
   }
 
@@ -287,7 +287,7 @@ export const getAvailableVideoEncoderCodec = async (): Promise<
   // Nếu không có codec nào trong danh sách ưu tiên được tìm thấy,
   // dùng encode software
   const fallbackCodec = 'h264';
-  console.log(
+  console.error(
     `No preferred codec found, falling back to the first available: ${fallbackCodec}`,
   );
   return fallbackCodec;

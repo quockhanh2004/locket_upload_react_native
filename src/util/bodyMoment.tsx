@@ -99,7 +99,6 @@ export const createBodyVideo = (
       ],
     },
   };
-  console.log(bodyPostMoment);
 
   return bodyPostMoment;
 };
@@ -121,8 +120,6 @@ export const createOverlay = ({
   text,
   postStyle,
 }: OverLayCreate) => {
-  console.log(postStyle);
-
   return {
     overlay_id: `caption:${overlay_type}`,
     overlay_type: 'caption',

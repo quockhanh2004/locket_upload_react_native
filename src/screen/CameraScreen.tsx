@@ -75,7 +75,6 @@ function CameraScreen() {
           flash: cameraSettings.flash ? 'on' : 'off',
         })
         .then((data: {path: string}) => {
-          console.log(data);
           setPhoto('file://' + data?.path);
           setType('image');
         });
@@ -90,7 +89,6 @@ function CameraScreen() {
         fileType: 'mp4',
         flash: cameraSettings.flash ? 'on' : 'off',
         onRecordingFinished: (video: {path: string}) => {
-          console.log('Recording finished', video);
           setPhoto('file://' + video.path);
           setType('video');
         },

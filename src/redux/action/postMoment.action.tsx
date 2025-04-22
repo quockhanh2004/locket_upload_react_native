@@ -98,8 +98,6 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
         },
       };
 
-      console.log(JSON.stringify(bodyPostMoment));
-
       const response = await wrapCancelable(
         axios.post(
           'https://api.locketcamera.com/postMomentV2',
@@ -115,8 +113,6 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
       );
 
       // Kiểm tra phản hồi từ server
-      console.log(JSON.stringify(response.data));
-
       if (response.data.result.status >= 400) {
         throw new Error(
           JSON.stringify(response?.data?.result?.errors || 'Unknown error'),

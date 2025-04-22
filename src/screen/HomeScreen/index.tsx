@@ -1,5 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
+
+// React & React Native Imports
+import React, {useCallback, useEffect, useState} from 'react';
+import {ScrollView} from 'react-native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+  NavigationProp,
+  RouteProp,
+} from '@react-navigation/native';
+
+// UI Library Imports
 import {
   View,
   Avatar,
@@ -7,73 +20,82 @@ import {
   Icon,
   Colors,
 } from 'react-native-ui-lib';
-import React, {useCallback, useEffect, useState} from 'react';
+
+// Redux Imports
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  useNavigation,
-  useRoute,
-  NavigationProp,
-  RouteProp,
-  useFocusEffect,
-} from '@react-navigation/native';
-
-import {
-  getInitialNotification,
-  getMessaging,
-} from '@react-native-firebase/messaging';
-import {getApp} from '@react-native-firebase/app';
-import {showEditor} from 'react-native-video-trim';
-import {Asset} from 'react-native-image-picker';
-import {ScrollView} from 'react-native';
-import RNFS from 'react-native-fs';
-
-import PostForm from './PostForm';
 import {AppDispatch, RootState} from '../../redux/store';
-import {nav} from '../../navigation/navName';
-import {selectMedia} from '../../util/selectImage';
-import {clearAppCache} from '../../util/uploadImage';
-import {handleNotificationClick} from '../../services/Notification';
 import {getAccountInfo, getToken} from '../../redux/action/user.action';
 import {setMessage, setTask} from '../../redux/slice/message.slice';
 import {clearPostMoment} from '../../redux/slice/postMoment.slice';
-import {deleteAllMp4Files} from '../../util/uploadVideo';
-import useTrimVideo from '../../hooks/useTrimVideo';
-import SelectFriendDialog from '../../Dialog/SelectFriendDialog';
-import SelectMediaDialog from '../../Dialog/SelectMediaDialog';
 import {
   uploadImageToFirebaseStorage,
   uploadVideoToFirebase,
 } from '../../redux/action/postMoment.action';
 import {getOldPosts} from '../../redux/action/getOldPost.action';
 import {getFriends} from '../../redux/action/getFriend.action';
-import SelectColorDialog from '../../Dialog/SelectColorSwatchDialog';
 import {setPostStyle} from '../../redux/slice/setting.slice';
+
+// Firebase Imports
+import {getApp} from '@react-native-firebase/app';
+import {
+  getInitialNotification,
+  getMessaging,
+  FirebaseMessagingTypes,
+} from '@react-native-firebase/messaging';
+
+// Third-party Library Imports
+import {showEditor} from 'react-native-video-trim';
+import {Asset} from 'react-native-image-picker';
+import RNFS from 'react-native-fs';
+
+// Local Component/Util Imports
+import PostForm from './PostForm';
+import SelectFriendDialog from '../../Dialog/SelectFriendDialog';
+import SelectMediaDialog from '../../Dialog/SelectMediaDialog';
+import SelectColorDialog from '../../Dialog/SelectColorSwatchDialog';
+import {nav} from '../../navigation/navName';
+import {selectMedia} from '../../util/selectImage';
+import {clearAppCache} from '../../util/uploadImage';
+import {deleteAllMp4Files} from '../../util/uploadVideo';
+import {handleNotificationClick} from '../../services/Notification';
+import useTrimVideo from '../../hooks/useTrimVideo';
 import {
   DefaultOverlayCreate,
   OverLayCreate,
   OverlayType,
 } from '../../util/bodyMoment';
 
-let navigation: NavigationProp<any>;
+// --- Type Definitions ---
 
 interface RouteParams {
   from?: string;
   uri?: string;
-  camera?: any;
+  camera?: Asset; // Giữ nguyên kiểu 'any' nếu bạn chắc chắn, nhưng Asset có vẻ phù hợp hơn
 }
 
 interface MediaType {
   uri: string;
-  type?: string;
+  type?: 'video' | 'image' | string; // Thêm gợi ý type
 }
 
-const HomeScreen = () => {
-  const messaging = getMessaging(getApp());
-  const dispatch = useDispatch<AppDispatch>();
-  navigation = useNavigation();
-  const route = useRoute<RouteProp<{params: RouteParams}>>();
+// --- Module-level Navigation Variable (Giữ lại theo yêu cầu) ---
+// Lưu ý: Việc sử dụng biến module-level này có thể tiềm ẩn rủi ro trong một số trường hợp.
+let navigation: NavigationProp<any>;
 
-  //redux state
+// --- Component ---
+
+const HomeScreen = () => {
+  // --- Hooks ---
+  const componentNavigation = useNavigation<NavigationProp<any>>(); // Lấy navigation từ hook
+  const route = useRoute<RouteProp<{params: RouteParams}>>();
+  const dispatch = useDispatch<AppDispatch>();
+  const messaging = getMessaging(getApp());
+  const trimmedVideoUri = useTrimVideo();
+
+  // Gán navigation từ hook vào biến module-level (Cập nhật mỗi khi component render)
+  navigation = componentNavigation;
+
+  // --- Redux State ---
   const {user, userInfo} = useSelector((state: RootState) => state.user);
   const {postMoment, isLoading} = useSelector(
     (state: RootState) => state.postMoment,
@@ -81,102 +103,153 @@ const HomeScreen = () => {
   const {useCamera, unlimitedTrimVideo, postStyle} = useSelector(
     (state: RootState) => state.setting,
   );
-  const {selected, optionSend, customListFriends} = useSelector(
+  const {selected, optionSend, customListFriends, friends} = useSelector(
     (state: RootState) => state.friends,
   );
-  const {friends} = useSelector((state: RootState) => state.friends);
   const {posts} = useSelector((state: RootState) => state.oldPosts);
 
-  //use state
-  const [selectedMedia, setselectedMedia] = useState<MediaType | null>(null);
+  // --- Component State ---
+  const [selectedMedia, setSelectedMedia] = useState<MediaType | null>(null);
   const [caption, setCaption] = useState('');
   const [overlay, setOverlay] = useState<OverLayCreate>(DefaultOverlayCreate);
   const [isVideo, setIsVideo] = useState(false);
   const [visibleSelectMedia, setVisibleSelectMedia] = useState(false);
   const [visibleSelectFriend, setVisibleSelectFriend] = useState(false);
-  const [localLoading, setLocalLoading] = useState(false);
   const [visibleSelectColor, setVisibleSelectColor] = useState(false);
+  const [localLoading, setLocalLoading] = useState(false);
 
+  // --- Effects ---
+
+  // Effect chạy 1 lần khi mount: Xử lý notification ban đầu và kiểm tra/làm mới token/lấy thông tin user
   useEffect(() => {
-    getInitialNotification(messaging).then(async remoteMessage => {
-      handleNotificationClick(remoteMessage?.data || {});
-    });
+    getInitialNotification(messaging).then(
+      (remoteMessage: FirebaseMessagingTypes.RemoteMessage | null) => {
+        if (remoteMessage?.data) {
+          handleNotificationClick(remoteMessage.data);
+        }
+      },
+    );
 
-    if (user?.timeExpires && +user.timeExpires < new Date().getTime()) {
-      dispatch(
-        getToken({
-          refreshToken: user.refreshToken || '',
-        }),
-      );
-    } else if (user) {
-      dispatch(
-        getAccountInfo({
-          idToken: user.idToken || '',
-          refreshToken: user.refreshToken || '',
-        }),
-      );
+    if (user) {
+      const now = new Date().getTime();
+      const expires = user.timeExpires ? +user.timeExpires : 0;
 
-      if (friends.length === 0) {
+      if (expires < now && user.refreshToken) {
+        dispatch(getToken({refreshToken: user.refreshToken}));
+      } else if (expires >= now && user.idToken) {
         dispatch(
-          getFriends({
-            idUser: user.localId,
-            idToken: user.idToken || '',
+          getAccountInfo({
+            idToken: user.idToken,
+            refreshToken: user.refreshToken || '',
           }),
         );
       }
     }
   }, []);
 
-  // Lắng nghe sự kiện khi cắt ảnh xong
+  useEffect(() => {
+    if (user) {
+      const now = new Date().getTime();
+      const expires = user.timeExpires ? +user.timeExpires : 0;
+
+      if (expires >= now && user.idToken) {
+        if (friends.length === 0 && user?.localId) {
+          dispatch(
+            getFriends({
+              idUser: user?.localId || '',
+              idToken: user?.idToken || '',
+            }),
+          );
+        }
+      }
+    }
+  }, [user?.localId, friends.length]);
+
+  // Effect xử lý kết quả trả về từ màn hình Crop hoặc Camera
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      switch (route.params?.from) {
-        case nav.crop:
-          if (route.params?.uri) {
-            setselectedMedia({uri: route.params.uri});
-            navigation.setParams(undefined);
-          }
-          break;
-        case nav.camera:
-          console.log(route.params);
+      const {params} = route;
+      let processed = false;
 
-          if (route.params?.camera) {
-            compressMedia(route.params.camera);
-            navigation.setParams(undefined);
-          }
-          break;
+      if (params?.from === nav.crop && params?.uri) {
+        setSelectedMedia({uri: params.uri, type: 'image'});
+        setIsVideo(false);
+        processed = true;
+      } else if (params?.from === nav.camera && params?.camera) {
+        compressMedia(params.camera);
+        processed = true;
+      }
 
-        default:
-          navigation.setParams(undefined);
-          break;
+      if (processed || params?.from) {
+        // Sử dụng clearNavigation được export thay vì setParams trực tiếp
+        clearNavigation();
       }
     });
 
-    return unsubscribe; // Hủy đăng ký listener khi component unmount
-  }, [navigation, route]);
+    return unsubscribe;
+  }, [route]); // Chỉ phụ thuộc route vì navigation được cập nhật vào biến module-level
 
+  // Effect chạy mỗi khi màn hình được focus: Lấy bài đăng cũ hơn
   useFocusEffect(
     useCallback(() => {
-      if (user?.timeExpires && +user.timeExpires > new Date().getTime()) {
+      if (
+        user?.localId &&
+        user.idToken &&
+        user.timeExpires &&
+        +user.timeExpires > new Date().getTime()
+      ) {
+        const lastTimestamp = posts[posts.length - 1]?.date?.toFixed(0);
         dispatch(
           getOldPosts({
-            userId: user?.localId || '',
-            token: user?.idToken || '',
-            timestamp: posts[posts.length - 1]?.date.toFixed(0),
+            userId: user.localId,
+            token: user.idToken,
+            timestamp: lastTimestamp,
           }),
         );
       }
-      return;
     }, [user?.localId, user?.idToken, user?.timeExpires, dispatch]),
   );
 
-  //event đăng xuất
+  // Effect xử lý sau khi đăng bài thành công
+  useEffect(() => {
+    if (postMoment) {
+      dispatch(setMessage({message: postMoment, type: 'Success'}));
+      dispatch(clearPostMoment());
+      setSelectedMedia(null);
+      setCaption('');
+      setOverlay(DefaultOverlayCreate);
+      setIsVideo(false);
+      clearAppCache();
+      deleteAllMp4Files(RNFS.DocumentDirectoryPath);
+    }
+  }, [postMoment, dispatch]);
+
+  // Effect xử lý kết quả trả về từ hook cắt video
+  useEffect(() => {
+    if (trimmedVideoUri === 'cancel') {
+      console.log('Video trimming cancelled');
+      setSelectedMedia(null);
+    } else if (trimmedVideoUri) {
+      setSelectedMedia({uri: trimmedVideoUri, type: 'video'});
+      setIsVideo(true);
+    }
+  }, [trimmedVideoUri]);
+
+  // Effect cập nhật overlay khi style bài đăng thay đổi
+  useEffect(() => {
+    setOverlay(prevOverlay => ({
+      ...prevOverlay,
+      postStyle: postStyle,
+    }));
+  }, [postStyle]);
+
+  // --- Event Handlers ---
+
   const handleViewPost = () => {
-    // dispatch(logout());
+    // Sử dụng navigationTo thay vì componentNavigation.navigate
     navigationTo(nav.posts);
   };
 
-  //kiểm tra cài đặt, nếu có bật cho phép chụp ảnh từ camera thì thêm option chụp ảnh nữa
   const handleSelectMedia = async () => {
     if (useCamera) {
       setVisibleSelectMedia(true);
@@ -185,177 +258,135 @@ const HomeScreen = () => {
     }
   };
 
-  //event bỏ loại bỏ media
   const handleRemoveMedia = () => {
-    setselectedMedia(null);
+    setSelectedMedia(null);
+    setIsVideo(false);
   };
 
-  //event nhấn xem profile
   const handleViewProfile = () => {
-    navigation.navigate(nav.accountInfo);
+    // Sử dụng navigationTo
+    navigationTo(nav.accountInfo);
   };
 
-  //event post moment
   const handlePost = async () => {
-    if (!user) {
+    if (!user || !user.localId || !user.idToken || !selectedMedia) {
+      console.warn('User data or media is missing for posting.');
       return;
     }
 
-    if (selectedMedia?.type === 'video') {
-      const task = dispatch(
+    const targetFriends =
+      optionSend === 'all'
+        ? []
+        : optionSend === 'custom_list'
+        ? customListFriends
+        : selected;
+
+    const overlayData =
+      overlay.overlay_type === OverlayType.standard
+        ? {...overlay, text: caption}
+        : overlay;
+
+    const commonParams = {
+      idUser: user.localId,
+      idToken: user.idToken,
+      refreshToken: user.refreshToken || '',
+      overlay: overlayData,
+      friend: targetFriends,
+    };
+
+    let task;
+    if (selectedMedia.type === 'video') {
+      task = dispatch(
         uploadVideoToFirebase({
-          idUser: user.localId,
-          idToken: user.idToken,
+          ...commonParams,
           videoInfo: selectedMedia.uri,
-          overlay:
-            overlay.overlay_type === OverlayType.standard
-              ? {
-                  ...overlay,
-                  text: caption,
-                }
-              : overlay,
-          refreshToken: user.refreshToken,
-          friend:
-            optionSend === 'all'
-              ? []
-              : optionSend === 'custom_list'
-              ? customListFriends
-              : selected,
         }),
       );
-
-      dispatch(setTask(task));
     } else {
-      const task = dispatch(
+      task = dispatch(
         uploadImageToFirebaseStorage({
-          idUser: user.localId,
-          idToken: user.idToken,
+          ...commonParams,
           imageInfo: selectedMedia,
-          overlay:
-            overlay.overlay_type === OverlayType.standard
-              ? {
-                  ...overlay,
-                  text: caption,
-                }
-              : overlay,
-          refreshToken: user.refreshToken,
-          friend:
-            optionSend === 'all'
-              ? []
-              : optionSend === 'custom_list'
-              ? customListFriends
-              : selected,
         }),
       );
-
-      dispatch(setTask(task));
     }
+    dispatch(setTask(task));
   };
 
-  //event hủy chọn
   const handleCancelSelectMedia = () => {
     setVisibleSelectMedia(false);
   };
 
-  //event chọn cách lấy file media (thư viện, camera)
   const handleConfirmSelectMedia = async (value: 'gallery' | 'camera') => {
+    setVisibleSelectMedia(false);
     setLocalLoading(true);
     await onSelectMedia(value);
     setLocalLoading(false);
   };
 
-  //xử lý option sau khi chọn
   const onSelectMedia = async (from: 'gallery' | 'camera') => {
-    let result;
-    if (from === 'gallery') {
-      result = await selectMedia();
-      if (result) {
-        compressMedia(result[0]);
+    try {
+      if (from === 'gallery') {
+        const result = await selectMedia();
+        if (result && result.length > 0 && result[0].uri) {
+          compressMedia(result[0]);
+        } else {
+          console.log('No media selected from gallery or selection cancelled.');
+        }
+      } else if (from === 'camera') {
+        // Sử dụng navigationTo
+        navigationTo(nav.camera);
       }
-    } else if (from === 'camera') {
-      navigationTo(nav.camera);
-    } else {
-      return;
+    } catch (error) {
+      console.error('Error selecting media:', error);
+      dispatch(setMessage({message: 'Lỗi khi chọn media', type: 'Error'}));
+      setLocalLoading(false);
     }
   };
 
-  //xử lý cắt ngắn video sau khi chọn xong
   const compressMedia = (media: Asset) => {
-    setselectedMedia(null);
+    setSelectedMedia(null);
 
-    if (media?.type?.startsWith('image')) {
+    if (!media.uri) {
+      console.warn('Selected media is missing URI.');
+      return;
+    }
+
+    if (media.type?.startsWith('image')) {
       setIsVideo(false);
-      navigation.navigate(nav.crop, {
-        imageUri: media.uri,
+      // Sử dụng navigationTo
+      navigationTo(nav.crop, {imageUri: media.uri});
+    } else if (media.type?.startsWith('video')) {
+      setIsVideo(true);
+      showEditor(media.uri, {
+        maxDuration: unlimitedTrimVideo ? undefined : 7,
+        saveButtonText: 'Lưu',
+        cancelButtonText: 'Hủy',
+        trimmingText: 'Đang xử lý...',
+        autoplay: true,
+        cancelDialogMessage: 'Bạn có muốn hủy cắt video không?',
+        cancelDialogConfirmText: 'Có',
+        cancelDialogCancelText: 'Không',
+        enableSaveDialog: false,
+        enableHapticFeedback: true,
+        type: 'video',
+        alertOnFailToLoad: true,
       });
-    } else if (media?.type?.startsWith('video')) {
-      if (media.uri) {
-        showEditor(media.uri, {
-          maxDuration: unlimitedTrimVideo ? undefined : 7,
-          saveButtonText: 'Lưu',
-          cancelButtonText: 'Hủy',
-          autoplay: true,
-          cancelDialogMessage: 'Bạn có muốn hủy cắt video không?',
-          cancelDialogConfirmText: 'Có',
-          cancelDialogCancelText: 'Không',
-          enableSaveDialog: false,
-          enableHapticFeedback: true,
-          type: 'video',
-          trimmingText: 'Đang xử lý...',
-          alertOnFailToLoad: true,
-        });
-        setIsVideo(true);
-        return;
-      }
+    } else {
+      console.warn('Unsupported media type:', media.type);
+      dispatch(
+        setMessage({message: 'Định dạng không được hỗ trợ.', type: 'Warning'}),
+      );
     }
   };
 
-  //sau khi postmoment xong thì xử lý ở đây
-  useEffect(() => {
-    if (postMoment) {
-      dispatch(
-        setMessage({
-          message: postMoment,
-          type: 'Success',
-        }),
-      );
-      dispatch(clearPostMoment());
-      setselectedMedia(null);
-
-      //xóa cache của app sau khi upload thành công
-      clearAppCache();
-      deleteAllMp4Files(RNFS.DocumentDirectoryPath);
-      setCaption('');
-    }
-  }, [postMoment]);
-
-  const uriVideo = useTrimVideo();
-
-  useEffect(() => {
-    if (uriVideo === 'cancel') {
-      console.log('cancel');
-
-      setselectedMedia(null);
-      navigation.setParams(undefined);
-      return;
-    }
-    if (uriVideo) {
-      setselectedMedia({uri: uriVideo, type: 'video'});
-    }
-  }, [uriVideo]);
-
-  useEffect(() => {
-    setOverlay({
-      ...overlay,
-      postStyle: postStyle,
-    });
-  }, [postStyle]);
-
+  // --- Render ---
   return (
     <View flex bg-black padding-12>
+      {/* Header */}
       <View row spread centerV>
         <Avatar
-          source={{uri: userInfo?.photoUrl}}
+          source={{uri: userInfo?.photoUrl || undefined}}
           size={36}
           onPress={handleViewProfile}
         />
@@ -376,8 +407,12 @@ const HomeScreen = () => {
           </View>
         </TouchableOpacity>
       </View>
+
+      {/* Body */}
       <ScrollView
-        contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}>
+        contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}>
         <PostForm
           selectedMedia={selectedMedia}
           isVideo={isVideo}
@@ -391,9 +426,7 @@ const HomeScreen = () => {
           localLoading={localLoading}
           overlay={overlay}
           setOverlay={setOverlay}
-          onLongPress={() => {
-            setVisibleSelectColor(true);
-          }}
+          onLongPress={() => setVisibleSelectColor(true)}
           selectedCount={
             optionSend === 'all'
               ? 0
@@ -403,11 +436,11 @@ const HomeScreen = () => {
           }
         />
       </ScrollView>
+
+      {/* Dialogs */}
       <SelectFriendDialog
         visible={visibleSelectFriend}
-        onDismiss={() => {
-          setVisibleSelectFriend(false);
-        }}
+        onDismiss={() => setVisibleSelectFriend(false)}
       />
       <SelectMediaDialog
         visible={visibleSelectMedia}
@@ -417,9 +450,7 @@ const HomeScreen = () => {
       <SelectColorDialog
         visible={visibleSelectColor}
         value={postStyle}
-        onDismiss={() => {
-          setVisibleSelectColor(false);
-        }}
+        onDismiss={() => setVisibleSelectColor(false)}
         onSelectColor={val => {
           dispatch(setPostStyle(val));
         }}
@@ -428,12 +459,27 @@ const HomeScreen = () => {
   );
 };
 
+// --- Exported Navigation Functions (Giữ lại theo yêu cầu) ---
 export const navigationTo = (to: string, data?: any) => {
-  navigation.navigate(to, data);
+  // Kiểm tra xem navigation đã được gán chưa trước khi sử dụng
+  if (navigation) {
+    navigation.navigate(to, data);
+  } else {
+    console.warn(
+      'Navigation object is not yet available. Navigation action ignored.',
+    );
+  }
 };
 
 export const clearNavigation = () => {
-  navigation.setParams(undefined);
+  // Kiểm tra xem navigation đã được gán chưa trước khi sử dụng
+  if (navigation) {
+    navigation.setParams({from: undefined, uri: undefined, camera: undefined});
+  } else {
+    console.warn(
+      'Navigation object is not yet available. Clear params action ignored.',
+    );
+  }
 };
 
 export default HomeScreen;
