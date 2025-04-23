@@ -6,6 +6,10 @@ import ViewMedia from '../../components/ViewMedia';
 import MainButton from '../../components/MainButton';
 import PostPager from './PostPager';
 import {OverLayCreate, OverlayType} from '../../util/bodyMoment';
+import GuideDialog from '../../Dialog/GuideDialog';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../../redux/store';
+import {setShowSelectColor} from '../../redux/slice/guide.slice';
 
 interface Props {
   selectedMedia: any;
@@ -40,8 +44,15 @@ const PostForm: React.FC<Props> = ({
   onLongPress,
   setOverlay,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const {showSelectColor} = useSelector((state: RootState) => state.guide);
+
   const [type, setType] = useState(OverlayType.standard);
   const [textOverlay, setTextOverlay] = useState('');
+
+  const handelNotShowAgainSelectColor = () => {
+    dispatch(setShowSelectColor(false));
+  };
 
   useEffect(() => {
     if (setOverlay) {
@@ -96,6 +107,12 @@ const PostForm: React.FC<Props> = ({
           onLongPress={onLongPress}
         />
       </View>
+      <GuideDialog
+        visible={showSelectColor}
+        label="Hướng dẫn mở tính năng chọn màu"
+        guideAssetsVideo={require('../../assets/guides/showSelectColors.mp4')}
+        onDismiss={handelNotShowAgainSelectColor}
+      />
     </View>
   );
 };

@@ -9,6 +9,7 @@ import postMomentReducer from './slice/postMoment.slice';
 import settingReducer from './slice/setting.slice';
 import friendsReducer from './slice/friends.slice';
 import {oldPostsReducer} from './slice/oldPosts.slice';
+import {guideReducer} from './slice/guide.slice';
 
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
@@ -31,6 +32,12 @@ const friendsPersistConfig: PersistConfig<ReturnType<typeof friendsReducer>> = {
   stateReconciler: autoMergeLevel2,
 };
 
+const guidePersistConfig: PersistConfig<ReturnType<typeof guideReducer>> = {
+  key: 'guide',
+  storage: AsyncStorage,
+  stateReconciler: autoMergeLevel2,
+};
+
 // Kết hợp reducer với từng persistReducer
 const rootReducer = combineReducers({
   user: persistReducer(userPersistConfig, userReducer),
@@ -39,6 +46,7 @@ const rootReducer = combineReducers({
   oldPosts: oldPostsReducer,
   message: messageReducer,
   postMoment: postMomentReducer,
+  guide: persistReducer(guidePersistConfig, guideReducer),
 });
 
 // Tạo store
