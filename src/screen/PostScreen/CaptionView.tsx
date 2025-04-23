@@ -12,7 +12,7 @@ const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
     return (
       <View>
         <Text
-          color={post.overlays[0].data.text_color || Colors.white}
+          color={post?.overlays[0]?.data?.text_color || Colors.white}
           text60BO
           center>
           {post.caption}
@@ -27,7 +27,7 @@ const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
       return (
         <View>
           <Text
-            color={post.overlays[0].data.text_color || Colors.white}
+            color={post?.overlays[0]?.data?.text_color || Colors.white}
             text60BO
             center>
             {`🕒 ${overLay.alt_text}`}

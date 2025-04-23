@@ -87,7 +87,7 @@ const PostPagerItem: React.FC<PostPagerItemProps> = React.memo(
             colors={listColor}
             style={{
               borderRadius: 999,
-              padding: !item.caption || !item.overlays[0].alt_text ? 0 : 12,
+              padding: !item?.caption && !item?.overlays[0]?.alt_text ? 0 : 12,
               justifyContent: 'center',
             }}>
             <CaptionView post={item} />
