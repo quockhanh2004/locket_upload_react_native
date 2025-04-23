@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import React, {useRef, useState, useEffect, useCallback} from 'react';
 import {
   Dimensions,
@@ -63,7 +64,16 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
       getOldPosts({
         userId: user?.localId || '',
         token: user?.idToken || '',
-        timestamp: posts[posts.length - 1]?.date.toFixed(0),
+      }),
+    );
+  };
+
+  const handleLoadMore = () => {
+    dispatch(
+      getOldPosts({
+        userId: user?.localId || '',
+        token: user?.idToken || '',
+        timestamp: listPostByFilter[listPostByFilter.length - 1].date,
       }),
     );
   };
@@ -84,29 +94,27 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   };
 
   useEffect(() => {
-    if (listPostByFilter.length === 0) {
+    if (!isViewerVisible || !flatListRef.current) {
       return;
     }
-    if (isViewerVisible && flatListRef.current) {
-      const scrollToIndex = indexToView;
 
-      const interactionHandle = InteractionManager.runAfterInteractions(() => {
-        if (flatListRef.current) {
-          flatListRef.current.scrollToIndex({
-            index: scrollToIndex,
-            animated: false,
-            viewPosition: 0,
-          });
-          // Cập nhật index đang hiển thị trong Modal
-          setSelectedIndexInModal(scrollToIndex);
-        } else {
-          console.warn(
-            '[Modal Scroll Interaction] Ref became null before scrolling!',
-          );
-        }
-      });
-      return () => interactionHandle.cancel();
+    const scrollToIndex = indexToView;
+    if (scrollToIndex >= listPostByFilter.length) {
+      return;
     }
+
+    const interactionHandle = InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => {
+        flatListRef.current?.scrollToIndex({
+          index: scrollToIndex,
+          animated: false,
+          viewPosition: 0,
+        });
+        setSelectedIndexInModal(scrollToIndex);
+      }, 50); // delay nhẹ để tránh jank
+    });
+
+    return () => interactionHandle.cancel();
   }, [isViewerVisible, indexToView, listPostByFilter.length]);
 
   // --- Cập nhật Index hiện tại trong Modal khi người dùng cuộn ---
@@ -144,6 +152,24 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
     itemVisiblePercentThreshold: 50,
   }).current;
 
+  const GridItem = React.memo(
+    ({
+      item,
+      index,
+      onPress,
+    }: {
+      item: Post;
+      index: number;
+      onPress: (index: number) => void;
+    }) => (
+      <Card borderRadius={20}>
+        <Pressable onPress={() => onPress(index)}>
+          <Image source={{uri: item.thumbnail_url}} style={styles.gridImage} />
+        </Pressable>
+      </Card>
+    ),
+  );
+
   return (
     <View flex bg-black useSafeArea>
       <PostScreenHeader
@@ -162,22 +188,21 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         numColumns={3}
         keyExtractor={item => item.id}
         itemSpacing={4}
+        onEndReachedThreshold={0.7}
+        onEndReached={handleLoadMore}
+        initialNumToRender={15}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        removeClippedSubviews={true}
         renderItem={({item, index}) => (
-          <Card borderRadius={20}>
-            <Pressable onPress={() => openViewer(index)}>
-              <Image
-                source={{uri: item.thumbnail_url}}
-                style={styles.gridImage}
-              />
-            </Pressable>
-          </Card>
+          <GridItem item={item} index={index} onPress={openViewer} />
         )}
       />
 
       <Modal
         visible={isViewerVisible}
         onRequestClose={handleBackPress}
-        animationType="fade"
+        animationType="slide"
         transparent={false}
         presentationStyle="fullScreen" // Tùy chọn trên iOS
       >
@@ -192,6 +217,8 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
             ref={flatListRef}
             data={listPostByFilter}
             keyExtractor={item => item.id}
+            onEndReachedThreshold={0.7}
+            onEndReached={handleLoadMore}
             renderItem={({item, index}) => (
               <PostPagerItem
                 item={item}
@@ -218,6 +245,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
             initialNumToRender={3}
             maxToRenderPerBatch={3}
             style={styles.modalFlatList}
+            updateCellsBatchingPeriod={50}
             ListEmptyComponent={
               <View flex bg-black useSafeArea>
                 <PostScreenHeader

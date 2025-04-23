@@ -5,7 +5,7 @@ import {Friend} from '../models/friend.model';
 
 export const getListIdFriend = async (token: string, userId: string) => {
   const response = await axios.post(
-    'https://file.quockhanh020924.id.vn/listen',
+    'https://locket.quockhanh020924.id.vn/listen',
     {
       token,
       userId,

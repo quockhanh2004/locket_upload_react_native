@@ -41,13 +41,21 @@ const oldPostsSlice = createSlice({
         const incomingPosts = action.payload.post;
         const currentUserId = action.payload.currentUserId;
         const deletedPosts = action.payload.deleted;
+        const isLoadMore = action.payload.isLoadMore;
 
         const existingIds = new Set(state.posts.map(post => post.id));
         const filteredNewPosts = incomingPosts.filter(
           (post: {id: string}) => !existingIds.has(post.id),
         );
 
-        const temp = [...filteredNewPosts, ...state.posts];
+        let temp;
+
+        if (isLoadMore) {
+          temp = [...state.posts, ...filteredNewPosts];
+        } else {
+          temp = [...filteredNewPosts, ...state.posts];
+        }
+
         state.posts = temp.filter(
           (post: {id: string}) => !deletedPosts.includes(post.id),
         );

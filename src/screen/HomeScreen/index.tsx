@@ -198,7 +198,7 @@ const HomeScreen = () => {
         user.timeExpires &&
         +user.timeExpires > new Date().getTime()
       ) {
-        const lastTimestamp = posts[posts.length - 1]?.date?.toFixed(0);
+        const lastTimestamp = posts[0]?.date?.toFixed(0);
         dispatch(
           getOldPosts({
             userId: user.localId,

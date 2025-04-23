@@ -107,7 +107,7 @@ const PostPagerItem: React.FC<PostPagerItemProps> = React.memo(
   },
 );
 
-export default PostPagerItem;
+export default React.memo(PostPagerItem);
 
 const styles = StyleSheet.create({
   mediaStyle: {
