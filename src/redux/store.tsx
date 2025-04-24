@@ -18,6 +18,7 @@ const userPersistConfig: PersistConfig<ReturnType<typeof userReducer>> = {
   key: 'user',
   storage: AsyncStorage,
   stateReconciler: autoMergeLevel2,
+  blacklist: ['isLoading'],
 };
 
 const settingPersistConfig: PersistConfig<ReturnType<typeof settingReducer>> = {
@@ -30,6 +31,7 @@ const friendsPersistConfig: PersistConfig<ReturnType<typeof friendsReducer>> = {
   key: 'friends',
   storage: AsyncStorage,
   stateReconciler: autoMergeLevel2,
+  blacklist: ['isLoadFriends'],
 };
 
 const guidePersistConfig: PersistConfig<ReturnType<typeof guideReducer>> = {
