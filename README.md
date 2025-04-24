@@ -19,7 +19,7 @@
 
 <p align="left">
   <a href="https://buymeacoffee.com/quockhanh2004" target="_blank">
-    <img src="./images/buymeacoffe.png" alt="Image">
+    <img src="./assets/images/buymeacoffe.png" alt="Image">
   </a>
 </p>
 
