@@ -39,6 +39,8 @@
   ![Screenshot9](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot9.png)  
   ![Screenshot10](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot10.png)  
   ![Screenshot11](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot11.png)  
+  ![Screenshot12](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot12.png)  
+  ![Screenshot13](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot13.png)  
 
 </details>
 
