@@ -103,7 +103,7 @@ Bạn có thể thay đổi các thành phần trong source code, chẳng hạn:
 </p>
 
 <p align="left">
-    <img src="./assets/images/momo.jpg" alt="Image">
+    <img src="./assets/images/momo.jpg" alt="Image" width="300px">
 </p>
 
 Nếu bạn có ý tưởng hoặc muốn cải thiện ứng dụng, hãy tạo **Pull Request** trên GitHub!
