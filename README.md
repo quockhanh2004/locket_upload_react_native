@@ -27,19 +27,19 @@
 <details>
   <summary>Xem hình ảnh minh họa (nhấn để mở)</summary>
 
-  <img src="https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot1.png" width="300px">  
-  <img src="https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot2.png" width="300px">  
-  <img src="https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot3.png" width="300px">  
-  <img src="https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot4.png" width="300px">  
-  <img src="https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot5.png" width="300px">  
-  <img src="https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot6.png" width="300px">  
-  <img src="https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot7.png" width="300px">  
-  <img src="https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot8.png" width="300px">  
-  <img src="https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot9.png" width="300px">  
-  <img src="https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot10.png" width="300px">  
-  <img src="https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot11.png" width="300px">  
-  <img src="https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot12.png" width="300px">  
-  <img src="https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot13.png" width="300px">  
+  <img src="./assets/images/screenshot1.png" width="300px">  
+  <img src="./assets/images/screenshot2.png" width="300px">  
+  <img src="./assets/images/screenshot3.png" width="300px">  
+  <img src="./assets/images/screenshot4.png" width="300px">  
+  <img src="./assets/images/screenshot5.png" width="300px">  
+  <img src="./assets/images/screenshot6.png" width="300px">  
+  <img src="./assets/images/screenshot7.png" width="300px">  
+  <img src="./assets/images/screenshot8.png" width="300px">  
+  <img src="./assets/images/screenshot9.png" width="300px">  
+  <img src="./assets/images/screenshot10.png" width="300px">  
+  <img src="./assets/images/screenshot11.png" width="300px">  
+  <img src="./assets/images/screenshot12.png" width="300px">  
+  <img src="./assets/images/screenshot13.png" width="300px">  
 
 </details>
 
