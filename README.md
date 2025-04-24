@@ -17,12 +17,6 @@
 
 [![GitHub Releases](https://img.shields.io/github/downloads/quockhanh2004/locket_upload_react_native/total?label=Downloads&logo=android)](https://github.com/quockhanh2004/locket_upload_react_native/releases)
 
-<p align="left">
-  <a href="https://buymeacoffee.com/quockhanh2004" target="_blank">
-    <img src="./assets/images/buymeacoffe.png" alt="Image">
-  </a>
-</p>
-
 ## 📷 Hình ảnh minh họa
 <details>
   <summary>Xem hình ảnh minh họa (nhấn để mở)</summary>
@@ -101,6 +95,16 @@ Bạn có thể thay đổi các thành phần trong source code, chẳng hạn:
 - **API Upload**: Kiểm tra trong `src/redux/action`
 
 ## 🚀 Đóng góp
+
+<p align="left">
+  <a href="https://buymeacoffee.com/quockhanh2004" target="_blank">
+    <img src="./assets/images/buymeacoffe.png" alt="Image">
+  </a>
+</p>
+
+<p align="left">
+    <img src="./assets/images/momo.jpg" alt="Image">
+</p>
 
 Nếu bạn có ý tưởng hoặc muốn cải thiện ứng dụng, hãy tạo **Pull Request** trên GitHub!
 

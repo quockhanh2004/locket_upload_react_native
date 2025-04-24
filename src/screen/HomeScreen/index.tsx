@@ -203,7 +203,7 @@ const HomeScreen = () => {
           }),
         );
       }
-    }, [user?.localId, user?.idToken, user?.timeExpires, dispatch]),
+    }, [user?.localId, user?.idToken, user?.timeExpires]),
   );
 
   // Effect xử lý sau khi đăng bài thành công
