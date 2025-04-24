@@ -103,7 +103,7 @@ export const handleNotificationClick = async (data?: DataNotification) => {
   } else {
     console.log('📌 Nhấn thông báo khi lấy từ AsyncStorage.');
     const localData = await AsyncStorage.getItem('lastNotificationData');
-
+    await AsyncStorage.setItem('lastNotificationData', '{}');
     // Kiểm tra nếu có dữ liệu, mới parse JSON
     if (localData) {
       lastData = JSON.parse(localData);

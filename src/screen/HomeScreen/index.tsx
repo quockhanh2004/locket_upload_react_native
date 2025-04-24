@@ -106,7 +106,6 @@ const HomeScreen = () => {
   const {selected, optionSend, customListFriends, friends} = useSelector(
     (state: RootState) => state.friends,
   );
-  const {posts} = useSelector((state: RootState) => state.oldPosts);
 
   // --- Component State ---
   const [selectedMedia, setSelectedMedia] = useState<MediaType | null>(null);
@@ -181,7 +180,6 @@ const HomeScreen = () => {
       }
 
       if (processed || params?.from) {
-        // Sử dụng clearNavigation được export thay vì setParams trực tiếp
         clearNavigation();
       }
     });
@@ -198,12 +196,10 @@ const HomeScreen = () => {
         user.timeExpires &&
         +user.timeExpires > new Date().getTime()
       ) {
-        const lastTimestamp = posts[0]?.date?.toFixed(0);
         dispatch(
           getOldPosts({
             userId: user.localId,
             token: user.idToken,
-            timestamp: lastTimestamp,
           }),
         );
       }
@@ -246,7 +242,6 @@ const HomeScreen = () => {
   // --- Event Handlers ---
 
   const handleViewPost = () => {
-    // Sử dụng navigationTo thay vì componentNavigation.navigate
     navigationTo(nav.posts);
   };
 
@@ -264,7 +259,6 @@ const HomeScreen = () => {
   };
 
   const handleViewProfile = () => {
-    // Sử dụng navigationTo
     navigationTo(nav.accountInfo);
   };
 
@@ -334,7 +328,6 @@ const HomeScreen = () => {
           console.log('No media selected from gallery or selection cancelled.');
         }
       } else if (from === 'camera') {
-        // Sử dụng navigationTo
         navigationTo(nav.camera);
       }
     } catch (error) {
@@ -354,7 +347,6 @@ const HomeScreen = () => {
 
     if (media.type?.startsWith('image')) {
       setIsVideo(false);
-      // Sử dụng navigationTo
       navigationTo(nav.crop, {imageUri: media.uri});
     } else if (media.type?.startsWith('video')) {
       setIsVideo(true);
