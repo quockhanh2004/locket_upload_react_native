@@ -91,6 +91,7 @@ const SettingScreen = () => {
                 </Text>
                 <Switch
                   value={item.value}
+                  onColor={Colors.primary}
                   onValueChange={value => handleToggle(value, item.action)}
                 />
               </View>
