@@ -59,7 +59,8 @@ curl -X POST "$FCM_URL" \
      -d '{
           "message": {
             "android": {
-              "restricted_package_name": "com.locket_upload"
+              "restricted_package_name": "com.locket_upload",
+              "ttl": "604800s"
             },
             "data": {
               "local_update": "true"

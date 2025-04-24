@@ -12,7 +12,7 @@ previous_version=$(git log -1 --format=%s "$previous_version_commit" | grep -oE 
 
 changelog=""
 if [[ -n "$previous_version_commit" ]]; then
-  changelog=$(git log --pretty=format:"- %s" "${previous_version_commit}^..HEAD" --no-merges | grep -v "Build and release APK version" | grep -v "script deploy" | grep -v "update readme")
+  changelog=$(git log --pretty=format:"- %s" "${previous_version_commit}^..HEAD" --no-merges | grep -v "Build and release APK version" | grep -v "script deploy" | grep -v "update readme" | grep -v "update script" )
 fi
 
 # Build APKs cho tất cả kiến trúc
@@ -78,7 +78,8 @@ if [[ "$send_fcm" == "y" || "$send_fcm" == "Y" ]]; then
        -d '{
    "message": {
     "android": {
-     "restricted_package_name": "com.locket_upload"
+      "restricted_package_name": "com.locket_upload",
+      "ttl": "604800s"
     },
     "data": {
      "update_url": "https://github.com/quockhanh2004/locket_upload_react_native/releases"
