@@ -1,3 +1,4 @@
+import './src/config';
 import React, {useEffect} from 'react';
 import {View} from 'react-native-ui-lib';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -5,8 +6,6 @@ import {StatusBar} from 'react-native';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 
-import {AssetsInit} from './src/config/assets';
-import {ColorsInit} from './src/config/colors';
 import RootNavigation from './src/navigation/RootNavigation';
 import {persistor, store} from './src/redux/store';
 import MessageDialog from './src/Dialog/MessageDialog';
@@ -17,8 +16,6 @@ import {clearAppCache} from './src/util/uploadImage';
 
 const App = () => {
   useEffect(() => {
-    AssetsInit();
-    ColorsInit();
     clearAppCache();
   }, []);
 

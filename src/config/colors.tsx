@@ -1,7 +1,6 @@
 import {Colors} from 'react-native-ui-lib';
 
-export const ColorsInit = () => {
-  Colors.loadColors({
-    primary: '#FFB705',
-  });
-};
+Colors.loadColors({
+  primary: '#FFB705',
+  text: '#FFFFFFE6',
+});

@@ -1,3 +1,4 @@
+import {Colors} from 'react-native-ui-lib';
 import {PostStyle} from '../models/setting.model';
 import {ColorDefault} from './colors';
 import {getMd5Hash} from './uploadVideo';
@@ -81,7 +82,7 @@ export const createBodyVideo = (
           alt_text: overlay?.text,
           data: {
             text: overlay?.text,
-            text_color: overlay?.postStyle.text_color || '#FFFFFFE6',
+            text_color: overlay?.postStyle.text_color || Colors.text,
             type: overlay?.overlay_type || OverlayType.standard,
             max_lines: {
               '@type': 'type.googleapis.com/google.protobuf.Int64Value',

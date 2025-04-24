@@ -2,7 +2,7 @@ import {Colors} from 'react-native-ui-lib';
 
 export const ColorsSelect = [
   Colors.primary,
-  '#FFFFFFE6',
+  Colors.text,
   Colors.black,
   Colors.dark,
   Colors.grey20,
@@ -35,7 +35,7 @@ export const ColorsSelect = [
 ];
 
 export const ColorDefault = {
-  text_color: '#FFFFFFE6',
+  text_color: Colors.text,
   color_bot: undefined,
   color_top: undefined,
 };
