@@ -21,6 +21,7 @@ import MainButton from '../../components/MainButton';
 import {Friend} from '../../models/friend.model';
 import {Post} from '../../models/post.model';
 import PostScreenHeader from './PostScreenHeader';
+import {removePost} from '../../redux/slice/oldPosts.slice';
 
 interface PostScreenProps {
   initialIndex?: number;
@@ -69,13 +70,15 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   };
 
   const handleLoadMore = () => {
-    dispatch(
-      getOldPosts({
-        userId: user?.localId || '',
-        token: user?.idToken || '',
-        timestamp: listPostByFilter[listPostByFilter.length - 1].date,
-      }),
-    );
+    if (!isLoadPosts) {
+      dispatch(
+        getOldPosts({
+          userId: user?.localId || '',
+          token: user?.idToken || '',
+          timestamp: listPostByFilter[listPostByFilter.length - 1].date,
+        }),
+      );
+    }
   };
 
   const filterFriends = (item: Post) => {
@@ -161,13 +164,23 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
       item: Post;
       index: number;
       onPress: (index: number) => void;
-    }) => (
-      <Card borderRadius={20}>
-        <Pressable onPress={() => onPress(index)}>
-          <Image source={{uri: item.thumbnail_url}} style={styles.gridImage} />
-        </Pressable>
-      </Card>
-    ),
+    }) => {
+      const find = friends.find(friend => friend.uid === item.user);
+      if (!find && item.user !== user?.localId) {
+        dispatch(removePost(item.id));
+        return null;
+      }
+      return (
+        <Card borderRadius={20}>
+          <Pressable onPress={() => onPress(index)}>
+            <Image
+              source={{uri: item.thumbnail_url}}
+              style={styles.gridImage}
+            />
+          </Pressable>
+        </Card>
+      );
+    },
   );
 
   return (

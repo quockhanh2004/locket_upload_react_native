@@ -25,6 +25,12 @@ export interface Data {
   text_color: string;
   max_lines: number;
   background: Background;
+  icon: IconData;
+}
+
+export interface IconData {
+  data: string;
+  type: string;
 }
 
 export interface Background {

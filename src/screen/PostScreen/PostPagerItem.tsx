@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useRef, useState, useEffect, useCallback} from 'react';
 import {StyleSheet, Dimensions} from 'react-native';
@@ -27,7 +28,6 @@ const PostPagerItem: React.FC<PostPagerItemProps> = React.memo(
     const onVideoLoad = useCallback(() => {
       setIsVideoReady(true);
       setVideoError(false);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [item.id]);
 
     const onVideoError = useCallback(

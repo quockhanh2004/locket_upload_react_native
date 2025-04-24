@@ -23,14 +23,17 @@ const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
 
   if (post.overlays.length > 0) {
     const overLay = post.overlays[0];
-    if (overLay.overlay_id === OverlayID.CaptionTime) {
+    if (
+      overLay.overlay_id !== OverlayID.CaptionStandard &&
+      overLay.overlay_id !== OverlayID.CaptionReview
+    ) {
       return (
         <View>
           <Text
             color={post?.overlays[0]?.data?.text_color || Colors.white}
             text60BO
             center>
-            {`🕒 ${overLay.alt_text}`}
+            {`${overLay.data?.icon?.data} ${overLay.alt_text}`}
           </Text>
         </View>
       );
