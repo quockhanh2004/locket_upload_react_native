@@ -4,6 +4,7 @@ import {
   Colors,
   Dialog,
   Image,
+  Text,
   Typography,
   View,
 } from 'react-native-ui-lib';
@@ -18,6 +19,7 @@ import MainButton from '../components/MainButton';
 interface GuideDialogProps {
   visible: boolean;
   label?: string;
+  decription?: string;
   onDismiss?: () => void;
   guideAssetsVideo?: any;
   guideAssetsImage?: any;
@@ -26,6 +28,7 @@ interface GuideDialogProps {
 const GuideDialog: React.FC<GuideDialogProps> = ({
   visible,
   label,
+  decription,
   onDismiss,
   guideAssetsVideo,
   guideAssetsImage,
@@ -74,13 +77,11 @@ const GuideDialog: React.FC<GuideDialogProps> = ({
         borderRadius: 10,
         paddingBottom: 24,
       }}>
-      <Checkbox
-        label="Không hiện lại"
-        labelStyle={{color: Colors.white}}
-        color={Colors.primary}
-        value={notShowAgain}
-        onValueChange={setNotShowAgain}
-      />
+      {decription && (
+        <Text text text80BL padding-8>
+          {decription}
+        </Text>
+      )}
       <View margin-12 bg-grey20 style={{borderRadius: 10}}>
         {guideAssetsVideo && (
           <Video
@@ -102,7 +103,16 @@ const GuideDialog: React.FC<GuideDialogProps> = ({
           />
         )}
       </View>
-      <MainButton label="Đã hiểu" onPress={handlePress} />
+      <View gap-8>
+        <Checkbox
+          label="Không hiện lại"
+          labelStyle={{color: Colors.white}}
+          color={Colors.primary}
+          value={notShowAgain}
+          onValueChange={setNotShowAgain}
+        />
+        <MainButton label="Đã hiểu" onPress={handlePress} />
+      </View>
     </CustomDialog>
   );
 };

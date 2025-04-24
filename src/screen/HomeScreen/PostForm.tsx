@@ -110,8 +110,9 @@ const PostForm: React.FC<Props> = ({
       <GuideDialog
         visible={showSelectColor}
         label="Hướng dẫn mở tính năng chọn màu"
+        decription='Nhấn giữ vào "Select friend" để mở tính năng chọn màu'
         guideAssetsVideo={{
-          uri: 'https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/videos/showSelectColors.mp4',
+          uri: 'https://quockhanh020924.id.vn/drive/videos/guide_select_colors.mp4',
         }}
         onDismiss={handelNotShowAgainSelectColor}
       />
