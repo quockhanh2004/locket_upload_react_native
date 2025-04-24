@@ -28,19 +28,19 @@
   <summary>📷 Xem hình ảnh minh họa (nhấn để mở)</summary>
 
   
-  ![Screenshot1](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot1.png)  
-  ![Screenshot2](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot2.png)  
-  ![Screenshot3](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot3.png)  
-  ![Screenshot4](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot4.png)  
-  ![Screenshot5](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot5.png)  
-  ![Screenshot6](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot6.png)  
-  ![Screenshot7](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot7.png)  
-  ![Screenshot8](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot8.png)  
-  ![Screenshot9](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot9.png)  
-  ![Screenshot10](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot10.png)  
-  ![Screenshot11](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot11.png)  
-  ![Screenshot12](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot12.png)  
-  ![Screenshot13](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/images/screenshot13.png)  
+  ![Screenshot1](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot1.png)  
+  ![Screenshot2](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot2.png)  
+  ![Screenshot3](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot3.png)  
+  ![Screenshot4](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot4.png)  
+  ![Screenshot5](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot5.png)  
+  ![Screenshot6](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot6.png)  
+  ![Screenshot7](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot7.png)  
+  ![Screenshot8](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot8.png)  
+  ![Screenshot9](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot9.png)  
+  ![Screenshot10](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot10.png)  
+  ![Screenshot11](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot11.png)  
+  ![Screenshot12](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot12.png)  
+  ![Screenshot13](https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/images/screenshot13.png)  
 
 </details>
 

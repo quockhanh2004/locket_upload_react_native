@@ -110,7 +110,9 @@ const PostForm: React.FC<Props> = ({
       <GuideDialog
         visible={showSelectColor}
         label="Hướng dẫn mở tính năng chọn màu"
-        guideAssetsVideo={require('../../assets/guides/showSelectColors.mp4')}
+        guideAssetsVideo={{
+          uri: 'https://raw.githubusercontent.com/quockhanh2004/locket_upload_react_native/main/assets/videos/showSelectColors.mp4',
+        }}
         onDismiss={handelNotShowAgainSelectColor}
       />
     </View>
