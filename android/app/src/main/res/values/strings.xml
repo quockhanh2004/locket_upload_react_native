@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">locket upload</string>
+    <string name="app_name">Locket upload</string>
     <string name="CodePushDeploymentKey">iBfzrBb1TTD1jZyazQKslU4Wr7WC4ksvOXqog</string>
     <string name="CodePushServerUrl">https://code-push.quockhanh020924.id.vn</string>
 </resources>
