@@ -103,7 +103,7 @@ const HomeScreen = () => {
   const {useCamera, unlimitedTrimVideo, postStyle} = useSelector(
     (state: RootState) => state.setting,
   );
-  const {selected, optionSend, customListFriends, friends} = useSelector(
+  const {selected, optionSend, customListFriends, isLoadFriends} = useSelector(
     (state: RootState) => state.friends,
   );
 
@@ -147,22 +147,20 @@ const HomeScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (user) {
+    if (user?.localId) {
       const now = new Date().getTime();
       const expires = user.timeExpires ? +user.timeExpires : 0;
 
-      if (expires >= now && user.idToken) {
-        if (friends.length === 0 && user?.localId) {
-          dispatch(
-            getFriends({
-              idUser: user?.localId || '',
-              idToken: user?.idToken || '',
-            }),
-          );
-        }
+      if (expires >= now && user.idToken && !isLoadFriends) {
+        dispatch(
+          getFriends({
+            idUser: user?.localId || '',
+            idToken: user?.idToken || '',
+          }),
+        );
       }
     }
-  }, [user?.localId, friends.length]);
+  }, [user?.localId]);
 
   // Effect xử lý kết quả trả về từ màn hình Crop hoặc Camera
   useEffect(() => {
