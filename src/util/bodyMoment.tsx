@@ -132,11 +132,9 @@ export const createOverlay = ({
       max_lines: 4,
       background: {
         material_blur: 'ultra_thin',
-        colors:
-          postStyle?.color_top && postStyle?.color_bot
-            ? [postStyle?.color_top, postStyle?.color_bot]
-            : [],
+        colors: getColors(postStyle),
       },
+      icon: getIcon(overlay_type),
     },
   };
 };
@@ -145,4 +143,31 @@ export const DefaultOverlayCreate: OverLayCreate = {
   overlay_type: OverlayType.standard,
   postStyle: ColorDefault,
   text: '',
+};
+
+export const getIcon = (overlayType: OverlayType) => {
+  switch (overlayType) {
+    case OverlayType.standard:
+      return undefined;
+    case OverlayType.time:
+      return {
+        type: 'emoji',
+        data: '🕒',
+      };
+    case OverlayType.review:
+      return {};
+    default:
+      return undefined;
+  }
+};
+
+export const getColors = (postStyle: PostStyle) => {
+  if (!postStyle?.color_bot && !postStyle?.color_top) {
+    return [];
+  }
+
+  return [
+    postStyle?.color_top ?? Colors.grey20,
+    postStyle?.color_bot ?? Colors.grey20,
+  ];
 };
