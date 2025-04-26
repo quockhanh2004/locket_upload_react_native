@@ -24,7 +24,9 @@ export const getAccessToken = createAsyncThunk(
       console.error('Error Authorization spotify', error);
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${error.message}`,
+          message: `Error: ${
+            JSON.stringify(error.response.data?.message) || error.message
+          }`,
           type: 'error',
         }),
       );
@@ -55,46 +57,18 @@ export const refreshAccessToken = createAsyncThunk(
           },
         },
       );
-
-      console.log(response.data);
-
       return response.data;
     } catch (error: any) {
       console.error('Error refreshing Spotify access token', error);
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${error.message}`,
+          message: `Error: ${
+            JSON.stringify(error.response.data?.message) || error.message
+          }`,
           type: 'error',
         }),
       );
       thunkApi.dispatch(clearTokenData());
-      return thunkApi.rejectWithValue(error);
-    }
-  },
-);
-
-export const getAlbum = createAsyncThunk(
-  'getAlbum',
-  async (data: {id: string; token: string}, thunkApi) => {
-    try {
-      const {id, token} = data;
-      const response = await axios.get(
-        `https://api.spotify.com/v1/albums/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      return response.data;
-    } catch (error: any) {
-      console.error('Error fetching Spotify album', error);
-      thunkApi.dispatch(
-        setMessage({
-          message: `Error: ${error.message}`,
-          type: 'error',
-        }),
-      );
       return thunkApi.rejectWithValue(error);
     }
   },
@@ -118,7 +92,9 @@ export const getCurrentPlay = createAsyncThunk(
       console.error('Error fetching Spotify current play', error);
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${error.message}`,
+          message: `Error: ${
+            JSON.stringify(error.response.data?.message) || error.message
+          }`,
           type: 'error',
         }),
       );
