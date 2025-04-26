@@ -22,11 +22,8 @@ const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
   }
 
   if (post.overlays.length > 0) {
-    const overLay = post.overlays[0];
-    if (
-      overLay.overlay_id !== OverlayID.CaptionStandard &&
-      overLay.overlay_id !== OverlayID.CaptionReview
-    ) {
+    const overLay = post?.overlays[0];
+    if (overLay.overlay_id !== OverlayID.CaptionReview) {
       return (
         <View>
           {overLay.data?.icon?.data?.includes('http') ? (
