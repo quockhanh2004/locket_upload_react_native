@@ -60,7 +60,7 @@ export const compressVideo = async (
   const codec = await getAvailableVideoEncoderCodec();
   // const codec = 'mpeg4';
 
-  const ffmpegCommand = `-hide_banner -i "${videoUri}" -vf "scale='min(720,iw)':-2" -c:v ${codec} -b:v ${bitrateKbps}k -maxrate ${bitrateKbps}k -bufsize ${bitrateKbps}k -threads 0 -an "${outputPath}"`;
+  const ffmpegCommand = `-hide_banner -i "${videoUri}" -vf "scale='min(720,iw)':-2" -c:v ${codec} -b:v ${bitrateKbps}k -maxrate ${bitrateKbps}k -bufsize ${bitrateKbps}k -threads 0 "${outputPath}"`;
   let totalDuration = 0;
   let pendingDurationNextLine = false;
 
