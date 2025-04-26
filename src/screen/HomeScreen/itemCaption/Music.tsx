@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useCallback} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -8,12 +8,12 @@ import {
   Colors,
 } from 'react-native-ui-lib';
 import {SpotifyAuth} from '../../../services/Spotify';
-import {Dimensions, Linking} from 'react-native';
+import {AppState, Dimensions, Linking} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../../redux/store';
 import TextTicker from 'react-native-text-ticker';
-import {useFocusEffect} from '@react-navigation/native';
 import {getCurrentPlay} from '../../../redux/action/spotify.action';
+import {useIsFocused} from '@react-navigation/native';
 
 interface ItemMusicProps {
   isFocus: boolean;
@@ -35,31 +35,27 @@ const ItemMusic: React.FC<ItemMusicProps> = ({isFocus}) => {
     Linking.openURL('spotify://');
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      if (tokenData && isFocus) {
-        dispatch(getCurrentPlay({token: tokenData?.access_token || ''}));
-      }
-    }, [dispatch, isFocus, tokenData]),
-  );
+  const isFocused = useIsFocused();
+  const appState = useRef(AppState.currentState);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/background|inactive/) &&
+        nextAppState === 'active'
+      ) {
+        console.log('App đã quay lại foreground');
 
-  if (!tokenData) {
-    return (
-      <View width={screenWidth - 24} center>
-        <TouchableOpacity
-          onPress={handleLogin}
-          style={{
-            padding: 16,
-            backgroundColor: Colors.spotify,
-            borderRadius: 999,
-          }}>
-          <Text text70BL white>
-            Login to Spotify
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+        if (isFocused && isFocus) {
+          dispatch(getCurrentPlay({token: tokenData?.access_token || ''}));
+        }
+      }
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [dispatch, isFocus, isFocused, tokenData]);
 
   if (isLoading) {
     return (
@@ -74,6 +70,24 @@ const ItemMusic: React.FC<ItemMusicProps> = ({isFocus}) => {
           }}>
           Loading...
         </Text>
+      </View>
+    );
+  }
+
+  if (!tokenData) {
+    return (
+      <View width={screenWidth - 24} center>
+        <TouchableOpacity
+          onPress={handleLogin}
+          style={{
+            padding: 16,
+            backgroundColor: Colors.spotify,
+            borderRadius: 999,
+          }}>
+          <Text text70BL white>
+            Đăng nhập Spotify
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   }

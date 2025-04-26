@@ -45,7 +45,9 @@ const PostForm: React.FC<Props> = ({
   setOverlay,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const {showSelectColor} = useSelector((state: RootState) => state.guide);
+  const {showSelectColor, guideSpotify} = useSelector(
+    (state: RootState) => state.guide,
+  );
   const {currentPlay} = useSelector((state: RootState) => state.spotify);
 
   const [type, setType] = useState(OverlayType.standard);
@@ -131,6 +133,15 @@ const PostForm: React.FC<Props> = ({
         decription='Nhấn giữ vào "Select friend" để mở tính năng chọn màu'
         guideAssetsVideo={{
           uri: 'https://quockhanh020924.id.vn/drive/videos/guide_select_colors.mp4',
+        }}
+        onDismiss={handelNotShowAgainSelectColor}
+      />
+      <GuideDialog
+        visible={guideSpotify}
+        label="Hướng dẫn chọn nhạc từ spotify"
+        decription='Nhấn vào "Chọn nhạc từ spotify", phát nhạc bạn muốn và quay trở lại app'
+        guideAssetsVideo={{
+          uri: 'https://quockhanh020924.id.vn/drive/videos/guide_spotify.mp4',
         }}
         onDismiss={handelNotShowAgainSelectColor}
       />
