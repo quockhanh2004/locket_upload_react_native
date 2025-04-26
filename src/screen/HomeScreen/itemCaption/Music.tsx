@@ -8,7 +8,7 @@ import {
   Colors,
 } from 'react-native-ui-lib';
 import {SpotifyAuth} from '../../../services/Spotify';
-import {AppState, Dimensions, Linking} from 'react-native';
+import {AppState, Dimensions, Linking, Platform} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../../redux/store';
 import TextTicker from 'react-native-text-ticker';
@@ -31,8 +31,22 @@ const ItemMusic: React.FC<ItemMusicProps> = ({isFocus}) => {
     SpotifyAuth.authorization();
   };
 
-  const handleSelectMusic = () => {
-    Linking.openURL('spotify://');
+  const handleSelectMusic = async () => {
+    try {
+      const supported = await Linking.canOpenURL('spotify://');
+      if (supported) {
+        await Linking.openURL('spotify://');
+      } else {
+        const storeUrl =
+          Platform.OS === 'android'
+            ? 'https://play.google.com/store/apps/details?id=com.spotify.music'
+            : 'https://apps.apple.com/app/spotify-music-and-podcasts/id324684580';
+
+        await Linking.openURL(storeUrl);
+      }
+    } catch (error) {
+      console.error('Lỗi mở Spotify:', error);
+    }
   };
 
   const isFocused = useIsFocused();

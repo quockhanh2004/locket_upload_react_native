@@ -25,7 +25,7 @@ export const getAccessToken = createAsyncThunk(
       thunkApi.dispatch(
         setMessage({
           message: `Error: ${
-            JSON.stringify(error.response.data?.message) || error.message
+            JSON.stringify(error.response.data) || error.message
           }`,
           type: 'error',
         }),
@@ -63,7 +63,7 @@ export const refreshAccessToken = createAsyncThunk(
       thunkApi.dispatch(
         setMessage({
           message: `Error: ${
-            JSON.stringify(error.response.data?.message) || error.message
+            JSON.stringify(error.response.data) || error.message
           }`,
           type: 'error',
         }),
@@ -93,7 +93,7 @@ export const getCurrentPlay = createAsyncThunk(
       thunkApi.dispatch(
         setMessage({
           message: `Error: ${
-            JSON.stringify(error.response.data?.message) || error.message
+            JSON.stringify(error.response?.data) || error.message
           }`,
           type: 'error',
         }),
