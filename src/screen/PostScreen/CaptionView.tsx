@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, Colors} from 'react-native-ui-lib';
+import {View, Text, Colors, Icon} from 'react-native-ui-lib';
 import {OverlayID, Post} from '../../models/post.model';
 import {parseAltText} from '../../util/regex';
 
@@ -29,12 +29,30 @@ const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
     ) {
       return (
         <View>
-          <Text
-            color={post?.overlays[0]?.data?.text_color || Colors.white}
-            text60BO
-            center>
-            {`${overLay.data?.icon?.data} ${overLay.alt_text}`}
-          </Text>
+          {overLay.data?.icon?.data?.includes('http') ? (
+            <View row gap-8 center>
+              <Icon
+                source={{uri: overLay.data?.icon?.data}}
+                size={32}
+                borderRadius={8}
+              />
+              <Text
+                color={post?.overlays[0]?.data?.text_color || Colors.white}
+                text60BO
+                center>
+                {overLay.alt_text}
+              </Text>
+            </View>
+          ) : (
+            <Text
+              color={post?.overlays[0]?.data?.text_color || Colors.white}
+              text60BO
+              center>
+              {overLay.data?.icon?.data
+                ? `${overLay.data?.icon?.data} `
+                : '' + overLay.alt_text}
+            </Text>
+          )}
         </View>
       );
     }

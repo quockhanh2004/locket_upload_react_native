@@ -2,6 +2,7 @@ import {Colors} from 'react-native-ui-lib';
 import {PostStyle} from '../models/setting.model';
 import {ColorDefault} from './colors';
 import {getMd5Hash} from './uploadVideo';
+import {SimplifiedTrack} from '../models/spotify.model';
 
 export const createBodyVideo = (
   thumbnailUrl: string,
@@ -71,13 +72,11 @@ export const createBodyVideo = (
         platform: 'ios',
       },
       sent_to_all: true,
-      caption:
-        overlay?.overlay_type !== OverlayType.standard
-          ? undefined
-          : overlay.text,
       overlays: [
         {
-          overlay_id: `caption:${overlay?.overlay_type || 'standard'}`,
+          overlay_id: `caption:${
+            overlay?.overlay_type || OverlayType.standard
+          }`,
           overlay_type: 'caption',
           alt_text: overlay?.text,
           data: {
@@ -109,18 +108,29 @@ export enum OverlayType {
   time = 'time',
   review = 'review',
   music = 'music',
+  // party_time = 'party_time',
+}
+
+export interface IconOverlay {
+  type: string;
+  data: string;
+  source?: string;
 }
 
 export interface OverLayCreate {
   overlay_type: OverlayType;
   text: string;
   postStyle: PostStyle;
+  icon?: IconOverlay;
+  payload?: SimplifiedTrack | any;
 }
 
 export const createOverlay = ({
   overlay_type,
   text,
   postStyle,
+  icon,
+  payload,
 }: OverLayCreate) => {
   return {
     overlay_id: `caption:${overlay_type}`,
@@ -135,7 +145,8 @@ export const createOverlay = ({
         material_blur: 'ultra_thin',
         colors: getColors(postStyle),
       },
-      icon: getIcon(overlay_type),
+      icon: icon ? icon : getIcon(overlay_type),
+      payload: !payload ? undefined : payload,
     },
   };
 };

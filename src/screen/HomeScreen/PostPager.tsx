@@ -4,11 +4,12 @@ import {FlatList, ViewToken} from 'react-native';
 import {Colors, View} from 'react-native-ui-lib';
 import {getCurrentTime} from '../../util/convertTime';
 import {OverlayType} from '../../util/bodyMoment';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../redux/store';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../../redux/store';
 import ItemStandard from './itemCaption/Standard';
 import ItemTime from './itemCaption/Time';
 import ItemMusic from './itemCaption/Music';
+import {refreshAccessToken} from '../../redux/action/spotify.action';
 
 const DATA = [
   {type: OverlayType.standard},
@@ -35,14 +36,16 @@ const PostPager: React.FC<PostPagerProps> = ({
   settype = () => {},
   setTextOverlay = () => {},
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
   const {postStyle} = useSelector((state: RootState) => state.setting);
-  const {tokenData} = useSelector((state: RootState) => state.spotify);
+  const {tokenData, currentPlay} = useSelector(
+    (state: RootState) => state.spotify,
+  );
 
   const [localCaption, setlocalCaption] = useState(caption || '');
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const flatListRef = useRef<FlatList>(null);
-  console.log(tokenData);
 
   const onViewableItemsChanged = useCallback(
     (info: {viewableItems: ViewToken[]; changed: ViewToken[]}) => {
@@ -51,12 +54,25 @@ const PostPager: React.FC<PostPagerProps> = ({
         setCurrentIndex(index);
 
         if (setCaption) {
-          if (DATA[index].type === OverlayType.standard) {
-            settype(OverlayType.standard);
-            setCaption(localCaption);
-          } else if (DATA[index].type === OverlayType.time) {
-            settype(OverlayType.time);
-            setTextOverlay(getCurrentTime());
+          switch (DATA[index].type) {
+            case OverlayType.standard:
+              settype(OverlayType.standard);
+              setCaption(localCaption);
+              break;
+
+            case OverlayType.time:
+              settype(OverlayType.time);
+              setTextOverlay(getCurrentTime());
+              break;
+
+            case OverlayType.music:
+              settype(OverlayType.music);
+              break;
+
+            default:
+              settype(OverlayType.standard);
+              setTextOverlay('');
+              break;
           }
         }
       }
@@ -73,6 +89,23 @@ const PostPager: React.FC<PostPagerProps> = ({
       setlocalCaption(caption);
     }
   }, [caption]);
+
+  useEffect(() => {
+    if (!tokenData) {
+      return;
+    }
+    if (tokenData && tokenData.time_expired <= new Date().getTime()) {
+      dispatch(
+        refreshAccessToken({
+          refreshToken: tokenData.refresh_token,
+        }),
+      );
+    }
+  }, [currentIndex, tokenData, dispatch]);
+
+  useEffect(() => {
+    setTextOverlay(`${currentPlay?.name} - ${currentPlay?.artists}`);
+  }, [currentPlay, setTextOverlay]);
 
   const renderItem = ({item}: RenderItemProps) => {
     switch (item.type) {
@@ -93,7 +126,7 @@ const PostPager: React.FC<PostPagerProps> = ({
         return <ItemTime postStyle={postStyle} />;
 
       case OverlayType.music:
-        return <ItemMusic isLogin={tokenData ? true : false} />;
+        return <ItemMusic isFocus={currentIndex === 2} />;
     }
     return null;
   };

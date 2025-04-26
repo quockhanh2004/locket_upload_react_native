@@ -1,7 +1,7 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {setMessage} from '../slice/message.slice';
 import axios from 'axios';
-import {SpotifyAuth} from '../../services/Spotify';
+import {parseSpotifyTrack, SpotifyAuth} from '../../services/Spotify';
 import {clearTokenData} from '../slice/spotify.slice';
 
 interface DataParam {
@@ -56,6 +56,8 @@ export const refreshAccessToken = createAsyncThunk(
         },
       );
 
+      console.log(response.data);
+
       return response.data;
     } catch (error: any) {
       console.error('Error refreshing Spotify access token', error);
@@ -98,22 +100,22 @@ export const getAlbum = createAsyncThunk(
   },
 );
 
-export const getPlayList = createAsyncThunk(
-  'getPlayList',
+export const getCurrentPlay = createAsyncThunk(
+  'getCurrentPlay',
   async (data: {token: string}, thunkApi) => {
     try {
       const {token} = data;
       const response = await axios.get(
-        'https://api.spotify.com/v1/me/playlists',
+        'https://api.spotify.com/v1/me/player/currently-playing',
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         },
       );
-      return response.data;
+      return parseSpotifyTrack(response.data);
     } catch (error: any) {
-      console.error('Error fetching Spotify playlist', error);
+      console.error('Error fetching Spotify current play', error);
       thunkApi.dispatch(
         setMessage({
           message: `Error: ${error.message}`,

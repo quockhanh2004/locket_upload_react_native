@@ -28,6 +28,7 @@ import {getAccountInfo, getToken} from '../../redux/action/user.action';
 import {setMessage, setTask} from '../../redux/slice/message.slice';
 import {clearPostMoment} from '../../redux/slice/postMoment.slice';
 import {
+  DataPostMoment,
   uploadImageToFirebaseStorage,
   uploadVideoToFirebase,
 } from '../../redux/action/postMoment.action';
@@ -110,7 +111,10 @@ const HomeScreen = () => {
   // --- Component State ---
   const [selectedMedia, setSelectedMedia] = useState<MediaType | null>(null);
   const [caption, setCaption] = useState('');
-  const [overlay, setOverlay] = useState<OverLayCreate>(DefaultOverlayCreate);
+  const [overlay, setOverlay] = useState<OverLayCreate>({
+    ...DefaultOverlayCreate,
+    postStyle: postStyle,
+  });
   const [isVideo, setIsVideo] = useState(false);
   const [visibleSelectMedia, setVisibleSelectMedia] = useState(false);
   const [visibleSelectFriend, setVisibleSelectFriend] = useState(false);
@@ -152,12 +156,12 @@ const HomeScreen = () => {
       const expires = user.timeExpires ? +user.timeExpires : 0;
 
       if (expires >= now && user.idToken && !isLoadFriends) {
-        // dispatch(
-        //   getFriends({
-        //     idUser: user?.localId || '',
-        //     idToken: user?.idToken || '',
-        //   }),
-        // );
+        dispatch(
+          getFriends({
+            idUser: user?.localId || '',
+            idToken: user?.idToken || '',
+          }),
+        );
       }
     }
   }, [user?.localId]);
@@ -186,23 +190,23 @@ const HomeScreen = () => {
   }, [route]); // Chỉ phụ thuộc route vì navigation được cập nhật vào biến module-level
 
   // Effect chạy mỗi khi màn hình được focus: Lấy bài đăng cũ hơn
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     if (
-  //       user?.localId &&
-  //       user.idToken &&
-  //       user.timeExpires &&
-  //       +user.timeExpires > new Date().getTime()
-  //     ) {
-  //       dispatch(
-  //         getOldPosts({
-  //           userId: user.localId,
-  //           token: user.idToken,
-  //         }),
-  //       );
-  //     }
-  //   }, [user?.localId, user?.idToken, user?.timeExpires]),
-  // );
+  useFocusEffect(
+    useCallback(() => {
+      if (
+        user?.localId &&
+        user.idToken &&
+        user.timeExpires &&
+        +user.timeExpires > new Date().getTime()
+      ) {
+        dispatch(
+          getOldPosts({
+            userId: user.localId,
+            token: user.idToken,
+          }),
+        );
+      }
+    }, [user?.localId, user?.idToken, user?.timeExpires]),
+  );
 
   // Effect xử lý sau khi đăng bài thành công
   useEffect(() => {
@@ -273,16 +277,17 @@ const HomeScreen = () => {
         ? customListFriends
         : selected;
 
-    const overlayData =
-      overlay.overlay_type === OverlayType.standard
-        ? {...overlay, text: caption}
-        : overlay;
-
-    const commonParams = {
+    const commonParams: DataPostMoment = {
       idUser: user.localId,
       idToken: user.idToken,
       refreshToken: user.refreshToken || '',
-      overlay: overlayData,
+      overlay: {
+        ...overlay,
+        text:
+          overlay.overlay_type === OverlayType.standard
+            ? caption
+            : overlay.text,
+      },
       friend: targetFriends,
     };
 

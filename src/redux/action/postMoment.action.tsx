@@ -22,10 +22,9 @@ import {
   createBodyVideo,
   createOverlay,
   OverLayCreate,
-  OverlayType,
 } from '../../util/bodyMoment';
 
-interface DataPostMoment {
+export interface DataPostMoment {
   idUser: string;
   idToken: string;
   imageInfo?: any;
@@ -86,12 +85,6 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
 
       const bodyPostMoment = {
         data: {
-          caption:
-            overlay && overlay?.overlay_type !== OverlayType.standard
-              ? undefined
-              : overlay?.text.length === 0
-              ? undefined
-              : overlay.text,
           thumbnail_url: downloadUrl,
           recipients: friend || [],
           overlays: overlay.text.length === 0 ? [] : [createOverlay(overlay)],

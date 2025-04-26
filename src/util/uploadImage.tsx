@@ -1,7 +1,7 @@
 import axios, {AxiosProgressEvent} from 'axios';
 import {uploadHeaders} from './header';
 import RNFS from 'react-native-fs';
-import {FFmpegKit} from 'ffmpeg-kit-react-native';
+import {FFmpegKit, FFmpegKitConfig} from 'ffmpeg-kit-react-native';
 
 export const UPLOAD_PROGRESS_STAGE = {
   PROCESSING_IMAGE: 'Processing image', // Xử lý ảnh (resize, convert, v.v.)
@@ -105,6 +105,7 @@ export const resizeImage = async (
   if (!uri) {
     return null;
   }
+  FFmpegKitConfig.disableLogs();
 
   const inputPath = uri.replace('file://', '');
   const outputPath = `${RNFS.CachesDirectoryPath}/resized_${Date.now()}.jpg`;
