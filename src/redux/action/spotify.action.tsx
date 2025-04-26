@@ -89,7 +89,7 @@ export const getCurrentPlay = createAsyncThunk(
       );
       return parseSpotifyTrack(response.data);
     } catch (error: any) {
-      console.error('Error fetching Spotify current play', error);
+      console.error('Error fetching Spotify current play', error.response.data);
       thunkApi.dispatch(
         setMessage({
           message: `Error: ${

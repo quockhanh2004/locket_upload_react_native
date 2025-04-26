@@ -45,7 +45,7 @@ const ItemMusic: React.FC<ItemMusicProps> = ({isFocus}) => {
       ) {
         console.log('App đã quay lại foreground');
 
-        if (isFocused && isFocus) {
+        if (isFocused && isFocus && tokenData?.access_token) {
           dispatch(getCurrentPlay({token: tokenData?.access_token || ''}));
         }
       }
