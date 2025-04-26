@@ -38,7 +38,9 @@ code-push release-react "$APP_NAME" android \
 echo "✅ CodePush deploy hoàn tất!"
 
 # Hỏi người dùng có muốn gửi thông báo qua FCM không
-read -p "📢 Bạn có muốn gửi thông báo cập nhật qua FCM không? (y/n): " send_fcm
+read -p "📢 Bạn có muốn gửi thông báo cập nhật qua FCM không? (Y/n): " send_fcm
+send_fcm=${send_fcm:-y} # nếu user bấm Enter, tự set send_fcm = y
+
 if [[ "$send_fcm" != "y" && "$send_fcm" != "Y" ]]; then
     echo "🚫 Bỏ qua gửi thông báo FCM."
     exit 0
