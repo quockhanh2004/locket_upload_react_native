@@ -108,6 +108,7 @@ export enum OverlayType {
   standard = 'standard',
   time = 'time',
   review = 'review',
+  music = 'music',
 }
 
 export interface OverLayCreate {

@@ -1,15 +1,20 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useRef, useState, useCallback, useEffect} from 'react';
-import {FlatList, Dimensions, ViewToken} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import {Colors, View, Text, TextField, Typography} from 'react-native-ui-lib';
+import {FlatList, ViewToken} from 'react-native';
+import {Colors, View} from 'react-native-ui-lib';
 import {getCurrentTime} from '../../util/convertTime';
 import {OverlayType} from '../../util/bodyMoment';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../redux/store';
+import ItemStandard from './itemCaption/Standard';
+import ItemTime from './itemCaption/Time';
+import ItemMusic from './itemCaption/Music';
 
-const DATA = [{type: OverlayType.standard}, {type: OverlayType.time}];
-const {width} = Dimensions.get('window');
+const DATA = [
+  {type: OverlayType.standard},
+  {type: OverlayType.time},
+  {type: OverlayType.music},
+];
 
 interface PostPagerProps {
   setCaption: (text: string) => void;
@@ -31,10 +36,13 @@ const PostPager: React.FC<PostPagerProps> = ({
   setTextOverlay = () => {},
 }) => {
   const {postStyle} = useSelector((state: RootState) => state.setting);
+  const {tokenData} = useSelector((state: RootState) => state.spotify);
+
   const [localCaption, setlocalCaption] = useState(caption || '');
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const flatListRef = useRef<FlatList>(null);
+  console.log(tokenData);
 
   const onViewableItemsChanged = useCallback(
     (info: {viewableItems: ViewToken[]; changed: ViewToken[]}) => {
@@ -67,49 +75,25 @@ const PostPager: React.FC<PostPagerProps> = ({
   }, [caption]);
 
   const renderItem = ({item}: RenderItemProps) => {
-    if (item.type === OverlayType.standard) {
-      return (
-        <View width={width - 24}>
-          <LinearGradient
-            colors={[
-              postStyle.color_top || Colors.grey40,
-              postStyle.color_bot || Colors.grey40,
-            ]}
-            style={{borderRadius: 999}}>
-            <TextField
-              placeholder={'Enter caption here...'}
-              placeholderTextColor={postStyle.text_color}
-              paddingV-10
-              color={postStyle.text_color}
-              paddingH-16
-              cursorColor={Colors.primary}
-              style={{...Typography.text70BL}}
-              onChangeText={val => {
-                setlocalCaption(val);
-                if (setCaption) {
-                  setCaption(val);
-                }
-              }}
-              value={localCaption}
-            />
-          </LinearGradient>
-        </View>
-      );
-    } else if (item.type === OverlayType.time) {
-      return (
-        <View width={width - 24} center style={{borderRadius: 999}}>
-          <LinearGradient
-            colors={[
-              postStyle.color_top || Colors.grey40,
-              postStyle.color_bot || Colors.grey40,
-            ]}
-            style={{borderRadius: 999, padding: 14}}>
-            <Text white color={postStyle.text_color} center text70BL>
-              {`🕒 ${getCurrentTime()}`}
-            </Text>
-          </LinearGradient>
-        </View>
-      );
+    switch (item.type) {
+      case OverlayType.standard:
+        return (
+          <ItemStandard
+            postStyle={postStyle}
+            caption={localCaption}
+            onChangeText={val => {
+              setlocalCaption(val);
+              if (setCaption) {
+                setCaption(val);
+              }
+            }}
+          />
+        );
+      case OverlayType.time:
+        return <ItemTime postStyle={postStyle} />;
+
+      case OverlayType.music:
+        return <ItemMusic isLogin={tokenData ? true : false} />;
     }
     return null;
   };

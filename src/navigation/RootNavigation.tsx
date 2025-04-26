@@ -7,6 +7,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../redux/store';
 import {restoreOldData} from '../util/migrateOldPersist';
 import {nav} from './navName';
+import queryString from 'query-string';
 
 import LoginScreen from '../screen/LoginScreen';
 import HomeScreen from '../screen/HomeScreen';
@@ -15,7 +16,10 @@ import CropImageScreen from '../screen/CropImageScreen';
 import SettingScreen from '../screen/SettingScreen';
 import CameraScreen from '../screen/CameraScreen';
 import PostScreen from '../screen/PostScreen';
+import {Linking} from 'react-native';
+import {getAccessToken} from '../redux/action/spotify.action';
 
+const REDIRECT_URI = 'locketupload.spotify://oauth';
 const Stack = createNativeStackNavigator();
 
 const AuthNavigator = () => {
@@ -34,6 +38,33 @@ const AuthNavigator = () => {
 };
 
 const HomeNavigator = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    Linking.getInitialURL()
+      .then(url => {
+        if (url) {
+          handleOpenURL(url);
+        }
+      })
+      .catch(err => console.error('Error getting initial URL:', err));
+    const subscription = Linking.addEventListener('url', handleOpenURL);
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  const handleOpenURL = (event: any) => {
+    const url = event.url || event;
+    console.log('Received deep link URL:', url);
+
+    if (url && url.startsWith(REDIRECT_URI)) {
+      const parsed = queryString.parseUrl(url);
+      const code = parsed.query.code as string;
+      if (code) {
+        dispatch(getAccessToken({code}));
+      }
+    }
+  };
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name={nav.home} component={HomeScreen} />

@@ -152,12 +152,12 @@ const HomeScreen = () => {
       const expires = user.timeExpires ? +user.timeExpires : 0;
 
       if (expires >= now && user.idToken && !isLoadFriends) {
-        dispatch(
-          getFriends({
-            idUser: user?.localId || '',
-            idToken: user?.idToken || '',
-          }),
-        );
+        // dispatch(
+        //   getFriends({
+        //     idUser: user?.localId || '',
+        //     idToken: user?.idToken || '',
+        //   }),
+        // );
       }
     }
   }, [user?.localId]);
@@ -186,23 +186,23 @@ const HomeScreen = () => {
   }, [route]); // Chỉ phụ thuộc route vì navigation được cập nhật vào biến module-level
 
   // Effect chạy mỗi khi màn hình được focus: Lấy bài đăng cũ hơn
-  useFocusEffect(
-    useCallback(() => {
-      if (
-        user?.localId &&
-        user.idToken &&
-        user.timeExpires &&
-        +user.timeExpires > new Date().getTime()
-      ) {
-        dispatch(
-          getOldPosts({
-            userId: user.localId,
-            token: user.idToken,
-          }),
-        );
-      }
-    }, [user?.localId, user?.idToken, user?.timeExpires]),
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     if (
+  //       user?.localId &&
+  //       user.idToken &&
+  //       user.timeExpires &&
+  //       +user.timeExpires > new Date().getTime()
+  //     ) {
+  //       dispatch(
+  //         getOldPosts({
+  //           userId: user.localId,
+  //           token: user.idToken,
+  //         }),
+  //       );
+  //     }
+  //   }, [user?.localId, user?.idToken, user?.timeExpires]),
+  // );
 
   // Effect xử lý sau khi đăng bài thành công
   useEffect(() => {

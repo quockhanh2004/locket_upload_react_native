@@ -61,23 +61,23 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   };
 
   const handleRefresh = () => {
-    dispatch(
-      getOldPosts({
-        userId: user?.localId || '',
-        token: user?.idToken || '',
-      }),
-    );
+    // dispatch(
+    //   getOldPosts({
+    //     userId: user?.localId || '',
+    //     token: user?.idToken || '',
+    //   }),
+    // );
   };
 
   const handleLoadMore = () => {
     if (!isLoadPosts) {
-      dispatch(
-        getOldPosts({
-          userId: user?.localId || '',
-          token: user?.idToken || '',
-          timestamp: listPostByFilter[listPostByFilter.length - 1].date,
-        }),
-      );
+      // dispatch(
+      //   getOldPosts({
+      //     userId: user?.localId || '',
+      //     token: user?.idToken || '',
+      //     timestamp: listPostByFilter[listPostByFilter.length - 1].date,
+      //   }),
+      // );
     }
   };
 
