@@ -9,7 +9,10 @@ import {OverLayCreate, OverlayType} from '../../util/bodyMoment';
 import GuideDialog from '../../Dialog/GuideDialog';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../redux/store';
-import {setShowSelectColor} from '../../redux/slice/guide.slice';
+import {
+  setGuideSpotify,
+  setShowSelectColor,
+} from '../../redux/slice/guide.slice';
 
 interface Props {
   selectedMedia: any;
@@ -55,6 +58,10 @@ const PostForm: React.FC<Props> = ({
 
   const handelNotShowAgainSelectColor = () => {
     dispatch(setShowSelectColor(false));
+  };
+
+  const handleNotShowAgainSelectSpotify = () => {
+    dispatch(setGuideSpotify(false));
   };
 
   useEffect(() => {
@@ -143,7 +150,7 @@ const PostForm: React.FC<Props> = ({
         guideAssetsVideo={{
           uri: 'https://quockhanh020924.id.vn/drive/videos/guide_spotify.mp4',
         }}
-        onDismiss={handelNotShowAgainSelectColor}
+        onDismiss={handleNotShowAgainSelectSpotify}
       />
     </View>
   );
