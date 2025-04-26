@@ -62,7 +62,7 @@ const spotifySlice = createSlice({
           state.tokenData.access_token = action.payload.access_token;
           state.tokenData.refresh_token = action.payload.refresh_token;
           state.tokenData.time_expired =
-            new Date().getTime() + action.payload.expires_in;
+            new Date().getTime() + action.payload.expires_in * 1000;
         }
       })
       .addCase(refreshAccessToken.rejected, state => {
