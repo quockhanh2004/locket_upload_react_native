@@ -46,7 +46,11 @@ const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
               text60BO
               center>
               {overLay.data?.icon?.data
-                ? `${overLay.data?.icon?.data === 'clock.fill' && '🕒'} `
+                ? `${
+                    overLay.data?.icon?.data === 'clock.fill'
+                      ? '🕒'
+                      : overLay.data?.icon?.data
+                  } `
                 : ''}
               {overLay.alt_text}
             </Text>
