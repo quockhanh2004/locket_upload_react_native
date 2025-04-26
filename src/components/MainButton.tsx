@@ -7,6 +7,7 @@ interface MainButtonProps {
   onPress?: () => void;
   backgroundColor?: string;
   lableColor?: string;
+  disabled?: boolean;
   onLongPress?: () => void;
 }
 
@@ -16,6 +17,7 @@ const MainButton: React.FC<MainButtonProps> = ({
   onPress,
   backgroundColor,
   lableColor,
+  disabled,
   onLongPress,
 }) => {
   return (
@@ -26,7 +28,7 @@ const MainButton: React.FC<MainButtonProps> = ({
       onPress={onPress}
       onLongPress={onLongPress}
       borderRadius={8}
-      disabled={isLoading}
+      disabled={disabled ? disabled : isLoading}
       delayLongPress={200}
       text70BL>
       {isLoading && (

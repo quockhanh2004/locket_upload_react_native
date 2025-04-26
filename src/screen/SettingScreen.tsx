@@ -19,11 +19,13 @@ import {logout} from '../redux/slice/user.slice';
 import {setOldPosts} from '../redux/slice/oldPosts.slice';
 import {setFriends} from '../redux/slice/friends.slice';
 import {useNavigation} from '@react-navigation/native';
+import {clearTokenData} from '../redux/slice/spotify.slice';
 
 const SettingScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
+  const {tokenData} = useSelector((state: RootState) => state.spotify);
   const {useCamera, optionFriend, unlimitedTrimVideo, trySoftwareEncode} =
     useSelector((state: RootState) => state.setting);
 
@@ -58,6 +60,10 @@ const SettingScreen = () => {
     },
     [dispatch],
   );
+
+  const handleSpotifyLogout = useCallback(() => {
+    dispatch(clearTokenData());
+  }, [dispatch]);
 
   const handleClearCache = useCallback(async () => {
     let totalSize = 0;
@@ -99,9 +105,18 @@ const SettingScreen = () => {
             </>
           )}
           ListFooterComponent={
-            <View marginT-20>
-              <MainButton onPress={handleClearCache} label="Xóa bộ nhớ đệm" />
-            </View>
+            <>
+              <View marginT-20 gap-8>
+                <MainButton onPress={handleClearCache} label="Xóa bộ nhớ đệm" />
+                {tokenData && (
+                  <MainButton
+                    label="Đăng xuất Spotify"
+                    onPress={handleSpotifyLogout}
+                    backgroundColor={Colors.spotify}
+                  />
+                )}
+              </View>
+            </>
           }
         />
       </View>

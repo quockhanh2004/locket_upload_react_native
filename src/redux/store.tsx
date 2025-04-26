@@ -10,6 +10,7 @@ import settingReducer from './slice/setting.slice';
 import friendsReducer from './slice/friends.slice';
 import {oldPostsReducer} from './slice/oldPosts.slice';
 import {guideReducer} from './slice/guide.slice';
+import {spotifyReducer} from './slice/spotify.slice';
 
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
@@ -18,6 +19,7 @@ const userPersistConfig: PersistConfig<ReturnType<typeof userReducer>> = {
   key: 'user',
   storage: AsyncStorage,
   stateReconciler: autoMergeLevel2,
+  blacklist: ['isLoading'],
 };
 
 const settingPersistConfig: PersistConfig<ReturnType<typeof settingReducer>> = {
@@ -30,12 +32,20 @@ const friendsPersistConfig: PersistConfig<ReturnType<typeof friendsReducer>> = {
   key: 'friends',
   storage: AsyncStorage,
   stateReconciler: autoMergeLevel2,
+  blacklist: ['isLoadFriends'],
 };
 
 const guidePersistConfig: PersistConfig<ReturnType<typeof guideReducer>> = {
   key: 'guide',
   storage: AsyncStorage,
   stateReconciler: autoMergeLevel2,
+};
+
+const spotifyPersistConfig: PersistConfig<ReturnType<typeof spotifyReducer>> = {
+  key: 'spotify',
+  storage: AsyncStorage,
+  stateReconciler: autoMergeLevel2,
+  whitelist: ['tokenData'],
 };
 
 // Kết hợp reducer với từng persistReducer
@@ -47,6 +57,7 @@ const rootReducer = combineReducers({
   message: messageReducer,
   postMoment: postMomentReducer,
   guide: persistReducer(guidePersistConfig, guideReducer),
+  spotify: persistReducer(spotifyPersistConfig, spotifyReducer),
 });
 
 // Tạo store

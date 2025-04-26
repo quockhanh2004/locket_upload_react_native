@@ -81,6 +81,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode(versionMajor * 10000 + versionMinor * 100 + versionPatch)
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+        manifestPlaceholders = [appAuthRedirectScheme: "com.locket_upload"]
     }
 
     // ✅ Đặt splits ở đây, đúng vị trí

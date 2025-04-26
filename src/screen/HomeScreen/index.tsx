@@ -28,6 +28,7 @@ import {getAccountInfo, getToken} from '../../redux/action/user.action';
 import {setMessage, setTask} from '../../redux/slice/message.slice';
 import {clearPostMoment} from '../../redux/slice/postMoment.slice';
 import {
+  DataPostMoment,
   uploadImageToFirebaseStorage,
   uploadVideoToFirebase,
 } from '../../redux/action/postMoment.action';
@@ -110,7 +111,10 @@ const HomeScreen = () => {
   // --- Component State ---
   const [selectedMedia, setSelectedMedia] = useState<MediaType | null>(null);
   const [caption, setCaption] = useState('');
-  const [overlay, setOverlay] = useState<OverLayCreate>(DefaultOverlayCreate);
+  const [overlay, setOverlay] = useState<OverLayCreate>({
+    ...DefaultOverlayCreate,
+    postStyle: postStyle,
+  });
   const [isVideo, setIsVideo] = useState(false);
   const [visibleSelectMedia, setVisibleSelectMedia] = useState(false);
   const [visibleSelectFriend, setVisibleSelectFriend] = useState(false);
@@ -273,16 +277,17 @@ const HomeScreen = () => {
         ? customListFriends
         : selected;
 
-    const overlayData =
-      overlay.overlay_type === OverlayType.standard
-        ? {...overlay, text: caption}
-        : overlay;
-
-    const commonParams = {
+    const commonParams: DataPostMoment = {
       idUser: user.localId,
       idToken: user.idToken,
       refreshToken: user.refreshToken || '',
-      overlay: overlayData,
+      overlay: {
+        ...overlay,
+        text:
+          overlay.overlay_type === OverlayType.standard
+            ? caption
+            : overlay.text,
+      },
       friend: targetFriends,
     };
 

@@ -46,6 +46,7 @@ const PostForm: React.FC<Props> = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const {showSelectColor} = useSelector((state: RootState) => state.guide);
+  const {currentPlay} = useSelector((state: RootState) => state.spotify);
 
   const [type, setType] = useState(OverlayType.standard);
   const [textOverlay, setTextOverlay] = useState('');
@@ -60,9 +61,26 @@ const PostForm: React.FC<Props> = ({
         ...overlay,
         overlay_type: type,
         text: textOverlay,
+        icon:
+          type === OverlayType.music
+            ? {
+                type: 'image',
+                data: currentPlay?.imageUrl || '',
+                source: 'url',
+              }
+            : undefined,
+        payload: currentPlay
+          ? {
+              artist: currentPlay?.artists,
+              isrc: currentPlay?.isrc,
+              song_title: currentPlay?.name,
+              preview_url: currentPlay?.previewUrl,
+              spotify_url: `https://open.spotify.com/track/${currentPlay?.id}`,
+            }
+          : undefined,
       });
     }
-  }, [setOverlay, textOverlay, type]);
+  }, [setOverlay, textOverlay, type, currentPlay]);
   return (
     <View centerV flex gap-24>
       <ViewMedia

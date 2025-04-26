@@ -1,3 +1,5 @@
+import {OverlayType} from '../util/bodyMoment';
+
 export interface Post {
   id: string;
   caption?: string;
@@ -20,7 +22,7 @@ export interface Overlay {
 }
 
 export interface Data {
-  type: Type | string;
+  type: OverlayType | string;
   text: string;
   text_color: string;
   max_lines: number;
@@ -38,18 +40,8 @@ export interface Background {
   colors: any[];
 }
 
-export enum Type {
-  Review = 'review',
-  Standard = 'standard',
-  Time = 'time',
-}
-
 export enum OverlayID {
   CaptionReview = 'caption:review',
   CaptionStandard = 'caption:standard',
   CaptionTime = 'caption:time',
-}
-
-enum OverlayType {
-  Caption = 'caption',
 }

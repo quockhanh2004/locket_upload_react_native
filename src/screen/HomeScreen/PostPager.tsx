@@ -1,15 +1,21 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useRef, useState, useCallback, useEffect} from 'react';
-import {FlatList, Dimensions, ViewToken} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import {Colors, View, Text, TextField, Typography} from 'react-native-ui-lib';
+import {FlatList, ViewToken} from 'react-native';
+import {Colors, View} from 'react-native-ui-lib';
 import {getCurrentTime} from '../../util/convertTime';
 import {OverlayType} from '../../util/bodyMoment';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../redux/store';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../../redux/store';
+import ItemStandard from './itemCaption/Standard';
+import ItemTime from './itemCaption/Time';
+import ItemMusic from './itemCaption/Music';
+import {refreshAccessToken} from '../../redux/action/spotify.action';
 
-const DATA = [{type: OverlayType.standard}, {type: OverlayType.time}];
-const {width} = Dimensions.get('window');
+const DATA = [
+  {type: OverlayType.standard},
+  {type: OverlayType.time},
+  {type: OverlayType.music},
+];
 
 interface PostPagerProps {
   setCaption: (text: string) => void;
@@ -30,7 +36,12 @@ const PostPager: React.FC<PostPagerProps> = ({
   settype = () => {},
   setTextOverlay = () => {},
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
   const {postStyle} = useSelector((state: RootState) => state.setting);
+  const {tokenData, currentPlay} = useSelector(
+    (state: RootState) => state.spotify,
+  );
+
   const [localCaption, setlocalCaption] = useState(caption || '');
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -43,12 +54,25 @@ const PostPager: React.FC<PostPagerProps> = ({
         setCurrentIndex(index);
 
         if (setCaption) {
-          if (DATA[index].type === OverlayType.standard) {
-            settype(OverlayType.standard);
-            setCaption(localCaption);
-          } else if (DATA[index].type === OverlayType.time) {
-            settype(OverlayType.time);
-            setTextOverlay(getCurrentTime());
+          switch (DATA[index].type) {
+            case OverlayType.standard:
+              settype(OverlayType.standard);
+              setCaption(localCaption);
+              break;
+
+            case OverlayType.time:
+              settype(OverlayType.time);
+              setTextOverlay(getCurrentTime());
+              break;
+
+            case OverlayType.music:
+              settype(OverlayType.music);
+              break;
+
+            default:
+              settype(OverlayType.standard);
+              setTextOverlay('');
+              break;
           }
         }
       }
@@ -66,50 +90,43 @@ const PostPager: React.FC<PostPagerProps> = ({
     }
   }, [caption]);
 
+  useEffect(() => {
+    if (!tokenData) {
+      return;
+    }
+    if (tokenData && tokenData.time_expired <= new Date().getTime()) {
+      dispatch(
+        refreshAccessToken({
+          refreshToken: tokenData.refresh_token,
+        }),
+      );
+    }
+  }, [currentIndex, tokenData, dispatch]);
+
+  useEffect(() => {
+    setTextOverlay(`${currentPlay?.name} - ${currentPlay?.artists}`);
+  }, [currentPlay, setTextOverlay]);
+
   const renderItem = ({item}: RenderItemProps) => {
-    if (item.type === OverlayType.standard) {
-      return (
-        <View width={width - 24}>
-          <LinearGradient
-            colors={[
-              postStyle.color_top || Colors.grey40,
-              postStyle.color_bot || Colors.grey40,
-            ]}
-            style={{borderRadius: 999}}>
-            <TextField
-              placeholder={'Enter caption here...'}
-              placeholderTextColor={postStyle.text_color}
-              paddingV-10
-              color={postStyle.text_color}
-              paddingH-16
-              cursorColor={Colors.primary}
-              style={{...Typography.text70BL}}
-              onChangeText={val => {
-                setlocalCaption(val);
-                if (setCaption) {
-                  setCaption(val);
-                }
-              }}
-              value={localCaption}
-            />
-          </LinearGradient>
-        </View>
-      );
-    } else if (item.type === OverlayType.time) {
-      return (
-        <View width={width - 24} center style={{borderRadius: 999}}>
-          <LinearGradient
-            colors={[
-              postStyle.color_top || Colors.grey40,
-              postStyle.color_bot || Colors.grey40,
-            ]}
-            style={{borderRadius: 999, padding: 14}}>
-            <Text white color={postStyle.text_color} center text70BL>
-              {`🕒 ${getCurrentTime()}`}
-            </Text>
-          </LinearGradient>
-        </View>
-      );
+    switch (item.type) {
+      case OverlayType.standard:
+        return (
+          <ItemStandard
+            postStyle={postStyle}
+            caption={localCaption}
+            onChangeText={val => {
+              setlocalCaption(val);
+              if (setCaption) {
+                setCaption(val);
+              }
+            }}
+          />
+        );
+      case OverlayType.time:
+        return <ItemTime postStyle={postStyle} />;
+
+      case OverlayType.music:
+        return <ItemMusic isFocus={currentIndex === 2} />;
     }
     return null;
   };
