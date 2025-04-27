@@ -1,33 +1,18 @@
 import {useEffect, useRef, useState} from 'react';
 import {AppState, AppStateStatus} from 'react-native';
-import {useIsFocused} from '@react-navigation/native';
 import SoundPlayer from 'react-native-sound-player';
-import {PayloadType} from '../models/post.model';
 
-const shouldPlayMusic = (
-  isActive: boolean,
-  isFocused: boolean,
-  previewUrl: string | undefined | null,
-  isAppActive: boolean,
-): boolean => {
-  return isActive && isFocused && !!previewUrl && isAppActive;
-};
-
-export function useMusicPlayer(
-  musicCaption: PayloadType | null,
-  isActive: boolean,
+export function useGlobalMusicPlayer(
+  activeUrl: string | null | undefined,
+  shouldPlay: boolean,
 ) {
-  const isFocused = useIsFocused();
   const [appState, setAppState] = useState(AppState.currentState);
   const isAppActive = appState === 'active';
 
-  const currentPreviewUrl = musicCaption?.preview_url;
-
   const loadedUrlRef = useRef<string | null>(null);
   const isPlayingRef = useRef(false);
-  const lastIsActiveRef = useRef(isActive);
 
-  // --- AppState listener ---
+  // Theo dõi app state
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       setAppState(nextAppState);
@@ -44,30 +29,20 @@ export function useMusicPlayer(
     return () => subscription.remove();
   }, []);
 
-  // --- Quản lý nhạc ---
+  // Quản lý playback
   useEffect(() => {
-    const play = shouldPlayMusic(
-      isActive,
-      isFocused,
-      currentPreviewUrl,
-      isAppActive,
-    );
-
     const manageMusic = async () => {
       try {
-        const needReload =
-          currentPreviewUrl &&
-          (currentPreviewUrl !== loadedUrlRef.current || // khác URL
-            (isActive && !lastIsActiveRef.current)); // active lại
+        const canPlay = shouldPlay && !!activeUrl && isAppActive;
 
-        if (needReload) {
+        if (activeUrl && activeUrl !== loadedUrlRef.current) {
           await SoundPlayer.stop();
-          await SoundPlayer.loadUrl(currentPreviewUrl);
-          loadedUrlRef.current = currentPreviewUrl;
-          isPlayingRef.current = false; // reset trạng thái
+          await SoundPlayer.loadUrl(activeUrl);
+          loadedUrlRef.current = activeUrl;
+          isPlayingRef.current = false;
         }
 
-        if (play && loadedUrlRef.current) {
+        if (canPlay && loadedUrlRef.current) {
           if (!isPlayingRef.current) {
             await SoundPlayer.play();
             isPlayingRef.current = true;
@@ -79,14 +54,13 @@ export function useMusicPlayer(
           }
         }
       } catch (error) {
-        console.error('Error managing sound:', error);
-        isPlayingRef.current = false;
+        console.error('Global music error:', error);
         loadedUrlRef.current = null;
+        isPlayingRef.current = false;
       }
     };
 
     manageMusic();
-    lastIsActiveRef.current = isActive;
 
     return () => {
       if (isPlayingRef.current) {
@@ -94,5 +68,5 @@ export function useMusicPlayer(
         isPlayingRef.current = false;
       }
     };
-  }, [isActive, isFocused, currentPreviewUrl, isAppActive]);
+  }, [activeUrl, shouldPlay, isAppActive]);
 }

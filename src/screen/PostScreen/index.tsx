@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unstable-nested-components */
-import React, {useRef, useState, useEffect, useCallback} from 'react';
+import React, {useRef, useState, useEffect, useCallback, useMemo} from 'react';
 import {
   Dimensions,
   FlatList,
@@ -11,11 +11,11 @@ import {
   RefreshControl,
 } from 'react-native';
 import {View, GridList, Card, Image, Text} from 'react-native-ui-lib';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../../redux/store';
+import {useDispatch} from 'react-redux';
+import {AppDispatch} from '../../redux/store';
 import {navigationTo} from '../HomeScreen';
 import {nav} from '../../navigation/navName';
-import PostPagerItem from './PostPagerItem';
+import PostPagerItem from './PostPagerItem/PostPagerItem';
 import {getOldPosts} from '../../redux/action/getOldPost.action';
 import MainButton from '../../components/MainButton';
 import {Friend} from '../../models/friend.model';
@@ -23,6 +23,8 @@ import {Post} from '../../models/post.model';
 import PostScreenHeader from './PostScreenHeader';
 import {removePost} from '../../redux/slice/oldPosts.slice';
 import {t} from '../../languages/i18n';
+import {useGlobalMusicPlayer} from '../../hooks/useGlobalMusicPlayer';
+import {useOldPostsData} from '../../hooks/useOldPostData';
 
 interface PostScreenProps {
   initialIndex?: number;
@@ -33,21 +35,31 @@ const screenHeight = Dimensions.get('window').height;
 
 const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   const dispatch = useDispatch<AppDispatch>();
-  const {posts, isLoadPosts} = useSelector(
-    (state: RootState) => state.oldPosts,
-  );
-  const friends = useSelector((state: RootState) => state.friends.friends);
-  const user = useSelector((state: RootState) => state.user.user);
+  const {posts, isLoadPosts, friends, user} = useOldPostsData();
 
   const [isViewerVisible, setIsViewerVisible] = useState<boolean>(true);
   const [indexToView, setIndexToView] = useState<number>(initialIndex);
   const [filterFriendShow, setFilterFriendShow] = useState<Friend | null>(null);
-  const [listPostByFilter, setListPostByFilter] = useState<Post[]>(posts);
   const [selectedIndexInModal, setSelectedIndexInModal] =
     useState<number>(initialIndex);
 
+  const listPostByFilter = useMemo(() => {
+    if (!filterFriendShow) {
+      return posts;
+    }
+    return posts.filter(p => p.user === filterFriendShow?.uid);
+  }, [posts, filterFriendShow]);
+
   const flatListRef = useRef<FlatList>(null);
 
+  const activeUrl = useMemo(() => {
+    return (
+      listPostByFilter[selectedIndexInModal]?.overlays[0]?.data?.payload
+        ?.preview_url || null
+    );
+  }, [listPostByFilter, selectedIndexInModal]);
+
+  useGlobalMusicPlayer(activeUrl, true);
   const openViewer = (index: number) => {
     setIndexToView(index);
     setIsViewerVisible(true);
@@ -138,19 +150,6 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
     },
     [],
   );
-
-  // --- Lọc danh sách bài viết theo bạn bè ---
-  useEffect(() => {
-    if (!filterFriendShow) {
-      setListPostByFilter(posts);
-      return;
-    }
-
-    const filteredPosts = posts.filter(
-      post => post.user === filterFriendShow?.uid,
-    );
-    setListPostByFilter(filteredPosts);
-  }, [filterFriendShow, posts]);
 
   const viewabilityConfig = useRef({
     itemVisiblePercentThreshold: 50,
