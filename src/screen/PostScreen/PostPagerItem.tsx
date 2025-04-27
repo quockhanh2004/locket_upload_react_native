@@ -33,7 +33,7 @@ const PostPagerItem: React.FC<PostPagerItemProps> = ({
   const musicCaption: PayloadType | null = potentialMusicPayload?.preview_url
     ? (potentialMusicPayload as PayloadType)
     : null;
-  useMusicPlayer(musicCaption, isActive);
+  useMusicPlayer(isActive ? musicCaption : null, isActive);
 
   const onVideoLoad = useCallback(() => {
     setIsVideoReady(true);
