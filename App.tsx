@@ -13,6 +13,7 @@ import CodePush from 'react-native-code-push';
 import {NotificationService} from './src/services/Notification';
 import {CODEPUSH_DEPLOYMENTKEY} from './src/util/codepush';
 import {clearAppCache} from './src/util/uploadImage';
+import {LanguageService} from './src/services/Language';
 
 const App = () => {
   useEffect(() => {
@@ -22,6 +23,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor} loading={null}>
+        <LanguageService />
         <NotificationService />
         <GestureHandlerRootView>
           <StatusBar backgroundColor={'black'} barStyle={'light-content'} />

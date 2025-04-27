@@ -5,3 +5,5 @@ export interface Friend {
   last_name?: string;
   profile_picture_url?: string;
 }
+
+export type OptionSend = 'all' | 'custom_list' | 'manual';

@@ -15,6 +15,7 @@ import {
 import {uploadLogToServer} from '../api/error.api';
 import {getTrySoftwareEncode} from './migrateOldPersist';
 import {getDeviceInfo} from './deviceInfo';
+import {t} from '../languages/i18n';
 
 export type VideoInfo = {
   extension: string;
@@ -50,7 +51,7 @@ export const compressVideo = async (
       : 0;
 
   if (!duration || isNaN(duration)) {
-    throw new Error('Không thể lấy thời lượng video');
+    throw new Error(t('can_not_get_duration_video'));
   }
   const bitrate = Math.floor((MAX_SIZE_MB * 1024 * 1024 * 8) / duration); // bit/s
   const bitrateKbps = Math.floor(bitrate / 1000); // chuyển sang kbps
@@ -93,14 +94,14 @@ export const compressVideo = async (
           });
         } else if (returnCode?.isValueCancel()) {
           if (onError) {
-            onError('Video compression was cancelled');
+            onError(t('video_compression_cancelled'));
           }
         } else {
           // Ghi lại lỗi vào file log
           if (onError) {
-            onError('Video compression failed, try again with encode software');
+            onError(t('video_compression_failed'));
           }
-          await logErrorAndUpload(logs, 'Video compression failed');
+          await logErrorAndUpload(logs, t('compression_failed'));
         }
       },
       log => {
@@ -351,14 +352,14 @@ export const deleteAllMp4Files = async (directoryPath: string) => {
 };
 
 export const UPLOAD_VIDEO_PROGRESS_STAGE = {
-  PROCESSING: 'Processing video', // Xử lý video (resize, convert, v.v.)
-  INITIATING_UPLOAD: 'Initiating upload', // Khởi tạo link upload
-  UPLOADING: 'Uploading video', // Đang tải lên
-  UPLOADING_THUMBNAIL: 'Uploading video thumbnail', // Đang tải lên
-  FETCHING_DOWNLOAD_URL: 'Fetching download URL', // Lấy link download
-  CREATING_MOMENT: 'Creating moment', // Tạo moment
-  COMPLETED: 'Upload completed', // Hoàn tất
-  FAILED: 'Upload failed', // Thất bại
+  PROCESSING: t('processing_video'), // Xử lý video (resize, convert, v.v.)
+  INITIATING_UPLOAD: t('initiating_upload'), // Khởi tạo link upload
+  UPLOADING: t('uploading_video'), // Đang tải lên
+  UPLOADING_THUMBNAIL: t('uploading_thumbnail'), // Đang tải lên
+  FETCHING_DOWNLOAD_URL: t('fetching_download_url_video'), // Lấy link download
+  CREATING_MOMENT: t('creating_moment'), // Tạo moment
+  COMPLETED: t('upload_complete'), // Hoàn tất
+  FAILED: t('upload_failed'), // Thất bại
 };
 
 export const getInfoVideo = async (uri: string): Promise<VideoInfo> => {
@@ -380,7 +381,7 @@ export const getInfoVideo = async (uri: string): Promise<VideoInfo> => {
     const info: MediaInformation | null = session.getMediaInformation();
 
     if (!info) {
-      throw new Error('Không thể lấy thông tin video');
+      throw new Error(t('error_read_file'));
     }
 
     const rawDuration = info.getDuration();
@@ -492,14 +493,14 @@ export const getVideoThumbnail = async (
   const probeSession = await FFprobeKit.getMediaInformation(filePath);
   const mediaInfo: MediaInformation | null = probeSession.getMediaInformation();
   if (!mediaInfo) {
-    throw new Error('Không thể lấy thông tin video để tạo thumbnail.');
+    throw new Error(t('error_read_video_for_thumbnail'));
   }
 
   const streams: StreamInformation[] = mediaInfo.getStreams() ?? [];
   const videoStream = streams.find(s => s.getType() === 'video');
 
   if (!videoStream) {
-    throw new Error('Không tìm thấy stream video.');
+    throw new Error(t('error_read_file'));
   }
 
   const fpsStr =
@@ -521,7 +522,7 @@ export const getVideoThumbnail = async (
   const returnCode = await session.getReturnCode();
 
   if (!returnCode?.isValueSuccess()) {
-    throw new Error('Không thể tạo thumbnail.');
+    throw new Error(t('error_create_thumbnail'));
   }
 
   return {path: `file://${outputPath}`};

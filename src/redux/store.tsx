@@ -8,6 +8,7 @@ import messageReducer from './slice/message.slice';
 import postMomentReducer from './slice/postMoment.slice';
 import settingReducer from './slice/setting.slice';
 import friendsReducer from './slice/friends.slice';
+import languageReducer from './slice/language.slice';
 import {oldPostsReducer} from './slice/oldPosts.slice';
 import {guideReducer} from './slice/guide.slice';
 import {spotifyReducer} from './slice/spotify.slice';
@@ -48,6 +49,13 @@ const spotifyPersistConfig: PersistConfig<ReturnType<typeof spotifyReducer>> = {
   whitelist: ['tokenData'],
 };
 
+const languagePersistConfig: PersistConfig<ReturnType<typeof languageReducer>> =
+  {
+    key: 'language',
+    storage: AsyncStorage,
+    stateReconciler: autoMergeLevel2,
+  };
+
 // Kết hợp reducer với từng persistReducer
 const rootReducer = combineReducers({
   user: persistReducer(userPersistConfig, userReducer),
@@ -58,6 +66,7 @@ const rootReducer = combineReducers({
   postMoment: postMomentReducer,
   guide: persistReducer(guidePersistConfig, guideReducer),
   spotify: persistReducer(spotifyPersistConfig, spotifyReducer),
+  language: persistReducer(languagePersistConfig, languageReducer),
 });
 
 // Tạo store

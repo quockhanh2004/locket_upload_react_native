@@ -41,7 +41,7 @@ export const getListFriend = (
   return Promise.all(friendPromises)
     .then(friends => friends)
     .catch(error => {
-      console.error('Error fetching friends:', error);
+      console.error('Error fetching friends:', error.response?.data);
       throw error;
     });
 };

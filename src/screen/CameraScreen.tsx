@@ -26,6 +26,7 @@ import Header from '../components/Header';
 import {setMessage} from '../redux/slice/message.slice';
 import Video from 'react-native-video';
 import {RootState} from '../redux/store';
+import {t} from '../languages/i18n';
 
 function CameraScreen() {
   const dispatch = useDispatch();
@@ -96,7 +97,7 @@ function CameraScreen() {
           dispatch(
             setMessage({
               message: JSON.stringify(error),
-              type: 'Error',
+              type: t('error'),
             }),
           );
         },
@@ -144,7 +145,7 @@ function CameraScreen() {
         dispatch(
           setMessage({
             message: `Error saving ${type} to camera roll: ${error.message}`,
-            type: 'Error',
+            type: t('error'),
           }),
         );
       }

@@ -3,6 +3,7 @@ import {setMessage} from '../slice/message.slice';
 import axios from 'axios';
 import {loadPostsFromStorage} from '../../helper/post.storage';
 import {setOldPosts} from '../slice/oldPosts.slice';
+import {t} from '../../languages/i18n';
 
 interface DataParam {
   token: string;
@@ -30,8 +31,8 @@ export const getOldPosts = createAsyncThunk(
       console.error('Error fetching list old posts', error);
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${error.message}`,
-          type: 'error',
+          message: `${error.message}`,
+          type: t('error'),
         }),
       );
       return thunkApi.rejectWithValue(error);

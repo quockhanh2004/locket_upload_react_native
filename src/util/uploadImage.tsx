@@ -2,15 +2,16 @@ import axios, {AxiosProgressEvent} from 'axios';
 import {uploadHeaders} from './header';
 import RNFS from 'react-native-fs';
 import {FFmpegKit, FFmpegKitConfig} from 'ffmpeg-kit-react-native';
+import {t} from '../languages/i18n';
 
 export const UPLOAD_PROGRESS_STAGE = {
-  PROCESSING_IMAGE: 'Processing image', // Xử lý ảnh (resize, convert, v.v.)
-  INITIATING_UPLOAD: 'Initiating upload', // Khởi tạo link upload
-  UPLOADING: 'Uploading image', // Đang tải lên
-  FETCHING_DOWNLOAD_URL: 'Fetching download URL', // Lấy link download
-  CREATING_MOMENT: 'Creating moment', // Tạo moment
-  COMPLETED: 'Upload completed', // Hoàn tất
-  FAILED: 'Upload failed', // Thất bại
+  PROCESSING_IMAGE: t('processing_image'), // Xử lý ảnh (resize, convert, v.v.)
+  INITIATING_UPLOAD: t('initiating_upload'), // Khởi tạo link upload
+  UPLOADING: t('uploading_image'), // Đang tải lên
+  FETCHING_DOWNLOAD_URL: t('fetching_download_url'), // Lấy link download
+  CREATING_MOMENT: t('creating_moment'), // Tạo moment
+  COMPLETED: t('upload_complete'), // Hoàn tất
+  FAILED: t('upload_failed'), // Thất bại
 };
 
 export const initiateUpload = async (

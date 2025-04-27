@@ -14,6 +14,7 @@ import {AppDispatch, RootState} from '../../../redux/store';
 import TextTicker from 'react-native-text-ticker';
 import {getCurrentPlay} from '../../../redux/action/spotify.action';
 import {useIsFocused} from '@react-navigation/native';
+import {t} from '../../../languages/i18n';
 
 interface ItemMusicProps {
   isFocus: boolean;
@@ -23,6 +24,8 @@ const screenWidth = Dimensions.get('window').width;
 
 const ItemMusic: React.FC<ItemMusicProps> = ({isFocus}) => {
   const dispatch = useDispatch<AppDispatch>();
+  const {usingSpotifyMod} = useSelector((state: RootState) => state.setting);
+
   const {isLoading, currentPlay, tokenData} = useSelector(
     (state: RootState) => state.spotify,
   );
@@ -32,6 +35,11 @@ const ItemMusic: React.FC<ItemMusicProps> = ({isFocus}) => {
   };
 
   const handleSelectMusic = async () => {
+    if (usingSpotifyMod) {
+      await Linking.openURL('spotify://');
+      return;
+    }
+
     try {
       const supported = await Linking.canOpenURL('spotify://');
       if (supported) {
@@ -99,7 +107,7 @@ const ItemMusic: React.FC<ItemMusicProps> = ({isFocus}) => {
             borderRadius: 999,
           }}>
           <Text text70BL white>
-            Đăng nhập Spotify
+            {t('login_spotify')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -119,7 +127,7 @@ const ItemMusic: React.FC<ItemMusicProps> = ({isFocus}) => {
           }}>
           {!currentPlay ? (
             <Text text70BL white>
-              Chọn nhạc từ Spotify
+              {t('select_music')}
             </Text>
           ) : (
             <View center>

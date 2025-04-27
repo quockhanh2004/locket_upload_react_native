@@ -1,10 +1,11 @@
 // components/SelectFriendDialog/constants.ts
 import {Colors} from 'react-native-ui-lib';
+import {t} from '../../languages/i18n';
 
 export const options = [
-  {label: 'All Friend', value: 'all'},
-  {label: 'Custom list', value: 'custom_list'},
-  {label: 'Manual', value: 'manual'},
+  {label: t('all_friend'), value: 'all'},
+  {label: t('custom_list'), value: 'custom_list'},
+  {label: t('manual'), value: 'manual'},
 ];
 
 export const stylesSelected = {

@@ -18,6 +18,7 @@ import {login, resetPassword} from '../redux/action/user.action';
 import {setMessage} from '../redux/slice/message.slice';
 import {checkEmail} from '../util/regex';
 import {clearStatus} from '../redux/slice/user.slice';
+import {t} from 'i18next';
 
 const LoginScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -48,8 +49,8 @@ const LoginScreen = () => {
     if (!checkEmail(email.trim())) {
       dispatch(
         setMessage({
-          message: 'Email not accepted',
-          type: 'Error',
+          message: t('email_not_accepted'),
+          type: t('error'),
         }),
       );
       return false;
@@ -57,8 +58,8 @@ const LoginScreen = () => {
     if (!isResetPassword && password.trim().length < 8) {
       dispatch(
         setMessage({
-          message: 'Password must be at least 8 characters long',
-          type: 'Error',
+          message: t('password_short'),
+          type: t('error'),
         }),
       );
       return false;
@@ -143,7 +144,7 @@ const LoginScreen = () => {
 
         <View gap-10>
           <Button
-            label={!isLoading ? 'Login' : ''}
+            label={!isLoading ? t('login') : ''}
             backgroundColor={Colors.primary}
             black
             onPress={handleLogin}
@@ -158,7 +159,7 @@ const LoginScreen = () => {
             )}
           </Button>
           <Button
-            label={resetPasswordLoading ? '' : 'Reset Password'}
+            label={resetPasswordLoading ? '' : t('reset_password')}
             backgroundColor={Colors.grey20}
             white
             onPress={handleResetPassword}

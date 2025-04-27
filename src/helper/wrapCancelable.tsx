@@ -1,7 +1,9 @@
+import {t} from '../languages/i18n';
+
 export const wrapCancelable = async <T,>(
   promise: Promise<T>,
   signal: AbortSignal,
-  errorMessage = 'Đã hủy tác vụ',
+  errorMessage = t('canceled_task'),
 ): Promise<T> => {
   if (signal.aborted) {
     throw new Error(errorMessage);

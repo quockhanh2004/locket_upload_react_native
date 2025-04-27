@@ -23,6 +23,7 @@ import {
   createOverlay,
   OverLayCreate,
 } from '../../util/bodyMoment';
+import {t} from 'i18next';
 
 export interface DataPostMoment {
   idUser: string;
@@ -49,7 +50,7 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
       );
 
       if (!imageBlob) {
-        throw new Error('Error read image file');
+        throw new Error(t('error_read_file'));
       }
 
       const fileSize = imageBlob.byteLength;
@@ -108,7 +109,7 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
       // Kiểm tra phản hồi từ server
       if (!response.data.result || response.data.result.status >= 400) {
         throw new Error(
-          JSON.stringify(response?.data?.result?.errors || 'Unknown error'),
+          JSON.stringify(response?.data?.result?.errors || t('unknow_error')),
         );
       }
 
@@ -121,10 +122,8 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
       thunkApi.dispatch(setTask(null));
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${
-            JSON.stringify(error?.response?.data) || error.message
-          }`,
-          type: 'Error',
+          message: `${JSON.stringify(error?.response?.data) || error.message}`,
+          type: t('error'),
         }),
       );
       return thunkApi.rejectWithValue(
@@ -157,8 +156,8 @@ export const uploadVideoToFirebase = createAsyncThunk(
         err => {
           thunkApi.dispatch(
             setMessage({
-              message: `Error: ${JSON.stringify(err)}`,
-              type: 'Error',
+              message: `${JSON.stringify(err)}`,
+              type: t('error'),
             }),
           );
           return thunkApi.rejectWithValue(err);
@@ -175,11 +174,11 @@ export const uploadVideoToFirebase = createAsyncThunk(
       if (!videoBlob) {
         thunkApi.dispatch(
           setMessage({
-            message: 'Error read video file',
-            type: 'Error',
+            message: t('error_read_file'),
+            type: t('error'),
           }),
         );
-        throw new Error('Error read video file');
+        throw new Error(t('error_read_file'));
       }
 
       const nameVideo = `${Date.now()}_vtd182.mp4`;
@@ -254,10 +253,8 @@ export const uploadVideoToFirebase = createAsyncThunk(
       thunkApi.dispatch(setTask(null));
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${
-            JSON.stringify(error?.response?.data) || error.message
-          }`,
-          type: 'Error',
+          message: `${JSON.stringify(error?.response?.data) || error.message}`,
+          type: t('error'),
         }),
       );
       return thunkApi.rejectWithValue(
@@ -275,14 +272,14 @@ const uploadThumbnail = async (
   const thumbnail = await getVideoThumbnail(uriVideo);
 
   if (!thumbnail) {
-    throw new Error("Can't create thumbnail from video");
+    throw new Error(t('can_not_create_thumbnail'));
   }
   const nameThumbnail = `${Date.now()}_vtd182.jpg`;
 
   const blobThumbnail = await readFileAsBytes(thumbnail.path);
   const size = blobThumbnail?.byteLength;
   if (!blobThumbnail || !size) {
-    throw new Error("Can't create blob from thumbnail");
+    throw new Error(t('error_read_file'));
   }
   const upload_url = await initiateUpload(idUser, idToken, size, nameThumbnail);
 
@@ -296,7 +293,7 @@ const showProgress = (thunkApi: any, message: string, progress: number) => {
   thunkApi.dispatch(
     setMessage({
       message,
-      type: 'info',
+      type: t('info'),
       hideButton: true,
       progress,
     }),

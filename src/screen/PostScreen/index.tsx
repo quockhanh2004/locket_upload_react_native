@@ -22,6 +22,7 @@ import {Friend} from '../../models/friend.model';
 import {Post} from '../../models/post.model';
 import PostScreenHeader from './PostScreenHeader';
 import {removePost} from '../../redux/slice/oldPosts.slice';
+import {t} from '../../languages/i18n';
 
 interface PostScreenProps {
   initialIndex?: number;
@@ -61,23 +62,23 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   };
 
   const handleRefresh = () => {
-    // dispatch(
-    //   getOldPosts({
-    //     userId: user?.localId || '',
-    //     token: user?.idToken || '',
-    //   }),
-    // );
+    dispatch(
+      getOldPosts({
+        userId: user?.localId || '',
+        token: user?.idToken || '',
+      }),
+    );
   };
 
   const handleLoadMore = () => {
     if (!isLoadPosts) {
-      // dispatch(
-      //   getOldPosts({
-      //     userId: user?.localId || '',
-      //     token: user?.idToken || '',
-      //     timestamp: listPostByFilter[listPostByFilter.length - 1].date,
-      //   }),
-      // );
+      dispatch(
+        getOldPosts({
+          userId: user?.localId || '',
+          token: user?.idToken || '',
+          timestamp: listPostByFilter[listPostByFilter.length - 1].date,
+        }),
+      );
     }
   };
 
@@ -88,7 +89,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
       listPostByFilter[selectedIndexInModal]?.user === user?.localId
     ) {
       return {
-        first_name: 'Bạn',
+        first_name: t('you'),
         profile_picture_url: user?.photoUrl,
         uid: user?.localId,
       };
@@ -268,15 +269,15 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
                   setFilterFriendShow={setFilterFriendShow}
                 />
                 <View flex center>
-                  <Text color="#fff">Không có bài viết nào</Text>
+                  <Text color="#fff">{t('not_have_moment')}</Text>
                 </View>
               </View>
             }
           />
 
           <View style={styles.modalOverlayButtons} gap-12 row spread>
-            <MainButton label="Refresh" onPress={handleRefresh} />
-            <MainButton label={'View all'} onPress={viewAll} />
+            <MainButton label={t('refresh')} onPress={handleRefresh} />
+            <MainButton label={t('view_all')} onPress={viewAll} />
           </View>
           <View absT width={screenWidth}>
             <PostScreenHeader

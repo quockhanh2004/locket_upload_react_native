@@ -13,6 +13,7 @@ import {
   setGuideSpotify,
   setShowSelectColor,
 } from '../../redux/slice/guide.slice';
+import {t} from '../../languages/i18n';
 
 interface Props {
   selectedMedia: any;
@@ -110,7 +111,9 @@ const PostForm: React.FC<Props> = ({
       <Button
         label={
           !isLoading
-            ? `Send! (to ${selectedCount > 0 ? selectedCount : 'all'} friends)`
+            ? `${t('send')} (${t('to')} ${
+                selectedCount > 0 ? selectedCount : t('all')
+              } ${t('friends')})`
             : ''
         }
         backgroundColor={Colors.primary}
@@ -129,15 +132,15 @@ const PostForm: React.FC<Props> = ({
 
       <View center>
         <MainButton
-          label="Select Friend"
+          label={t('select_friends')}
           onPress={onSelectFriend}
           onLongPress={onLongPress}
         />
       </View>
       <GuideDialog
         visible={showSelectColor}
-        label="Hướng dẫn mở tính năng chọn màu"
-        decription='Nhấn giữ vào "Select friend" để mở tính năng chọn màu'
+        label={t('guied_open_select_colors')}
+        decription={t('guied_open_select_colors_desc')}
         guideAssetsVideo={{
           uri: 'https://quockhanh020924.id.vn/drive/videos/guide_select_colors.mp4',
         }}
@@ -145,8 +148,8 @@ const PostForm: React.FC<Props> = ({
       />
       <GuideDialog
         visible={guideSpotify}
-        label="Hướng dẫn chọn nhạc từ spotify"
-        decription='Nhấn vào "Chọn nhạc từ spotify", phát nhạc bạn muốn và quay trở lại app'
+        label={t('guied_open_select_music')}
+        decription={t('guied_open_select_music_desc')}
         guideAssetsVideo={{
           uri: 'https://quockhanh020924.id.vn/drive/videos/guide_spotify.mp4',
         }}

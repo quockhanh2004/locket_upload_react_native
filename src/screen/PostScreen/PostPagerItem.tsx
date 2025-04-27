@@ -112,6 +112,7 @@ export default React.memo(PostPagerItem);
 const styles = StyleSheet.create({
   mediaStyle: {
     width: screenWidth - 32,
+    height: screenWidth - 32,
     aspectRatio: 1,
     borderRadius: 20,
     backgroundColor: '#333',
@@ -119,6 +120,7 @@ const styles = StyleSheet.create({
   },
   imageStyle: {
     width: screenWidth - 32,
+    height: screenWidth - 32,
     aspectRatio: 1,
     borderRadius: 20,
     backgroundColor: '#333',

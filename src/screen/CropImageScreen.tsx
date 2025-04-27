@@ -10,6 +10,7 @@ import MainButton from '../components/MainButton';
 import Header from '../components/Header';
 import {BackHandler} from 'react-native';
 import {navigationTo} from './HomeScreen';
+import {t} from '../languages/i18n';
 
 const CropImageScreen = () => {
   const cropViewRef = useRef<any>();
@@ -59,8 +60,8 @@ const CropImageScreen = () => {
         />
       </View>
 
-      <View marginB-100>
-        <MainButton label="Cắt ảnh" onPress={handleCrop} />
+      <View marginB-100 padding-12>
+        <MainButton label={t('crop_photo')} onPress={handleCrop} />
       </View>
     </View>
   );

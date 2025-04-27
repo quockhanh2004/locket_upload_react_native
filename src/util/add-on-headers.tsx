@@ -4,7 +4,7 @@ export const addTypeImage = (sizeFile: String) => {
   return {
     headers: {
       ...uploadHeaders,
-      'x-goog-upload-content-type': 'image/webp',
+      'x-goog-upload-content-type': 'image/*',
       'x-goog-upload-content-length': sizeFile.toString(),
     },
   };

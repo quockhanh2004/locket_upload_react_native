@@ -17,5 +17,6 @@ export interface SettingState {
   optionFriend: boolean;
   unlimitedTrimVideo: boolean;
   trySoftwareEncode: boolean;
+  usingSpotifyMod: boolean;
   postStyle: PostStyle;
 }

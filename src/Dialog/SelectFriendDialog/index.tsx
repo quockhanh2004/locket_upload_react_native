@@ -16,6 +16,8 @@ import {getFriends} from '../../redux/action/getFriend.action';
 import FriendOptionList from './FriendOptionList';
 import FriendAvatarList from './FriendAvatarList';
 import MainButton from '../../components/MainButton';
+import {OptionSend} from '../../models/friend.model';
+import {t} from '../../languages/i18n';
 
 interface SelectFriendDialogProps {
   visible: boolean;
@@ -32,7 +34,7 @@ const SelectFriendDialog: React.FC<SelectFriendDialogProps> = ({
   const {user} = useSelector((state: RootState) => state.user);
   const {optionFriend} = useSelector((state: RootState) => state.setting);
 
-  const handleSelectTypeSend = (value: 'all' | 'custom_list' | 'manual') => {
+  const handleSelectTypeSend = (value: OptionSend) => {
     dispatch(setOptionSend(value));
   };
 
@@ -131,13 +133,13 @@ const SelectFriendDialog: React.FC<SelectFriendDialogProps> = ({
         <View>
           <MainButton
             isLoading={isLoadFriends}
-            label={'Refresh friend'}
+            label={t('refresh_friend')}
             onPress={handleGetListFriend}
             backgroundColor={Colors.blue40}
           />
         </View>
         <View flex>
-          <MainButton label="Done" onPress={onDismiss} />
+          <MainButton label={t('done')} onPress={onDismiss} />
         </View>
       </View>
     </CustomDialog>

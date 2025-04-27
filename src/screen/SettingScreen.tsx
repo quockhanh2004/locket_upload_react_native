@@ -14,41 +14,44 @@ import {
   setTrySoftwareEncode,
 } from '../redux/slice/setting.slice';
 import {clearPostMoment} from '../redux/slice/postMoment.slice';
-import {RootState} from '../redux/store';
+import {AppDispatch, RootState} from '../redux/store';
 import {logout} from '../redux/slice/user.slice';
 import {setOldPosts} from '../redux/slice/oldPosts.slice';
 import {setFriends} from '../redux/slice/friends.slice';
 import {useNavigation} from '@react-navigation/native';
 import {clearTokenData} from '../redux/slice/spotify.slice';
+import {t} from '../languages/i18n';
+import {setLanguage} from '../redux/slice/language.slice';
+import {LanguageSwitch} from '../components/LanguageSwitch';
+import {Language} from '../models/language.model';
 
 const SettingScreen = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
 
+  const {language} = useSelector((state: RootState) => state.language);
   const {tokenData} = useSelector((state: RootState) => state.spotify);
   const {useCamera, optionFriend, unlimitedTrimVideo, trySoftwareEncode} =
     useSelector((state: RootState) => state.setting);
 
   const settingOptions = [
     {
-      title: 'Sử dụng camera',
+      title: t('use_camera'),
       value: useCamera,
       action: setUseCameraSetting,
     },
     {
-      title: 'Nhiều lựa chọn bạn bè',
+      title: t('multi_option_friend'),
       value: optionFriend,
       action: setOptionFriend,
     },
     {
-      title:
-        'Cắt video nhiều hơn 7 giây \n(có thể làm giảm chất lượng rất nhiều)',
+      title: t('unlimited_trim_video'),
       value: unlimitedTrimVideo,
       action: setUnlimitedTrimVideo,
     },
     {
-      title:
-        'Sử dụng phần mềm mã hóa video \n(có thể 1 số thiết bị sẽ không xem được video)',
+      title: t('use_software_encode_video'),
       value: trySoftwareEncode,
       action: setTrySoftwareEncode,
     },
@@ -72,7 +75,7 @@ const SettingScreen = () => {
 
     dispatch(clearPostMoment());
     ToastAndroid.show(
-      `Dọn dẹp bộ nhớ hoàn tất (${totalSize.toFixed(1)}Mb)`,
+      `${t('clean_cache_complete')} (${totalSize.toFixed(1)}Mb)`,
       ToastAndroid.SHORT,
     );
   }, [dispatch]);
@@ -80,7 +83,7 @@ const SettingScreen = () => {
   return (
     <View flex bg-black paddingB-16>
       <Header
-        title="Cài đặt"
+        title={t('setting')}
         leftIconAction={() => {
           navigation.goBack();
         }}
@@ -106,11 +109,28 @@ const SettingScreen = () => {
           )}
           ListFooterComponent={
             <>
+              <>
+                <View row spread paddingV-8 centerV>
+                  <Text white text70BL flexS>
+                    {t('language')}
+                  </Text>
+                  <LanguageSwitch
+                    onChange={(val: Language) => {
+                      dispatch(setLanguage(val));
+                    }}
+                    currentLanguage={language}
+                  />
+                </View>
+                <View height={1} bg-grey40 />
+              </>
               <View marginT-20 gap-8>
-                <MainButton onPress={handleClearCache} label="Xóa bộ nhớ đệm" />
+                <MainButton
+                  onPress={handleClearCache}
+                  label={t('clean_cache')}
+                />
                 {tokenData && (
                   <MainButton
-                    label="Đăng xuất Spotify"
+                    label={t('logout_spotify')}
                     onPress={handleSpotifyLogout}
                     backgroundColor={Colors.spotify}
                   />
@@ -121,7 +141,7 @@ const SettingScreen = () => {
         />
       </View>
       <MainButton
-        label="Đăng xuất"
+        label={t('logout')}
         backgroundColor={Colors.red30}
         lableColor={Colors.white}
         onPress={() => {

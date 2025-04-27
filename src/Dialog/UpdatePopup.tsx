@@ -10,17 +10,8 @@ import {
 } from 'react-native-ui-lib';
 import CustomDialog from './CustomDialog';
 import MainButton from '../components/MainButton';
-
-type UpdateInfoType =
-  | 'CHECKING_FOR_UPDATE'
-  | 'UPDATE_AVAILABLE'
-  | 'DOWNLOADING_PACKAGE'
-  | 'INSTALLING_UPDATE'
-  | 'UP_TO_DATE'
-  | 'UPDATE_INSTALLED'
-  | 'ERROR'
-  | 'CHECK_UPDATE'
-  | 'APK_UPDATE_AVAILABLE';
+import {t} from '../languages/i18n';
+import {UpdateInfoType} from '../models/update.model';
 
 interface UpdatePopupProps {
   isVisible: boolean;
@@ -58,56 +49,72 @@ const UpdatePopup = ({
   const updateState = useMemo(
     () => ({
       CHECKING_FOR_UPDATE: {
-        message: 'Đang kiểm tra cập nhật...',
+        message: t('checking_for_update'),
         buttons: null,
       },
       UPDATE_AVAILABLE: {
-        message: 'Có bản cập nhật mới!',
+        message: t('update_avaliable'),
         buttons: (
-          <MainButton label="Cập nhật" onPress={onUpdate} isLoading={false} />
+          <MainButton
+            label={t('update')}
+            onPress={onUpdate}
+            isLoading={false}
+          />
         ),
       },
       DOWNLOADING_PACKAGE: {
-        message: `Đang tải xuống: ${progressPercent}%`,
+        message: `${t('downloading')}: ${progressPercent}%`,
         buttons: null,
       },
       INSTALLING_UPDATE: {
-        message: 'Đang cài đặt bản cập nhật...',
+        message: t('installing_update'),
         buttons: null,
       },
       UP_TO_DATE: {
-        message: 'Bạn đã cập nhật phiên bản mới nhất',
+        message: t('up_to_date'),
         buttons: (
-          <MainButton label="Đóng" onPress={onPostpone} isLoading={false} />
+          <MainButton
+            label={t('close')}
+            onPress={onPostpone}
+            isLoading={false}
+          />
         ),
       },
       UPDATE_INSTALLED: {
-        message: 'Cập nhật thành công! Ứng dụng sẽ khởi động lại.',
+        message: t('update_complete'),
         buttons: (
-          <MainButton label="Đóng" onPress={onPostpone} isLoading={false} />
+          <MainButton
+            label={t('close')}
+            onPress={onPostpone}
+            isLoading={false}
+          />
         ),
       },
       ERROR: {
-        message: 'Lỗi khi kiểm tra cập nhật.',
+        message: t('error_checking_for_update'),
         buttons: (
-          <MainButton label="Đóng" onPress={onPostpone} isLoading={false} />
+          <MainButton
+            label={t('close')}
+            onPress={onPostpone}
+            isLoading={false}
+          />
         ),
       },
       CHECK_UPDATE: {
-        message: 'Kiểm tra cập nhật...',
+        message: t('check_update'),
         buttons: (
           <MainButton
-            label="Kiểm tra"
+            label={t('check')}
             onPress={onCheckUpdate}
             isLoading={false}
           />
         ),
       },
       APK_UPDATE_AVAILABLE: {
-        message: 'Có bản cập nhật apk mới!',
+        message: t('apk_update_avaliable'),
         buttons: (
           <MainButton
-            label="Cập nhật apk"
+            label={t('update_apk')}
             onPress={onUpdateApk}
             isLoading={false}
           />
@@ -153,7 +160,7 @@ const UpdatePopup = ({
         {decriptionUpdate && (
           <View paddingB-12>
             <Text white text70BL>
-              Thông tin cập nhật:
+              {t('update_info')}:
             </Text>
             <Text white> - {decriptionUpdate}</Text>
           </View>

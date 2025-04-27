@@ -1,13 +1,13 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {getFriends} from '../action/getFriend.action';
-import {Friend} from '../../models/friend.model';
+import {Friend, OptionSend} from '../../models/friend.model';
 
 interface InitialState {
   friends: Friend[];
   isLoadFriends: boolean;
   selected: string[];
   customListFriends: string[];
-  optionSend: 'all' | 'custom_list' | 'manual';
+  optionSend: OptionSend;
 }
 
 const friendsSlice = createSlice({
@@ -37,10 +37,7 @@ const friendsSlice = createSlice({
       state.customListFriends = action.payload;
     },
 
-    setOptionSend(
-      state,
-      action: PayloadAction<'all' | 'custom_list' | 'manual'>,
-    ) {
+    setOptionSend(state, action: PayloadAction<OptionSend>) {
       state.optionSend = action.payload;
     },
 

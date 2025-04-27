@@ -3,6 +3,7 @@ import {
   uploadImageToFirebaseStorage,
   uploadVideoToFirebase,
 } from '../action/postMoment.action';
+import {t} from '../../languages/i18n';
 
 interface ProgressUpload {
   state: string;
@@ -39,7 +40,7 @@ const postMomentSlice = createSlice({
       })
       .addCase(uploadImageToFirebaseStorage.fulfilled, (state, action: any) => {
         if (action.payload) {
-          state.postMoment = 'Post Moment completed';
+          state.postMoment = t('post_moment_complete');
           state.isLoading = false;
         }
       })
@@ -52,7 +53,7 @@ const postMomentSlice = createSlice({
       })
       .addCase(uploadVideoToFirebase.fulfilled, (state, action: any) => {
         if (action.payload) {
-          state.postMoment = 'Post Moment completed';
+          state.postMoment = t('post_moment_complete');
           state.isLoading = false;
         }
       })

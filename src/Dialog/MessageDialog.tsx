@@ -13,6 +13,7 @@ import {clearMessage, setTask} from '../redux/slice/message.slice';
 import CustomDialog from './CustomDialog';
 import {ScrollView} from 'react-native';
 import {AppDispatch, RootState} from '../redux/store';
+import {t} from '../languages/i18n';
 
 const MessageDialog = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -57,7 +58,7 @@ const MessageDialog = () => {
       </ScrollView>
       {!hideButton && (
         <Button
-          label="Ok"
+          label={t('close')}
           onPress={handleClearMessage}
           borderRadius={8}
           text70BL
@@ -69,22 +70,20 @@ const MessageDialog = () => {
           <ProgressBar progress={progress} progressColor={Colors.primary} />
         </>
       )}
-      {task &&
-        type?.toUpperCase() !== 'ERROR' &&
-        type?.toUpperCase() !== 'SUCCESS' && (
-          <Button
-            label="Cancel"
-            onPress={() => {
-              if (task) {
-                task.abort();
-                dispatch(setTask(null));
-              }
-            }}
-            borderRadius={8}
-            text70BL
-            backgroundColor={Colors.red30}
-          />
-        )}
+      {task && type !== t('error') && type !== t('success') && (
+        <Button
+          label={t('cancel')}
+          onPress={() => {
+            if (task) {
+              task.abort();
+              dispatch(setTask(null));
+            }
+          }}
+          borderRadius={8}
+          text70BL
+          backgroundColor={Colors.red30}
+        />
+      )}
     </CustomDialog>
   );
 };

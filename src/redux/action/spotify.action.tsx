@@ -3,6 +3,7 @@ import {setMessage} from '../slice/message.slice';
 import axios from 'axios';
 import {parseSpotifyTrack} from '../../services/Spotify';
 import {clearTokenData} from '../slice/spotify.slice';
+import {t} from '../../languages/i18n';
 
 interface DataParam {
   code?: string | null;
@@ -24,10 +25,8 @@ export const getAccessToken = createAsyncThunk(
       console.error('Error Authorization spotify', error);
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${
-            JSON.stringify(error.response.data) || error.message
-          }`,
-          type: 'error',
+          message: `${JSON.stringify(error.response.data) || error.message}`,
+          type: t('error'),
         }),
       );
       return thunkApi.rejectWithValue(error);
@@ -55,10 +54,8 @@ export const refreshAccessToken = createAsyncThunk(
       console.error('Error refreshing Spotify access token', error);
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${
-            JSON.stringify(error.response.data) || error.message
-          }`,
-          type: 'error',
+          message: `${JSON.stringify(error.response.data) || error.message}`,
+          type: t('error'),
         }),
       );
       thunkApi.dispatch(clearTokenData());
@@ -85,10 +82,8 @@ export const getCurrentPlay = createAsyncThunk(
       console.error('Error fetching Spotify current play', error.response.data);
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${
-            JSON.stringify(error.response?.data) || error.message
-          }`,
-          type: 'error',
+          message: `${JSON.stringify(error.response?.data) || error.message}`,
+          type: t('error'),
         }),
       );
       return thunkApi.rejectWithValue(error);

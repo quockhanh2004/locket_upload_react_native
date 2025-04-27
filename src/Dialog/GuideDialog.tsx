@@ -15,6 +15,7 @@ import CustomDialog from './CustomDialog';
 import {AppDispatch} from '../redux/store';
 import Video from 'react-native-video';
 import MainButton from '../components/MainButton';
+import {t} from '../languages/i18n';
 
 interface GuideDialogProps {
   visible: boolean;
@@ -105,13 +106,13 @@ const GuideDialog: React.FC<GuideDialogProps> = ({
       </View>
       <View gap-8>
         <Checkbox
-          label="Không hiện lại"
+          label={t('not_show_again')}
           labelStyle={{color: Colors.white}}
           color={Colors.primary}
           value={notShowAgain}
           onValueChange={setNotShowAgain}
         />
-        <MainButton label="Đã hiểu" onPress={handlePress} />
+        <MainButton label={t('understood')} onPress={handlePress} />
       </View>
     </CustomDialog>
   );

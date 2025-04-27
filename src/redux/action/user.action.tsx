@@ -12,6 +12,7 @@ import {
 } from '../../util/uploadImage';
 import {readFileAsBytes} from '../../util/getBufferFile';
 import {fetchUser} from '../../api/user.api';
+import {t} from '../../languages/i18n';
 
 interface DataLogin {
   email: string;
@@ -41,15 +42,15 @@ export const login = createAsyncThunk(
       if (error?.response) {
         thunkApi.dispatch(
           setMessage({
-            message: `Error: ${error?.response?.data?.error?.message}`,
-            type: 'Error',
+            message: `${error?.response?.data?.error?.message}`,
+            type: t('error'),
           }),
         );
       } else {
         thunkApi.dispatch(
           setMessage({
-            message: `Error: ${error?.message}`,
-            type: 'Error',
+            message: `${error?.message}`,
+            type: t('error'),
           }),
         );
       }
@@ -77,8 +78,8 @@ export const resetPassword = createAsyncThunk(
       if (res) {
         thunkApi.dispatch(
           setMessage({
-            message: 'Password reset email has been sent',
-            type: 'Success',
+            message: t('email_reset_password_send'),
+            type: t('success'),
           }),
         );
         return '';
@@ -86,8 +87,8 @@ export const resetPassword = createAsyncThunk(
     } catch (error: any) {
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${error?.response?.data?.error}`,
-          type: 'Error',
+          message: `${error?.response?.data?.error}`,
+          type: t('error'),
         }),
       );
       thunkApi.rejectWithValue(error?.response?.data?.error);
@@ -153,8 +154,8 @@ export const getToken = createAsyncThunk(
     } catch (error: any) {
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${JSON.stringify(error?.response?.data?.error)}`,
-          type: 'Error',
+          message: `${JSON.stringify(error?.response?.data?.error)}`,
+          type: t('error'),
         }),
       );
       thunkApi.dispatch(logout());
@@ -190,8 +191,8 @@ export const updateDisplayName = createAsyncThunk(
 
       thunkApi.dispatch(
         setMessage({
-          message: 'Display Name updated successfully',
-          type: 'Success',
+          message: t('display_name_updateed_successfully'),
+          type: t('success'),
         }),
       );
       thunkApi.dispatch(getAccountInfo({idToken, refreshToken}));
@@ -199,8 +200,8 @@ export const updateDisplayName = createAsyncThunk(
     } catch (error: any) {
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${JSON.stringify(error?.response?.data?.error)}`,
-          type: 'Error',
+          message: `${JSON.stringify(error?.response?.data?.error)}`,
+          type: t('error'),
         }),
       );
       thunkApi.rejectWithValue(error);
@@ -225,7 +226,7 @@ export const updateAvatar = createAsyncThunk(
       // Prepare image for upload
       const imageBlob = await readFileAsBytes(imageInfo);
       if (!imageBlob) {
-        throw new Error('Failed to read image file');
+        throw new Error(t('error_read_file'));
       }
       const fileSize = imageBlob.byteLength;
       const imageName = `${Date.now()}_vtd182.webp`;
@@ -261,7 +262,7 @@ export const updateAvatar = createAsyncThunk(
         });
 
         if (response.status !== 200) {
-          throw new Error(response.data?.error?.message || 'Update failed');
+          throw new Error(response.data?.error?.message || t('update_failed'));
         }
 
         return response;
@@ -278,8 +279,8 @@ export const updateAvatar = createAsyncThunk(
           thunkApi.dispatch(getAccountInfo({idToken, refreshToken}));
           thunkApi.dispatch(
             setMessage({
-              message: 'Avatar updated successfully',
-              type: 'Success',
+              message: t('avatar_update_success'),
+              type: t('success'),
             }),
           );
           return true;
@@ -311,10 +312,8 @@ export const updateAvatar = createAsyncThunk(
       // Dispatch error messages
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${
-            error?.response?.data?.error?.message || error.message
-          }`,
-          type: 'Error',
+          message: `${error?.response?.data?.error?.message || error.message}`,
+          type: t('error'),
         }),
       );
       return thunkApi.rejectWithValue(error);
@@ -349,7 +348,7 @@ export const enableLocketGold = createAsyncThunk(
       thunkApi.dispatch(
         setMessage({
           message: JSON.stringify(response?.data?.result),
-          type: 'Success',
+          type: t('success'),
         }),
       );
       thunkApi.dispatch(getAccountInfo({idToken, refreshToken}));
@@ -359,8 +358,8 @@ export const enableLocketGold = createAsyncThunk(
 
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${error?.response?.data?.error?.message}`,
-          type: 'Error',
+          message: `${error?.response?.data?.error?.message}`,
+          type: t('error'),
         }),
       );
       thunkApi.rejectWithValue(error);

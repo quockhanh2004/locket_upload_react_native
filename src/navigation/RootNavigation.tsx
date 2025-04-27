@@ -55,7 +55,6 @@ const HomeNavigator = () => {
 
   const handleOpenURL = (event: any) => {
     const url = event.url || event;
-    console.log('Received deep link URL:', url);
 
     if (url && url.startsWith(REDIRECT_URI)) {
       const parsed = queryString.parseUrl(url);

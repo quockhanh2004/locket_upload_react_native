@@ -15,6 +15,7 @@ import {ColorDefault, ColorsSelect} from '../util/colors';
 import {PostStyle} from '../models/setting.model';
 import MainButton from '../components/MainButton';
 import {FlatList} from 'react-native';
+import {t} from '../languages/i18n';
 
 interface SelectColorDialogProps {
   visible: boolean;
@@ -115,7 +116,7 @@ const SelectColorDialog: React.FC<SelectColorDialogProps> = ({
             ))}
           </View>
           <View center row gap-12>
-            <MainButton label="Reset" onPress={handleReset} />
+            <MainButton label={t('reset')} onPress={handleReset} />
             <LinearGradient
               colors={[
                 value.color_top || Colors.grey40,
@@ -127,7 +128,7 @@ const SelectColorDialog: React.FC<SelectColorDialogProps> = ({
                 justifyContent: 'center',
               }}>
               <Text color={value.text_color} text70BL>
-                Đây là văn bản mẫu
+                {t('this_text_sample')}
               </Text>
             </LinearGradient>
           </View>
@@ -153,7 +154,7 @@ const SelectColorDialog: React.FC<SelectColorDialogProps> = ({
           />
         </View>
 
-        <MainButton label="Done" onPress={onDismiss} />
+        <MainButton label={t('done')} onPress={onDismiss} />
       </View>
     </CustomDialog>
   );

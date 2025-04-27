@@ -5,6 +5,7 @@ import {Modal, FlatList, Dimensions} from 'react-native';
 import {TouchableOpacity, Text, View, Image} from 'react-native-ui-lib';
 import {Friend} from '../../models/friend.model';
 import {User} from '../../models/user.model';
+import {t} from '../../languages/i18n';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -30,7 +31,7 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
 
   const me: Friend = {
     uid: user.localId,
-    first_name: 'Bạn',
+    first_name: t('you'),
     last_name: '',
     profile_picture_url: user.profilePicture,
   };
@@ -39,7 +40,7 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
     return [
       {
         uid: 'all',
-        first_name: 'Tất cả',
+        first_name: t('all'),
         last_name: '',
         profile_picture_url: '',
       },
@@ -111,7 +112,7 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
           overflow: 'hidden',
         }}>
         <Text style={{color: '#fff'}}>
-          {value ? `${value.first_name} ${value.last_name}` : 'Tất cả'}
+          {value ? `${value.first_name} ${value.last_name}` : t('all')}
         </Text>
       </TouchableOpacity>
 

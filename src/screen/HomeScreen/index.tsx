@@ -65,6 +65,7 @@ import {
   OverLayCreate,
   OverlayType,
 } from '../../util/bodyMoment';
+import {t} from 'i18next';
 
 // --- Type Definitions ---
 
@@ -211,7 +212,7 @@ const HomeScreen = () => {
   // Effect xử lý sau khi đăng bài thành công
   useEffect(() => {
     if (postMoment) {
-      dispatch(setMessage({message: postMoment, type: 'Success'}));
+      dispatch(setMessage({message: postMoment, type: t('success')}));
       dispatch(clearPostMoment());
       setSelectedMedia(null);
       setCaption('');
@@ -335,7 +336,9 @@ const HomeScreen = () => {
       }
     } catch (error) {
       console.error('Error selecting media:', error);
-      dispatch(setMessage({message: 'Lỗi khi chọn media', type: 'Error'}));
+      dispatch(
+        setMessage({message: t('error_select_media'), type: t('error')}),
+      );
       setLocalLoading(false);
     }
   };
@@ -355,13 +358,13 @@ const HomeScreen = () => {
       setIsVideo(true);
       showEditor(media.uri, {
         maxDuration: unlimitedTrimVideo ? undefined : 7,
-        saveButtonText: 'Lưu',
-        cancelButtonText: 'Hủy',
-        trimmingText: 'Đang xử lý...',
+        saveButtonText: t('save'),
+        cancelButtonText: t('cancel'),
+        trimmingText: t('processing'),
         autoplay: true,
-        cancelDialogMessage: 'Bạn có muốn hủy cắt video không?',
-        cancelDialogConfirmText: 'Có',
-        cancelDialogCancelText: 'Không',
+        cancelDialogMessage: t('cancel_trim_video'),
+        cancelDialogConfirmText: t('yes'),
+        cancelDialogCancelText: t('no'),
         enableSaveDialog: false,
         enableHapticFeedback: true,
         type: 'video',
@@ -370,7 +373,7 @@ const HomeScreen = () => {
     } else {
       console.warn('Unsupported media type:', media.type);
       dispatch(
-        setMessage({message: 'Định dạng không được hỗ trợ.', type: 'Warning'}),
+        setMessage({message: t('video_type_not_support'), type: t('error')}),
       );
     }
   };

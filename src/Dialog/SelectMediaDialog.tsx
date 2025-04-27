@@ -11,6 +11,7 @@ import {
 } from 'react-native-ui-lib';
 import CustomDialog from './CustomDialog';
 import {requestCameraPermission} from '../util/permission';
+import {t} from '../languages/i18n';
 
 interface SelectMediaDialogProps {
   visible: boolean;
@@ -38,7 +39,7 @@ const SelectMediaDialog = ({
     <CustomDialog
       visible={visible}
       onDismiss={onDismiss}
-      title={'Select media from'}
+      title={t('select_media_from')}
       panDirection={Dialog.directions.DOWN}
       bottom
       width={'98%'}
@@ -84,7 +85,7 @@ const SelectMediaDialog = ({
         row
         onPress={handlePressGallery}>
         <Text white text70BL>
-          Gallery
+          {t('gallery')}
         </Text>
         <Icon
           assetGroup="icons"

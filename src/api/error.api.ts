@@ -9,7 +9,9 @@ export const uploadLogToServer = async (
   const cleanPath = logFilePath.replace('file://', '');
 
   const exists = await RNFS.exists(cleanPath);
-  if (!exists) throw new Error('File không tồn tại');
+  if (!exists) {
+    throw new Error('File không tồn tại');
+  }
 
   const formData = new FormData();
 

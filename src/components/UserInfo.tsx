@@ -10,6 +10,7 @@ import {
   LoaderScreen,
 } from 'react-native-ui-lib';
 import {converTime} from '../util/convertTime';
+import {t} from '../languages/i18n';
 
 interface UserInfoProps {
   dataUser: any;
@@ -28,9 +29,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
     return (
       <View center>
         <Text text70BL color={Colors.white} marginT-20>
-          {
-            'Không tìm thấy thông tin tài khoản \nhãy thử vuốt xuống để làm mới nhé!'
-          }
+          {t('not_found_info_account')}
         </Text>
       </View>
     );
@@ -67,7 +66,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
         {dataUser?.email}
       </Text>
       <Text text70BL color={Colors.white} marginT-10>
-        Tham gia vào Locket {converTime(dataUser?.createdAt)}
+        {t('invate_to_locket')} {converTime(dataUser?.createdAt)}
       </Text>
     </View>
   );

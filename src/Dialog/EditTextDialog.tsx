@@ -4,6 +4,7 @@ import React, {useEffect, useState} from 'react';
 import CustomDialog from './CustomDialog';
 import MainButton from '../components/MainButton';
 import MainInput from '../components/MainInput';
+import {t} from '../languages/i18n';
 
 interface EditTextDialogProps {
   value: string;
@@ -79,7 +80,7 @@ const EditTextDialog = ({
           />
         )}
         <MainButton
-          label={'Update'}
+          label={t('update')}
           onPress={() => {
             onConfirm(text, text2);
           }}

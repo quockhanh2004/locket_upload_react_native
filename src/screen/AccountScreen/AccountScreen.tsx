@@ -27,6 +27,8 @@ import {navigationTo} from '../HomeScreen';
 import {nav} from '../../navigation/navName';
 import {AppDispatch, RootState} from '../../redux/store';
 import ModalImageViewBlur from './ModalImageViewBlur';
+import {t} from '../../languages/i18n';
+import {UpdateInfoType} from '../../models/update.model';
 
 const AccountScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -76,7 +78,7 @@ const AccountScreen = () => {
     }
   }, [local_update]);
 
-  const [updateInfo, setUpdateInfo] = useState<any>(null);
+  const [updateInfo, setUpdateInfo] = useState<UpdateInfoType | null>(null);
   const [updateAPKInfo, setupdateAPKInfo] = useState<any>(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -108,7 +110,7 @@ const AccountScreen = () => {
       dispatch(
         setMessage({
           message: JSON.stringify(error),
-          type: 'Error',
+          type: t('error'),
         }),
       );
       setUpdateInfo('ERROR');
@@ -189,7 +191,7 @@ const AccountScreen = () => {
           />
           <View paddingH-23>
             <MainButton
-              label={'Kiểm tra cập nhật ứng dụng'}
+              label={t('check_update_app')}
               onPress={handleCodePushUpdate}
             />
           </View>
@@ -209,18 +211,18 @@ const AccountScreen = () => {
         <EditTextDialog
           visible={isEditName}
           onDismiss={onDismissEditName}
-          label={'Update Name'}
+          label={t('edit_name')}
           onConfirm={handleConfirmEditName}
           isEditName={true}
-          placeholder={'First Name'}
-          placeholder2={'Last Name'}
+          placeholder={t('first_name')}
+          placeholder2={t('last_name')}
           value={userInfo?.firstName || ''}
           value2={userInfo?.lastName || ''}
           isLoading={isLoading}
         />
         <UpdatePopup
           isVisible={isPopupVisible}
-          updateInfo={updateInfo}
+          updateInfo={updateInfo || 'CHECK_UPDATE'}
           progress={downloadProgress}
           onUpdate={onUpdate}
           decriptionUpdate={decriptionUpdate}

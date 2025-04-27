@@ -13,6 +13,7 @@ const initialState: SettingState = {
   optionFriend: false,
   unlimitedTrimVideo: false,
   trySoftwareEncode: false,
+  usingSpotifyMod: false,
   postStyle: ColorDefault,
 };
 
@@ -51,6 +52,10 @@ const settingSlice = createSlice({
       state.postStyle = action.payload;
     },
 
+    setUsingSpotifyMod(state, action: PayloadAction<boolean>) {
+      state.usingSpotifyMod = action.payload;
+    },
+
     setSetting(state, action) {
       const data = JSON.parse(action.payload);
       state.useCamera = data.useCamera;
@@ -69,6 +74,7 @@ export const {
   setTrySoftwareEncode,
   setPostStyle,
   setSetting,
+  setUsingSpotifyMod,
 } = settingSlice.actions;
 
 export default settingSlice.reducer;

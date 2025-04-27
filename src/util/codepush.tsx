@@ -1,5 +1,6 @@
 import {Platform} from 'react-native';
 import codePush from 'react-native-code-push';
+import {UpdateInfoType} from '../models/update.model';
 
 const CODEPUSH_ANDROID_KEY = 'iBfzrBb1TTD1jZyazQKslU4Wr7WC4ksvOXqog';
 const CODEPUSH_IOS_KEY = '';
@@ -11,7 +12,9 @@ export const CODEPUSH_DEPLOYMENTKEY = (): string => {
   }
 };
 
-export const getStatusFromCodePush = (status: codePush.SyncStatus): string => {
+export const getStatusFromCodePush = (
+  status: codePush.SyncStatus,
+): UpdateInfoType => {
   switch (status) {
     case codePush.SyncStatus.CHECKING_FOR_UPDATE:
       return 'CHECKING_FOR_UPDATE';

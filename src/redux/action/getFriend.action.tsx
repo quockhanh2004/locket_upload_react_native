@@ -1,6 +1,7 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {getListFriend, getListIdFriend} from '../../util/Friends';
 import {setMessage} from '../slice/message.slice';
+import {t} from '../../languages/i18n';
 
 interface DataParam {
   idUser: string;
@@ -18,8 +19,8 @@ export const getFriends = createAsyncThunk(
       console.error('Error fetching list friend', error);
       thunkApi.dispatch(
         setMessage({
-          message: `Error: ${error.message}`,
-          type: 'error',
+          message: error.message,
+          type: t('error'),
         }),
       );
       return thunkApi.rejectWithValue(error);
