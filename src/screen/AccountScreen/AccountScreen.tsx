@@ -36,7 +36,6 @@ const AccountScreen = () => {
   const {userInfo, isLoading, user, updateAvatarLoading} = useSelector(
     (state: RootState) => state.user,
   );
-
   const [isEditName, setisEditName] = useState(false);
   const [visibleBigAvatar, setvisibleBigAvatar] = useState(false);
 
@@ -231,7 +230,7 @@ const AccountScreen = () => {
           onUpdateApk={handleCheckUpdateAPK}
         />
         <ModalImageViewBlur
-          image={user?.profilePicture || ''}
+          image={userInfo?.photoUrl || ''}
           visible={visibleBigAvatar}
           onCancel={function (): void {
             setvisibleBigAvatar(false);

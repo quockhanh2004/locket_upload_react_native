@@ -94,7 +94,7 @@ const PostPager: React.FC<PostPagerProps> = ({
     if (!tokenData) {
       return;
     }
-    if (tokenData && tokenData.time_expired <= new Date().getTime()) {
+    if (tokenData && tokenData?.time_expired <= new Date().getTime()) {
       dispatch(
         refreshAccessToken({
           refreshToken: tokenData.refresh_token,

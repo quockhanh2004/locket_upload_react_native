@@ -1,7 +1,7 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {setMessage} from '../slice/message.slice';
 import axios from 'axios';
-import {parseSpotifyTrack, SpotifyAuth} from '../../services/Spotify';
+import {parseSpotifyTrack} from '../../services/Spotify';
 import {clearTokenData} from '../slice/spotify.slice';
 
 interface DataParam {
@@ -45,16 +45,9 @@ export const refreshAccessToken = createAsyncThunk(
     try {
       const {refreshToken} = data;
       const response = await axios.post(
-        'https://accounts.spotify.com/api/token',
+        'https://locket.quockhanh020924.id.vn/spotify/refresh',
         {
-          grant_type: 'refresh_token',
           refresh_token: refreshToken,
-          client_id: SpotifyAuth.config.client_id,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
         },
       );
       return response.data;
