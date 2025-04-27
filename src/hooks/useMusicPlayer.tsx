@@ -4,7 +4,6 @@ import {useIsFocused} from '@react-navigation/native';
 import SoundPlayer from 'react-native-sound-player';
 import {PayloadType} from '../models/post.model';
 
-// Helper function để kiểm tra xem có nên phát nhạc hay không
 const shouldPlayMusic = (
   isActive: boolean,
   isFocused: boolean,
@@ -21,22 +20,20 @@ export function useMusicPlayer(
   const isFocused = useIsFocused();
   const [appState, setAppState] = useState(AppState.currentState);
   const isAppActive = appState === 'active';
-  const currentPreviewUrl = musicCaption?.preview_url;
-  // Ref để lưu trữ URL đã được load thành công, tránh load lại không cần thiết
-  const loadedUrlRef = useRef<string | null>(null);
-  // Ref để tránh gọi play/pause liên tục nếu trạng thái không đổi
-  const isPlayingRef = useRef(false);
 
-  // --- Effect 1: Xử lý thay đổi AppState ---
+  const currentPreviewUrl = musicCaption?.preview_url;
+
+  const loadedUrlRef = useRef<string | null>(null);
+  const isPlayingRef = useRef(false);
+  const lastIsActiveRef = useRef(isActive);
+
+  // --- AppState listener ---
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
       setAppState(nextAppState);
-      // Pause ngay lập tức nếu app vào background/inactive để phản hồi nhanh hơn
-      if (nextAppState.match(/inactive|background/)) {
-        if (isPlayingRef.current) {
-          SoundPlayer.pause();
-          isPlayingRef.current = false;
-        }
+      if (nextAppState.match(/inactive|background/) && isPlayingRef.current) {
+        SoundPlayer.pause();
+        isPlayingRef.current = false;
       }
     };
 
@@ -44,13 +41,10 @@ export function useMusicPlayer(
       'change',
       handleAppStateChange,
     );
-
-    return () => {
-      subscription.remove();
-    };
+    return () => subscription.remove();
   }, []);
 
-  // --- Effect 2: Xử lý chính việc load và play/pause nhạc ---
+  // --- Quản lý nhạc ---
   useEffect(() => {
     const play = shouldPlayMusic(
       isActive,
@@ -61,22 +55,18 @@ export function useMusicPlayer(
 
     const manageMusic = async () => {
       try {
-        // 1. Xử lý Load nhạc nếu URL thay đổi và hợp lệ
-        if (currentPreviewUrl && currentPreviewUrl !== loadedUrlRef.current) {
-          // Dừng nhạc cũ trước khi load nhạc mới (nếu có)
-          if (loadedUrlRef.current) {
-            await SoundPlayer.stop();
-            isPlayingRef.current = false;
-          }
+        const needReload =
+          currentPreviewUrl &&
+          (currentPreviewUrl !== loadedUrlRef.current || // khác URL
+            (isActive && !lastIsActiveRef.current)); // active lại
+
+        if (needReload) {
+          await SoundPlayer.stop();
           await SoundPlayer.loadUrl(currentPreviewUrl);
           loadedUrlRef.current = currentPreviewUrl;
-        } else if (!currentPreviewUrl && loadedUrlRef.current) {
-          await SoundPlayer.stop();
-          loadedUrlRef.current = null;
-          isPlayingRef.current = false;
+          isPlayingRef.current = false; // reset trạng thái
         }
 
-        // 2. Xử lý Play/Pause dựa trên trạng thái mong muốn `play`
         if (play && loadedUrlRef.current) {
           if (!isPlayingRef.current) {
             await SoundPlayer.play();
@@ -96,9 +86,9 @@ export function useMusicPlayer(
     };
 
     manageMusic();
+    lastIsActiveRef.current = isActive;
+
     return () => {
-      // Chỉ pause ở đây thay vì stop để khi quay lại nhanh có thể resume mượt hơn.
-      // Việc stop() để giải phóng hoàn toàn sẽ được xử lý khi URL thay đổi hoặc bị gỡ bỏ.
       if (isPlayingRef.current) {
         SoundPlayer.pause();
         isPlayingRef.current = false;
