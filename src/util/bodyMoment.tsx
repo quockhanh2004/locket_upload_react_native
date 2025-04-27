@@ -18,29 +18,13 @@ export const createBodyVideo = (
       recipients: friends || [],
       sent_to_all: true,
       overlays: [
-        {
-          overlay_id: `caption:${
-            overlay?.overlay_type || OverlayType.standard
-          }`,
-          overlay_type: 'caption',
-          alt_text: overlay?.text,
-          data: {
-            text: overlay?.text,
-            text_color: overlay?.postStyle.text_color || Colors.text,
-            type: overlay?.overlay_type || OverlayType.standard,
-            max_lines: {
-              '@type': 'type.googleapis.com/google.protobuf.Int64Value',
-              value: '4',
-            },
-            background: {
-              material_blur: 'ultra_thin',
-              colors: [
-                overlay?.postStyle?.color_top,
-                overlay?.postStyle?.color_bot,
-              ],
-            },
-          },
-        },
+        createOverlay({
+          overlay_type: overlay?.overlay_type || OverlayType.standard,
+          postStyle: overlay?.postStyle || ColorDefault,
+          payload: overlay?.payload,
+          text: overlay?.text || '',
+          icon: overlay?.icon,
+        }),
       ],
     },
   };

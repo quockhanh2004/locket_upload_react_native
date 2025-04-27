@@ -27,7 +27,16 @@ export interface Data {
   text_color: string;
   max_lines: number;
   background: Background;
+  payload?: PayloadType;
   icon: IconData;
+}
+
+export interface PayloadType {
+  artist: string;
+  isrc: string;
+  preview_url: string;
+  song_title: string;
+  spotify_url: string;
 }
 
 export interface IconData {

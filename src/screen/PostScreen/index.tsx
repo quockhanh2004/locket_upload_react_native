@@ -76,7 +76,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         getOldPosts({
           userId: user?.localId || '',
           token: user?.idToken || '',
-          timestamp: listPostByFilter[listPostByFilter.length - 1].date,
+          timestamp: listPostByFilter[listPostByFilter?.length - 1]?.date,
         }),
       );
     }
@@ -254,10 +254,10 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
             })}
             onViewableItemsChanged={onViewableItemsChangedInModal}
             viewabilityConfig={viewabilityConfig}
-            removeClippedSubviews={true}
+            removeClippedSubviews={false}
             windowSize={5}
-            initialNumToRender={3}
-            maxToRenderPerBatch={3}
+            initialNumToRender={0}
+            // maxToRenderPerBatch={3}
             style={styles.modalFlatList}
             updateCellsBatchingPeriod={50}
             ListEmptyComponent={
