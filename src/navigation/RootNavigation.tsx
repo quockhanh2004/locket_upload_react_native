@@ -18,6 +18,7 @@ import CameraScreen from '../screen/CameraScreen';
 import PostScreen from '../screen/PostScreen';
 import {Linking} from 'react-native';
 import {getAccessToken} from '../redux/action/spotify.action';
+import {cleanOldPost} from '../redux/slice/oldPosts.slice';
 
 const REDIRECT_URI = 'locketupload.spotify://oauth';
 const Stack = createNativeStackNavigator();
@@ -40,6 +41,7 @@ const AuthNavigator = () => {
 const HomeNavigator = () => {
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
+    dispatch(cleanOldPost());
     Linking.getInitialURL()
       .then(url => {
         if (url) {

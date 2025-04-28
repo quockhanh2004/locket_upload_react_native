@@ -36,6 +36,11 @@ const oldPostsSlice = createSlice({
       state.posts = state.posts.filter(post => post.id !== postId);
       state.deleted.push(postId);
     },
+
+    cleanOldPost(state) {
+      const postsToKeep = state.posts.slice(0, 60);
+      state.posts = postsToKeep;
+    },
   },
 
   extraReducers: builder => {
@@ -74,6 +79,6 @@ const oldPostsSlice = createSlice({
   },
 });
 
-export const {setOldPosts, setIsLoadOldPosts, removePost} =
+export const {setOldPosts, setIsLoadOldPosts, cleanOldPost, removePost} =
   oldPostsSlice.actions;
 export const oldPostsReducer = oldPostsSlice.reducer;

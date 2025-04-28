@@ -13,7 +13,7 @@ const CaptionContainer: React.FC<CaptionContainerProps> = ({post}) => {
   const listColor =
     post?.overlays?.[0]?.data?.background?.colors.length >= 2
       ? post.overlays[0].data.background.colors
-      : [Colors.grey40, Colors.grey40];
+      : [Colors.grey20, Colors.grey20];
 
   return (
     <LinearGradient colors={listColor} style={styles.gradientContainer}>
@@ -27,7 +27,6 @@ export default React.memo(CaptionContainer);
 const styles = StyleSheet.create({
   gradientContainer: {
     borderRadius: 999,
-    padding: 12,
     justifyContent: 'center',
   },
 });

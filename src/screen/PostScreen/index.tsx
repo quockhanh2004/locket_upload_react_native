@@ -203,8 +203,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         itemSpacing={4}
         onEndReachedThreshold={0.7}
         onEndReached={handleLoadMore}
-        initialNumToRender={15}
-        maxToRenderPerBatch={10}
+        initialNumToRender={20}
         windowSize={5}
         removeClippedSubviews={true}
         renderItem={({item, index}) => (
@@ -255,8 +254,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
             viewabilityConfig={viewabilityConfig}
             removeClippedSubviews={false}
             windowSize={5}
-            initialNumToRender={0}
-            // maxToRenderPerBatch={3}
+            initialNumToRender={12}
             style={styles.modalFlatList}
             updateCellsBatchingPeriod={50}
             ListEmptyComponent={

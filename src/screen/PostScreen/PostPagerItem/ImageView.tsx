@@ -1,5 +1,6 @@
 import React from 'react';
-import {Image, StyleSheet, Dimensions} from 'react-native';
+import {StyleSheet, Dimensions} from 'react-native';
+import {Image} from 'react-native-ui-lib';
 
 const screenWidth = Dimensions.get('window').width;
 

@@ -18,11 +18,9 @@ const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
     }
   }, [overlay?.data?.payload?.spotify_url]);
 
-  if (post.caption) {
-    console.log('Caption:', post.caption);
-
+  if (post.caption && post.caption?.length > 0) {
     return (
-      <View>
+      <View margin-12>
         <Text color={overlay?.data?.text_color || Colors.white} text60BO center>
           {post.caption}
         </Text>
@@ -41,7 +39,7 @@ const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
       return null;
     }
     return (
-      <View>
+      <View margin-12>
         <Text color={overlay.data.text_color || Colors.white} text60BO center>
           {`${rating.rating}`}
           <Text primary text60BO>
@@ -53,18 +51,17 @@ const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
     );
   }
 
-  const hasImageIcon = overlay.data?.icon?.data?.includes('http');
+  const hasImageIcon = overlay.data?.icon?.data?.startsWith('http');
   const iconData = overlay.data?.icon?.data;
   const textColor = overlay.data?.text_color || Colors.white;
   const altText = overlay.alt_text;
 
   if (hasImageIcon) {
-    console.log(iconData);
-
     return (
       <TouchableOpacity
         onPress={handlePressCaption}
-        disabled={!overlay?.data?.payload?.spotify_url}>
+        disabled={!overlay?.data?.payload?.spotify_url}
+        margin-12>
         <View row gap-8 center>
           <Icon source={{uri: iconData}} size={32} borderRadius={8} />
           <Text color={textColor} text60BO center>
@@ -74,15 +71,17 @@ const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
       </TouchableOpacity>
     );
   }
-
-  return (
-    <View>
-      <Text color={textColor} text60BO center>
-        {iconData === 'clock.fill' ? '🕒 ' : iconData ? `${iconData} ` : ''}
-        {altText}
-      </Text>
-    </View>
-  );
+  if (iconData) {
+    return (
+      <View margin-12>
+        <Text color={textColor} text60BO center>
+          {iconData === 'clock.fill' ? '🕒 ' : iconData ? `${iconData} ` : ''}
+          {altText}
+        </Text>
+      </View>
+    );
+  }
+  return null;
 };
 
 export default React.memo(CaptionView);
