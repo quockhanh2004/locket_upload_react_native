@@ -1,6 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {Post} from '../../models/post.model';
-import {getOldPosts} from '../action/getOldPost.action';
+import {cleanOldPostAsync, getOldPosts} from '../action/getOldPost.action';
 import {savePostsToStorage} from '../../helper/post.storage';
 
 interface InitialState {
@@ -34,12 +34,9 @@ const oldPostsSlice = createSlice({
     removePost(state, action) {
       const postId = action.payload;
       state.posts = state.posts.filter(post => post.id !== postId);
-      state.deleted.push(postId);
-    },
-
-    cleanOldPost(state) {
-      const postsToKeep = state.posts.slice(0, 60);
-      state.posts = postsToKeep;
+      if (!state.deleted.includes(postId)) {
+        state.deleted.push(postId);
+      }
     },
   },
 
@@ -52,13 +49,15 @@ const oldPostsSlice = createSlice({
         const incomingPosts = action.payload.post;
         const currentUserId = action.payload.currentUserId;
         const deletedPosts = action.payload.deleted;
-        const isLoadMore = action.payload.isLoadMore;
 
-        const existingIds = new Set(state.posts.map(post => post.id));
+        const isLoadMore = action.payload.isLoadMore;
+        let existingIds: Set<string> = new Set();
+        if (state.posts.length > 0) {
+          existingIds = new Set(state.posts.map(post => post.id));
+        }
         const filteredNewPosts = incomingPosts.filter(
           (post: {id: string}) => !existingIds.has(post.id),
         );
-
         let temp;
 
         if (isLoadMore) {
@@ -75,10 +74,15 @@ const oldPostsSlice = createSlice({
       })
       .addCase(getOldPosts.rejected, state => {
         state.isLoadPosts = false;
+      })
+
+      .addCase(cleanOldPostAsync.fulfilled, (state, action) => {
+        state.posts = action.payload;
+        state.isLoadPosts = false;
       });
   },
 });
 
-export const {setOldPosts, setIsLoadOldPosts, cleanOldPost, removePost} =
+export const {setOldPosts, setIsLoadOldPosts, removePost} =
   oldPostsSlice.actions;
 export const oldPostsReducer = oldPostsSlice.reducer;

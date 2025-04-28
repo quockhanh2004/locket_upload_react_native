@@ -1,9 +1,13 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {setMessage} from '../slice/message.slice';
 import axios from 'axios';
-import {loadPostsFromStorage} from '../../helper/post.storage';
+import {
+  loadPostsFromStorage,
+  savePostsToStorage,
+} from '../../helper/post.storage';
 import {setOldPosts} from '../slice/oldPosts.slice';
 import {t} from '../../languages/i18n';
+import {Post} from '../../models/post.model';
 
 interface DataParam {
   token: string;
@@ -37,5 +41,19 @@ export const getOldPosts = createAsyncThunk(
       );
       return thunkApi.rejectWithValue(error);
     }
+  },
+);
+
+export const cleanOldPostAsync = createAsyncThunk(
+  'oldPosts/cleanOldPostAsync',
+  async (currentUserId: string, _) => {
+    const key = 'posts_' + currentUserId;
+    const data: Post[] = await loadPostsFromStorage(key);
+
+    const postsToKeep = data.slice(0, 60);
+
+    await savePostsToStorage(key, postsToKeep);
+
+    return postsToKeep;
   },
 );

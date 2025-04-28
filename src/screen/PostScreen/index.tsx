@@ -113,6 +113,9 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
     if (!isViewerVisible || !flatListRef.current) {
       return;
     }
+    if (!listPostByFilter || listPostByFilter.length === 0) {
+      return;
+    }
 
     const scrollToIndex = indexToView;
     if (scrollToIndex >= listPostByFilter.length) {
@@ -131,7 +134,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
     });
 
     return () => interactionHandle.cancel();
-  }, [isViewerVisible, indexToView, listPostByFilter.length]);
+  }, [isViewerVisible, indexToView, listPostByFilter]);
 
   // --- Cập nhật Index hiện tại trong Modal khi người dùng cuộn ---
   const onViewableItemsChangedInModal = useCallback(
@@ -201,7 +204,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         numColumns={3}
         keyExtractor={item => item.id}
         itemSpacing={4}
-        onEndReachedThreshold={0.7}
+        onEndReachedThreshold={0.5}
         onEndReached={handleLoadMore}
         initialNumToRender={20}
         windowSize={5}
