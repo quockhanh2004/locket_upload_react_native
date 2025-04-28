@@ -61,6 +61,49 @@ export const login = createAsyncThunk(
   },
 );
 
+export const loginPhone = createAsyncThunk(
+  'loginPhone',
+  async (data: DataLogin, thunkApi) => {
+    try {
+      const {email, password} = data;
+      const body = {
+        data: {
+          phone: email,
+          password,
+          returnSecureToken: true,
+        },
+      };
+      const response: AxiosResponse = await instanceLocket.post(
+        'signInWithPhonePassword',
+        body,
+        {headers: loginHeader},
+      );
+      if (response.status < 400) {
+        return response.data;
+      }
+    } catch (error: any) {
+      if (error?.response) {
+        thunkApi.dispatch(
+          setMessage({
+            message: `${error?.response?.data?.error?.message}`,
+            type: t('error'),
+          }),
+        );
+      } else {
+        thunkApi.dispatch(
+          setMessage({
+            message: `${error?.message}`,
+            type: t('error'),
+          }),
+        );
+      }
+
+      thunkApi.dispatch(clearStatus());
+      thunkApi.rejectWithValue(error?.message);
+    }
+  },
+);
+
 export const resetPassword = createAsyncThunk(
   'resetPassword',
   async (data: {email: string}, thunkApi) => {

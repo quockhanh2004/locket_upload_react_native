@@ -9,16 +9,21 @@ import {
   LoaderScreen,
   TextField,
   TextFieldRef,
+  TouchableOpacity,
+  Icon,
 } from 'react-native-ui-lib';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState, AppDispatch} from '../redux/store';
 
-import {login, resetPassword} from '../redux/action/user.action';
+import {login, loginPhone, resetPassword} from '../redux/action/user.action';
 import {setMessage} from '../redux/slice/message.slice';
-import {checkEmail} from '../util/regex';
+import {checkEmail, checkPhoneNumber} from '../util/regex';
 import {clearStatus} from '../redux/slice/user.slice';
 import {t} from 'i18next';
+import {Linking} from 'react-native';
+import {TextSwitch} from '../components/TextSwitch';
+import {hapticFeedback} from '../util/haptic';
 
 const LoginScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -29,15 +34,30 @@ const LoginScreen = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginOption, setloginOption] = useState<'Email' | 'Phone'>('Email');
 
   const emailRef = useRef<TextFieldRef>(null);
   const passwordRef = useRef<TextFieldRef>(null);
 
   const handleLogin = async () => {
     if (checkValue(false)) {
-      dispatch(login({email: email.trim(), password: password.trim()}));
+      if (loginOption === 'Phone') {
+        dispatch(loginPhone({email: email.trim(), password: password.trim()}));
+      } else {
+        dispatch(login({email: email.trim(), password: password.trim()}));
+      }
     }
   };
+
+  const handlePressGithub = useCallback(() => {
+    hapticFeedback();
+    Linking.openURL('https://github.com/quockhanh2004/');
+  }, []);
+
+  const handlePressFacebook = useCallback(() => {
+    hapticFeedback();
+    Linking.openURL('https://www.facebook.com/profile.php?id=61575901494417');
+  }, []);
 
   const handleResetPassword = () => {
     if (checkValue(true)) {
@@ -46,10 +66,19 @@ const LoginScreen = () => {
   };
 
   const checkValue = (isResetPassword: boolean) => {
-    if (!checkEmail(email.trim())) {
+    if (loginOption === 'Email' && !checkEmail(email.trim())) {
       dispatch(
         setMessage({
           message: t('email_not_accepted'),
+          type: t('error'),
+        }),
+      );
+      return false;
+    }
+    if (loginOption === 'Phone' && !checkPhoneNumber(email.trim())) {
+      dispatch(
+        setMessage({
+          message: t('phone_not_accepted'),
           type: t('error'),
         }),
       );
@@ -68,6 +97,15 @@ const LoginScreen = () => {
     return true;
   };
 
+  const handleSwitchLoginOption = (value: string) => {
+    setloginOption(value as 'Email' | 'Phone');
+    if (value === 'Phone') {
+      setEmail('+84');
+    } else {
+      setEmail('');
+    }
+  };
+
   useEffect(() => {
     dispatch(clearStatus());
   }, []);
@@ -79,6 +117,13 @@ const LoginScreen = () => {
       </Text>
       <View gap-40>
         <View gap-8>
+          <View width={'40%'}>
+            <TextSwitch
+              value={loginOption}
+              option={['Email', 'Phone']}
+              onChange={handleSwitchLoginOption}
+            />
+          </View>
           <View gap-8>
             <TextField
               ref={emailRef}
@@ -94,16 +139,16 @@ const LoginScreen = () => {
                 borderWidth: 2,
                 borderRadius: 10,
               }}
-              label="Email"
+              label={loginOption}
               labelColor={Colors.white}
               labelStyle={{...Typography.text70BL}}
-              placeholder="Email"
+              placeholder={loginOption}
               placeholderTextColor={Colors.grey40}
               onChangeText={setEmail}
               color={Colors.grey60}
               showClear={email.length > 0}
               showClearButton
-              inputMode="email"
+              inputMode={loginOption === 'Phone' ? 'tel' : 'email'}
               onSubmitEditing={() => {
                 if (passwordRef.current) {
                   passwordRef.current.focus();
@@ -173,6 +218,31 @@ const LoginScreen = () => {
               </View>
             )}
           </Button>
+        </View>
+        <View gap-12>
+          <TouchableOpacity onPress={handlePressGithub}>
+            <View center row gap-8>
+              <Icon
+                assetGroup="icons"
+                assetName="ic_github"
+                tintColor={Colors.grey30}
+                size={20}
+              />
+              <Text grey30>quockhanh2004</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={handlePressFacebook}>
+            <View center row gap-8>
+              <Icon
+                assetGroup="icons"
+                assetName="ic_facebook"
+                tintColor={Colors.grey30}
+                size={25}
+              />
+              <Text grey30>Locket Upload</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
     </View>

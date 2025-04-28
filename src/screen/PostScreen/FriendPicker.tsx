@@ -6,6 +6,7 @@ import {TouchableOpacity, Text, View, Image} from 'react-native-ui-lib';
 import {Friend} from '../../models/friend.model';
 import {User} from '../../models/user.model';
 import {t} from '../../languages/i18n';
+import {hapticFeedback} from '../../util/haptic';
 
 const screenHeight = Dimensions.get('window').height;
 
@@ -25,6 +26,7 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleSelect = (friend: Friend | null) => {
+    hapticFeedback();
     onSelect(friend);
     setModalVisible(false);
   };

@@ -4,6 +4,7 @@ import {
   getAccountInfo,
   getToken,
   login,
+  loginPhone,
   resetPassword,
   updateAvatar,
   updateDisplayName,
@@ -67,6 +68,21 @@ const userSlice = createSlice({
         }
       })
       .addCase(login.rejected, state => {
+        state.isLoading = false;
+      })
+
+      .addCase(loginPhone.pending, state => {
+        state.isLoading = true;
+      })
+      .addCase(loginPhone.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        if (state.user) {
+          let now = new Date().getTime() + 3600 * 1000;
+          state.user.timeExpires = now;
+        }
+      })
+      .addCase(loginPhone.rejected, state => {
         state.isLoading = false;
       })
 

@@ -3,6 +3,8 @@ import {View, Text, Colors, Icon, TouchableOpacity} from 'react-native-ui-lib';
 import {OverlayID, Post} from '../../../models/post.model';
 import {parseAltText} from '../../../util/regex';
 import {Linking} from 'react-native';
+import {getIconFill} from '../../../util/getIconFill';
+import {hapticFeedback} from '../../../util/haptic';
 
 interface CaptionViewProps {
   post: Post;
@@ -12,6 +14,7 @@ const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
   const overlay = post?.overlays[0];
 
   const handlePressCaption = useCallback(() => {
+    hapticFeedback();
     const url = overlay?.data?.payload?.spotify_url;
     if (url) {
       Linking.openURL(url);
@@ -71,17 +74,14 @@ const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
       </TouchableOpacity>
     );
   }
-  if (iconData) {
-    return (
-      <View margin-12>
-        <Text color={textColor} text60BO center>
-          {iconData === 'clock.fill' ? '🕒 ' : iconData ? `${iconData} ` : ''}
-          {altText}
-        </Text>
-      </View>
-    );
-  }
-  return null;
+  return (
+    <View margin-12>
+      <Text color={textColor} text60BO center>
+        {getIconFill(iconData) ? `${getIconFill(iconData)} ` : ''}
+        {altText}
+      </Text>
+    </View>
+  );
 };
 
 export default React.memo(CaptionView);

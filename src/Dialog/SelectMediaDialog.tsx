@@ -12,6 +12,7 @@ import {
 import CustomDialog from './CustomDialog';
 import {requestCameraPermission} from '../util/permission';
 import {t} from '../languages/i18n';
+import {hapticFeedback} from '../util/haptic';
 
 interface SelectMediaDialogProps {
   visible: boolean;
@@ -25,12 +26,14 @@ const SelectMediaDialog = ({
   onConfirm = () => {},
 }: SelectMediaDialogProps) => {
   const handlePressCamera = async () => {
+    hapticFeedback();
     await requestCameraPermission();
     onDismiss();
     onConfirm('camera');
   };
 
   const handlePressGallery = () => {
+    hapticFeedback();
     onDismiss();
     onConfirm('gallery');
   };

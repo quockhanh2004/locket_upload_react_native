@@ -264,6 +264,48 @@ export const uploadVideoToFirebase = createAsyncThunk(
   },
 );
 
+export const momentReaction = createAsyncThunk(
+  'momentReaction',
+  async (
+    data: {emoji: string; postId: string; owner_uid: string; idToken: string},
+    thunkApi,
+  ) => {
+    try {
+      const {emoji, postId, owner_uid, idToken} = data;
+      const body = {
+        data: {
+          intensity: 0,
+          moment_uid: postId,
+          reaction: emoji,
+          owner_uid: owner_uid,
+        },
+      };
+      const response = await axios.post(
+        'https://api.locketcamera.com/reactToMoment',
+        body,
+        {
+          headers: {
+            ...loginHeader,
+            Authorization: `Bearer ${idToken}`,
+          },
+        },
+      );
+
+      return response.data;
+    } catch (error: any) {
+      thunkApi.dispatch(
+        setMessage({
+          message: `${JSON.stringify(error?.response?.data) || error.message}`,
+          type: t('error'),
+        }),
+      );
+      return thunkApi.rejectWithValue(
+        error?.response?.data?.error || error.message,
+      );
+    }
+  },
+);
+
 const uploadThumbnail = async (
   uriVideo: string,
   idToken: string,

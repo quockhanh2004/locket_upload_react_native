@@ -22,7 +22,7 @@ import {useNavigation} from '@react-navigation/native';
 import {clearTokenData} from '../redux/slice/spotify.slice';
 import {t} from '../languages/i18n';
 import {setLanguage} from '../redux/slice/language.slice';
-import {LanguageSwitch} from '../components/LanguageSwitch';
+import {TextSwitch} from '../components/TextSwitch';
 import {Language} from '../models/language.model';
 
 const SettingScreen = () => {
@@ -114,12 +114,15 @@ const SettingScreen = () => {
                   <Text white text70BL flexS>
                     {t('language')}
                   </Text>
-                  <LanguageSwitch
-                    onChange={(val: Language) => {
-                      dispatch(setLanguage(val));
-                    }}
-                    currentLanguage={language}
-                  />
+                  <View width={'40%'}>
+                    <TextSwitch
+                      onChange={(val: string) => {
+                        dispatch(setLanguage(val as Language));
+                      }}
+                      option={[Language.EN, Language.VI]}
+                      value={language}
+                    />
+                  </View>
                 </View>
                 <View height={1} bg-grey40 />
               </>

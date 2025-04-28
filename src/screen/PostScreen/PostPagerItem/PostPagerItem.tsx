@@ -33,7 +33,6 @@ const PostPagerItem: React.FC<PostPagerItemProps> = ({
       </View>
 
       <CaptionContainer post={item} />
-
       <UserInfoBar user={user} date={item.date} />
     </View>
   );

@@ -29,6 +29,7 @@ import {AppDispatch, RootState} from '../../redux/store';
 import ModalImageViewBlur from './ModalImageViewBlur';
 import {t} from '../../languages/i18n';
 import {UpdateInfoType} from '../../models/update.model';
+import {hapticFeedback} from '../../util/haptic';
 
 const AccountScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -166,12 +167,12 @@ const AccountScreen = () => {
   }, []);
 
   const handlePressGithub = useCallback(() => {
-    Linking.openURL(
-      'https://github.com/quockhanh2004/locket_upload_react_native',
-    );
+    hapticFeedback();
+    Linking.openURL('https://github.com/quockhanh2004');
   }, []);
 
   const handlePressFacebook = useCallback(() => {
+    hapticFeedback();
     Linking.openURL('https://www.facebook.com/profile.php?id=61575901494417');
   }, []);
 

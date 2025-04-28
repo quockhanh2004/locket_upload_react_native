@@ -16,6 +16,7 @@ import {PostStyle} from '../models/setting.model';
 import MainButton from '../components/MainButton';
 import {FlatList} from 'react-native';
 import {t} from '../languages/i18n';
+import {hapticFeedback} from '../util/haptic';
 
 interface SelectColorDialogProps {
   visible: boolean;
@@ -55,6 +56,11 @@ const SelectColorDialog: React.FC<SelectColorDialogProps> = ({
         return value.text_color;
     }
   }, [indexColor, value.color_bot, value.color_top, value.text_color]);
+
+  const handleSelectColor = (key: IndexColor) => {
+    hapticFeedback();
+    setIndexColor(key);
+  };
 
   const handleColorChange = (val: string) => {
     onSelectColor({
@@ -107,7 +113,9 @@ const SelectColorDialog: React.FC<SelectColorDialogProps> = ({
         <View row spread>
           <View gap-8>
             {colorKeys.map(({label, key}) => (
-              <TouchableOpacity key={key} onPress={() => setIndexColor(key)}>
+              <TouchableOpacity
+                key={key}
+                onPress={() => handleSelectColor(key)}>
                 <Text
                   color={indexColor === key ? Colors.primary : Colors.white}>
                   {label}

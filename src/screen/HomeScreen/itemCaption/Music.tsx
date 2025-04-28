@@ -15,6 +15,7 @@ import TextTicker from 'react-native-text-ticker';
 import {getCurrentPlay} from '../../../redux/action/spotify.action';
 import {useIsFocused} from '@react-navigation/native';
 import {t} from '../../../languages/i18n';
+import {hapticFeedback} from '../../../util/haptic';
 
 interface ItemMusicProps {
   isFocus: boolean;
@@ -31,10 +32,12 @@ const ItemMusic: React.FC<ItemMusicProps> = ({isFocus}) => {
   );
 
   const handleLogin = () => {
+    hapticFeedback();
     SpotifyAuth.authorization();
   };
 
   const handleSelectMusic = async () => {
+    hapticFeedback();
     if (usingSpotifyMod) {
       await Linking.openURL('spotify://');
       return;

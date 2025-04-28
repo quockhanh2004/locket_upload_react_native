@@ -15,6 +15,7 @@ const initialState: SettingState = {
   trySoftwareEncode: false,
   usingSpotifyMod: false,
   postStyle: ColorDefault,
+  showDonate: true,
 };
 
 const settingSlice = createSlice({

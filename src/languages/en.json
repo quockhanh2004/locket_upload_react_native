@@ -98,5 +98,9 @@
   "fetching_download_url_video": "Fetching video URL...",
   "error_read_video_for_thumbnail": "Error reading video for thumbnail creation",
   "error_create_thumbnail": "Error creating thumbnail",
-  "language": "Language"
+  "language": "Language",
+  "phone_not_accepted": "Invalid phone number",
+  "thank_for_use_my_app": "Thank you for using my app",
+  "donate": "I built this app out of pure passion. If you like it, buy me a coffee so I can keep grinding! ☕❤️",
+  "copyed": "Copied \"0382914192\" to your clipboard!"
 }

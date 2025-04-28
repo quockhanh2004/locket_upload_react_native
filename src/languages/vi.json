@@ -98,5 +98,9 @@
   "fetching_download_url_video": "Đang lấy URL video...",
   "error_read_video_for_thumbnail": "Có lỗi khi đọc video để tạo hình thu nhỏ",
   "error_create_thumbnail": "Có lỗi khi tạo hình thu nhỏ",
-  "language": "Ngôn ngữ"
+  "language": "Ngôn ngữ",
+  "phone_not_accepted": "Số điện thoại không hợp lệ",
+  "thank_for_use_my_app": "Cảm ơn bạn đã sử dụng ứng dụng của mình",
+  "donate": "App này mình làm đam mê là chính, nếu bạn thấy hay thì mời mình ly cà phê để mình có động lực chiến tiếp nha! ☕❤️",
+  "copyed": "Đã sao chép \"0382914192\" vào bộ nhớ đệm"
 }

@@ -19,4 +19,5 @@ export interface SettingState {
   trySoftwareEncode: boolean;
   usingSpotifyMod: boolean;
   postStyle: PostStyle;
+  showDonate: boolean;
 }

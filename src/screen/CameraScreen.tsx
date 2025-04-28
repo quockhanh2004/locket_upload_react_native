@@ -27,6 +27,7 @@ import {setMessage} from '../redux/slice/message.slice';
 import Video from 'react-native-video';
 import {RootState} from '../redux/store';
 import {t} from '../languages/i18n';
+import {hapticFeedback} from '../util/haptic';
 
 function CameraScreen() {
   const dispatch = useDispatch();
@@ -53,6 +54,7 @@ function CameraScreen() {
   const [type, setType] = useState<string | null>(null);
 
   const handleSwitchCamera = () => {
+    hapticFeedback();
     startRotation();
     dispatch(
       setCameraSettings({
@@ -62,6 +64,7 @@ function CameraScreen() {
   };
 
   const handleFlash = () => {
+    hapticFeedback();
     dispatch(
       setCameraSettings({
         flash: !cameraSettings?.flash,
@@ -70,6 +73,7 @@ function CameraScreen() {
   };
 
   const handleTakePicture = () => {
+    hapticFeedback();
     if (camera.current) {
       camera.current
         .takePhoto({
@@ -83,6 +87,7 @@ function CameraScreen() {
   };
 
   const handleRecordVideo = async () => {
+    hapticFeedback();
     if (camera.current) {
       setIsRecording(true);
       await camera.current.startRecording({
@@ -116,6 +121,7 @@ function CameraScreen() {
   };
 
   const stopRecording = async () => {
+    hapticFeedback();
     if (camera.current) {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -130,6 +136,7 @@ function CameraScreen() {
   };
 
   const handleSavePicture = async () => {
+    hapticFeedback();
     if (photo) {
       try {
         const newUri = await CameraRoll.saveAsset(photo, {});
@@ -153,6 +160,7 @@ function CameraScreen() {
   };
 
   const handleReturnMedia = async () => {
+    hapticFeedback();
     if (photo) {
       navigationTo(nav.home, {
         camera: {
@@ -165,6 +173,7 @@ function CameraScreen() {
   };
 
   const handleClearMedia = () => {
+    hapticFeedback();
     if (photo) {
       setPhoto(null);
       setType(null);

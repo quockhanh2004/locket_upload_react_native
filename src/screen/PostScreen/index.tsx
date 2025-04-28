@@ -1,23 +1,18 @@
-/* eslint-disable react/no-unstable-nested-components */
 import React, {useRef, useState, useEffect, useCallback, useMemo} from 'react';
 import {
   Dimensions,
   FlatList,
-  Pressable,
   ViewToken,
   Modal,
   InteractionManager,
-  StyleSheet,
   RefreshControl,
 } from 'react-native';
-import {View, GridList, Card, Image, Text} from 'react-native-ui-lib';
+import {View, GridList} from 'react-native-ui-lib';
 import {useDispatch} from 'react-redux';
 import {AppDispatch} from '../../redux/store';
 import {navigationTo} from '../HomeScreen';
 import {nav} from '../../navigation/navName';
-import PostPagerItem from './PostPagerItem/PostPagerItem';
 import {getOldPosts} from '../../redux/action/getOldPost.action';
-import MainButton from '../../components/MainButton';
 import {Friend} from '../../models/friend.model';
 import {Post} from '../../models/post.model';
 import PostScreenHeader from './PostScreenHeader';
@@ -25,6 +20,13 @@ import {removePost} from '../../redux/slice/oldPosts.slice';
 import {t} from '../../languages/i18n';
 import {useGlobalMusicPlayer} from '../../hooks/useGlobalMusicPlayer';
 import {useOldPostsData} from '../../hooks/useOldPostData';
+import AnimatedButtons from './AnimatedButton';
+import AnimatedEmojiPicker from './PostPagerItem/AnimatedEmojiPicker';
+import GridItem from './GridItem';
+import PostList from './PostList';
+import {momentReaction} from '../../redux/action/postMoment.action';
+import {hapticFeedback} from '../../util/haptic';
+import {sendMessage} from '../../redux/action/chat.action';
 
 interface PostScreenProps {
   initialIndex?: number;
@@ -39,6 +41,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
 
   const [isViewerVisible, setIsViewerVisible] = useState<boolean>(true);
   const [indexToView, setIndexToView] = useState<number>(initialIndex);
+  const [isFocusReaction, setIsFocusReaction] = useState(false);
   const [filterFriendShow, setFilterFriendShow] = useState<Friend | null>(null);
   const [selectedIndexInModal, setSelectedIndexInModal] =
     useState<number>(initialIndex);
@@ -66,6 +69,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   };
 
   const viewAll = () => {
+    hapticFeedback();
     setIsViewerVisible(false);
   };
 
@@ -74,6 +78,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   };
 
   const handleRefresh = () => {
+    hapticFeedback();
     dispatch(
       getOldPosts({
         userId: user?.localId || '',
@@ -92,6 +97,35 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         }),
       );
     }
+  };
+
+  const handleReaction = (emoji: string) => {
+    hapticFeedback();
+    const currentPost = listPostByFilter[selectedIndexInModal];
+    if (currentPost) {
+      dispatch(
+        momentReaction({
+          emoji,
+          idToken: user?.idToken || '',
+          owner_uid: currentPost.user,
+          postId: currentPost.id,
+        }),
+      );
+    }
+  };
+
+  const handleSendMessage = (message: string) => {
+    hapticFeedback();
+    const currentPost = listPostByFilter[selectedIndexInModal];
+    dispatch(
+      sendMessage({
+        msg: message,
+        idToken: user?.idToken || '',
+        moment_uid: currentPost?.id,
+        receiver_uid: currentPost.user,
+        client_token: '',
+      }),
+    );
   };
 
   const filterFriends = (item: Post) => {
@@ -158,34 +192,6 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
     itemVisiblePercentThreshold: 50,
   }).current;
 
-  const GridItem = React.memo(
-    ({
-      item,
-      index,
-      onPress,
-    }: {
-      item: Post;
-      index: number;
-      onPress: (index: number) => void;
-    }) => {
-      const find = friends.find(friend => friend.uid === item.user);
-      if (!find && item.user !== user?.localId) {
-        dispatch(removePost(item.id));
-        return null;
-      }
-      return (
-        <Card borderRadius={20}>
-          <Pressable onPress={() => onPress(index)}>
-            <Image
-              source={{uri: item.thumbnail_url}}
-              style={styles.gridImage}
-            />
-          </Pressable>
-        </Card>
-      );
-    },
-  );
-
   return (
     <View flex bg-black useSafeArea>
       <PostScreenHeader
@@ -209,9 +215,14 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         initialNumToRender={20}
         windowSize={5}
         removeClippedSubviews={true}
-        renderItem={({item, index}) => (
-          <GridItem item={item} index={index} onPress={openViewer} />
-        )}
+        renderItem={({item, index}) => {
+          const find = friends.find(friend => friend.uid === item.user);
+          if (!find && item.user !== user?.localId) {
+            dispatch(removePost(item.id));
+            return null;
+          }
+          return <GridItem item={item} index={index} onPress={openViewer} />;
+        }}
       />
 
       <Modal
@@ -222,63 +233,35 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         presentationStyle="fullScreen" // Tùy chọn trên iOS
       >
         <View flex bg-black>
-          <FlatList
-            refreshControl={
-              <RefreshControl
-                refreshing={isLoadPosts}
-                onRefresh={handleRefresh}
-              />
-            }
-            ref={flatListRef}
-            data={listPostByFilter}
-            keyExtractor={item => item.id}
-            onEndReachedThreshold={0.7}
-            onEndReached={handleLoadMore}
-            renderItem={({item, index}) => (
-              <PostPagerItem
-                item={item}
-                key={item.id}
-                isActive={index === selectedIndexInModal} // Chỉ active nếu index khớp
-                user={filterFriends(item)}
-              />
-            )}
-            snapToInterval={screenHeight}
-            snapToAlignment="start"
-            decelerationRate="fast"
-            pagingEnabled={true}
-            showsVerticalScrollIndicator={false}
-            bounces={false}
-            getItemLayout={(_, index) => ({
-              length: screenHeight,
-              offset: screenHeight * index,
-              index,
-            })}
-            onViewableItemsChanged={onViewableItemsChangedInModal}
+          <PostList
+            isLoadPosts={isLoadPosts}
+            listPostByFilter={listPostByFilter}
+            handleRefresh={handleRefresh}
+            handleLoadMore={handleLoadMore}
+            selectedIndexInModal={selectedIndexInModal}
+            filterFriends={filterFriends}
+            filterFriendShow={filterFriendShow}
+            setFilterFriendShow={setFilterFriendShow}
+            friends={friends}
+            user={user}
+            screenHeight={screenHeight}
+            onViewableItemsChangedInModal={onViewableItemsChangedInModal}
             viewabilityConfig={viewabilityConfig}
-            removeClippedSubviews={false}
-            windowSize={5}
-            initialNumToRender={12}
-            style={styles.modalFlatList}
-            updateCellsBatchingPeriod={50}
-            ListEmptyComponent={
-              <View flex bg-black useSafeArea>
-                <PostScreenHeader
-                  friends={friends}
-                  user={user}
-                  filterFriendShow={filterFriendShow}
-                  setFilterFriendShow={setFilterFriendShow}
-                />
-                <View flex center>
-                  <Text color="#fff">{t('not_have_moment')}</Text>
-                </View>
-              </View>
-            }
           />
-
-          <View style={styles.modalOverlayButtons} gap-12 row spread>
-            <MainButton label={t('refresh')} onPress={handleRefresh} />
-            <MainButton label={t('view_all')} onPress={viewAll} />
-          </View>
+          <AnimatedEmojiPicker
+            isMyMoment={
+              listPostByFilter[selectedIndexInModal]?.user === user?.localId
+            }
+            isFocusReaction={isFocusReaction}
+            setIsFocusReaction={setIsFocusReaction}
+            onEmojiSelected={handleReaction}
+            onSendMessage={handleSendMessage}
+          />
+          <AnimatedButtons
+            isFocusReaction={isFocusReaction}
+            handleRefresh={handleRefresh}
+            viewAll={viewAll}
+          />
           <View absT width={screenWidth}>
             <PostScreenHeader
               friends={friends}
@@ -292,36 +275,5 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
     </View>
   );
 };
-
-// --- StyleSheet ---
-const styles = StyleSheet.create({
-  gridImage: {
-    aspectRatio: 1,
-    backgroundColor: '#999',
-    borderRadius: 20,
-  },
-  modalItemContainer: {
-    height: screenHeight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-  },
-  modalImage: {
-    width: screenWidth - 32,
-    aspectRatio: 1,
-  },
-  modalFlatList: {
-    flex: 1,
-  },
-  modalOverlayButtons: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    paddingHorizontal: 16,
-    paddingBottom: 30, // Hoặc dùng padding SafeAreaProvider nếu cần
-    backgroundColor: 'transparent', // Hoặc màu nền nhẹ nếu muốn
-  },
-});
 
 export default PostScreen;

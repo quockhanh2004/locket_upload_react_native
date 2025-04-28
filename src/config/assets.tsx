@@ -20,4 +20,7 @@ Assets.loadAssetsGroup('icons', {
   ic_group: require('../assets/icons/ic_group.png'),
   ic_menu: require('../assets/icons/ic_menu.png'),
   ic_facebook: require('../assets/icons/ic_facebook.png'),
+  ic_copy: require('../assets/icons/ic_copy.png'),
+  add_emoji: require('../assets/icons/add_emoji.png'),
+  ic_send: require('../assets/icons/ic_send.png'),
 });

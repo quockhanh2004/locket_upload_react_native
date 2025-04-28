@@ -9,6 +9,7 @@ import {
 } from 'react-native-ui-lib';
 import {navigationTo} from '../screen/HomeScreen';
 import {nav} from '../navigation/navName';
+import {hapticFeedback} from '../util/haptic';
 
 interface HeaderProps {
   title?: string;
@@ -28,6 +29,7 @@ const Header = ({
   leftIconAction,
 }: HeaderProps) => {
   const handleBack = () => {
+    hapticFeedback();
     if (leftIconAction) {
       leftIconAction();
       return;

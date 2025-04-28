@@ -66,6 +66,7 @@ import {
   OverlayType,
 } from '../../util/bodyMoment';
 import {t} from 'i18next';
+import {hapticFeedback} from '../../util/haptic';
 
 // --- Type Definitions ---
 
@@ -245,6 +246,7 @@ const HomeScreen = () => {
   // --- Event Handlers ---
 
   const handleViewPost = () => {
+    hapticFeedback();
     navigationTo(nav.posts);
   };
 
