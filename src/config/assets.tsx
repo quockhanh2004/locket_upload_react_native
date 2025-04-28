@@ -19,4 +19,5 @@ Assets.loadAssetsGroup('icons', {
   ic_check: require('../assets/icons/ic_check.png'),
   ic_group: require('../assets/icons/ic_group.png'),
   ic_menu: require('../assets/icons/ic_menu.png'),
+  ic_facebook: require('../assets/icons/ic_facebook.png'),
 });

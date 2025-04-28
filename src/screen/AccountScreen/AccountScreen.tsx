@@ -171,6 +171,10 @@ const AccountScreen = () => {
     );
   }, []);
 
+  const handlePressFacebook = useCallback(() => {
+    Linking.openURL('https://www.facebook.com/profile.php?id=61575901494417');
+  }, []);
+
   return (
     <>
       <Header rightIcon={'ic_setting'} rightIconAction={handleSetting} />
@@ -207,7 +211,20 @@ const AccountScreen = () => {
               <Text grey30>quockhanh2004</Text>
             </View>
           </TouchableOpacity>
+
+          <TouchableOpacity onPress={handlePressFacebook}>
+            <View center row gap-8>
+              <Icon
+                assetGroup="icons"
+                assetName="ic_facebook"
+                tintColor={Colors.grey30}
+                size={20}
+              />
+              <Text grey30>Locket Upload</Text>
+            </View>
+          </TouchableOpacity>
         </View>
+
         <EditTextDialog
           visible={isEditName}
           onDismiss={onDismissEditName}
