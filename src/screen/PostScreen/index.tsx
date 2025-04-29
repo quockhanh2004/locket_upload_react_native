@@ -93,7 +93,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         getOldPosts({
           userId: user?.localId || '',
           token: user?.idToken || '',
-          timestamp: listPostByFilter[listPostByFilter?.length - 1]?.date,
+          timestamp: posts[posts?.length - 1]?.date,
         }),
       );
     }
@@ -232,6 +232,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         transparent={false}>
         <View flex bg-black>
           <PostList
+            ref={flatListRef}
             isLoadPosts={isLoadPosts}
             listPostByFilter={listPostByFilter}
             handleRefresh={handleRefresh}
