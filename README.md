@@ -11,7 +11,9 @@
 - 🖼️ **Xem trước ảnh/video**: Có thể xem lại trước khi xác nhận gửi.
 - 🔄 **Đổi tên người dùng**: Cá nhân hóa tên hiển thị trong ứng dụng.
 - 🧑‍🤝‍🧑 **Hiển thị danh sách bạn bè**: Xem và chọn người nhận trước khi upload.
-- 🚀 **Cập nhật trong app**: Nhận bản cập nhật mới trong app, hạn chế phải cài APK thủ công.
+- 🕰️ **Xem lại các moment cũ**: Dễ dàng xem lại những khoảnh khắc đã lưu trữ.
+- 💬 **Reaction các moment của bạn bè**: Thể hiện cảm xúc với moment của người khác.
+- 🚀 **Cập nhật trong app**: Nhận bản cập nhật mới ngay trong ứng dụng, không cần tải APK thủ công.
 
 ## [📦 Bản dựng sẵn có thể tải](https://github.com/quockhanh2004/locket_upload_react_native/releases)
 
@@ -34,6 +36,9 @@
   <img src="./assets/images/screenshot11.png" width="300px">  
   <img src="./assets/images/screenshot12.png" width="300px">  
   <img src="./assets/images/screenshot13.png" width="300px">  
+  <img src="./assets/images/screenshot14.png" width="300px">  
+  <img src="./assets/images/screenshot15.png" width="300px">  
+  <img src="./assets/images/screenshot16.png" width="300px">  
 
 </details>
 
