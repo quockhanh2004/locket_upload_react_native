@@ -4,7 +4,6 @@ import {setMessage} from '../slice/message.slice';
 import {t} from '../../languages/i18n';
 
 interface DataParam {
-  idUser: string;
   idToken: string;
 }
 
@@ -12,7 +11,7 @@ export const getFriends = createAsyncThunk(
   'getListFriend',
   async (data: DataParam, thunkApi) => {
     try {
-      const listFriendId = await getListIdFriend(data.idToken, data.idUser);
+      const listFriendId = await getListIdFriend(data.idToken);
       const listFriend = await getListFriend(data.idToken, listFriendId);
       return listFriend;
     } catch (error: any) {

@@ -31,7 +31,7 @@ const AnimatedEmojiPicker: React.FC<AnimatedEmojiPickerProps> = ({
   useEffect(() => {
     Animated.parallel([
       Animated.timing(translateY, {
-        toValue: isFocusReaction ? 100 : 0, // dịch xuống 100px
+        toValue: isFocusReaction ? 70 : 0, // dịch xuống 100px
         duration: 180,
         useNativeDriver: true,
       }),
@@ -71,7 +71,7 @@ export default AnimatedEmojiPicker;
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginBottom: 100,
+    // marginBottom: 70,
     paddingHorizontal: 20,
     backgroundColor: Colors.transparent,
   },

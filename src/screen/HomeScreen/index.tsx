@@ -24,25 +24,12 @@ import {
 // Redux Imports
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../redux/store';
-import {getAccountInfo, getToken} from '../../redux/action/user.action';
-import {setMessage, setTask} from '../../redux/slice/message.slice';
+import {setMessage} from '../../redux/slice/message.slice';
 import {clearPostMoment} from '../../redux/slice/postMoment.slice';
-import {
-  DataPostMoment,
-  uploadImageToFirebaseStorage,
-  uploadVideoToFirebase,
-} from '../../redux/action/postMoment.action';
 import {getOldPosts} from '../../redux/action/getOldPost.action';
-import {getFriends} from '../../redux/action/getFriend.action';
 import {setPostStyle} from '../../redux/slice/setting.slice';
 
 // Firebase Imports
-import {getApp} from '@react-native-firebase/app';
-import {
-  getInitialNotification,
-  getMessaging,
-  FirebaseMessagingTypes,
-} from '@react-native-firebase/messaging';
 
 // Third-party Library Imports
 import {showEditor} from 'react-native-video-trim';
@@ -58,15 +45,12 @@ import {nav} from '../../navigation/navName';
 import {selectMedia} from '../../util/selectImage';
 import {clearAppCache} from '../../util/uploadImage';
 import {deleteAllMp4Files} from '../../util/uploadVideo';
-import {handleNotificationClick} from '../../services/Notification';
 import useTrimVideo from '../../hooks/useTrimVideo';
-import {
-  DefaultOverlayCreate,
-  OverLayCreate,
-  OverlayType,
-} from '../../util/bodyMoment';
+import {DefaultOverlayCreate, OverLayCreate} from '../../util/bodyMoment';
 import {t} from 'i18next';
 import {hapticFeedback} from '../../util/haptic';
+import {onPostMoment} from './functions/PostMoment';
+import useUserNotificationsAndData from './functions/useUserNotificationsAndData';
 
 // --- Type Definitions ---
 
@@ -81,24 +65,16 @@ interface MediaType {
   type?: 'video' | 'image' | string; // Thêm gợi ý type
 }
 
-// --- Module-level Navigation Variable (Giữ lại theo yêu cầu) ---
-// Lưu ý: Việc sử dụng biến module-level này có thể tiềm ẩn rủi ro trong một số trường hợp.
 let navigation: NavigationProp<any>;
 
-// --- Component ---
-
 const HomeScreen = () => {
-  // --- Hooks ---
   const componentNavigation = useNavigation<NavigationProp<any>>(); // Lấy navigation từ hook
   const route = useRoute<RouteProp<{params: RouteParams}>>();
   const dispatch = useDispatch<AppDispatch>();
-  const messaging = getMessaging(getApp());
   const trimmedVideoUri = useTrimVideo();
 
-  // Gán navigation từ hook vào biến module-level (Cập nhật mỗi khi component render)
   navigation = componentNavigation;
 
-  // --- Redux State ---
   const {user, userInfo} = useSelector((state: RootState) => state.user);
   const {postMoment, isLoading} = useSelector(
     (state: RootState) => state.postMoment,
@@ -126,47 +102,7 @@ const HomeScreen = () => {
   // --- Effects ---
 
   // Effect chạy 1 lần khi mount: Xử lý notification ban đầu và kiểm tra/làm mới token/lấy thông tin user
-  useEffect(() => {
-    getInitialNotification(messaging).then(
-      (remoteMessage: FirebaseMessagingTypes.RemoteMessage | null) => {
-        if (remoteMessage?.data) {
-          handleNotificationClick(remoteMessage.data);
-        }
-      },
-    );
-
-    if (user) {
-      const now = new Date().getTime();
-      const expires = user.timeExpires ? +user.timeExpires : 0;
-
-      if (expires < now && user.refreshToken) {
-        dispatch(getToken({refreshToken: user.refreshToken}));
-      } else if (expires >= now && user.idToken) {
-        dispatch(
-          getAccountInfo({
-            idToken: user.idToken,
-            refreshToken: user.refreshToken || '',
-          }),
-        );
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (user?.localId) {
-      const now = new Date().getTime();
-      const expires = user.timeExpires ? +user.timeExpires : 0;
-
-      if (expires >= now && user.idToken && !isLoadFriends) {
-        dispatch(
-          getFriends({
-            idUser: user?.localId || '',
-            idToken: user?.idToken || '',
-          }),
-        );
-      }
-    }
-  }, [user?.localId]);
+  useUserNotificationsAndData(user, isLoadFriends);
 
   // Effect xử lý kết quả trả về từ màn hình Crop hoặc Camera
   useEffect(() => {
@@ -268,49 +204,16 @@ const HomeScreen = () => {
   };
 
   const handlePost = async () => {
-    if (!user || !user.localId || !user.idToken || !selectedMedia) {
-      console.warn('User data or media is missing for posting.');
-      return;
-    }
-
-    const targetFriends =
-      optionSend === 'all'
-        ? []
-        : optionSend === 'custom_list'
-        ? customListFriends
-        : selected;
-
-    const commonParams: DataPostMoment = {
-      idUser: user.localId,
-      idToken: user.idToken,
-      refreshToken: user.refreshToken || '',
-      overlay: {
-        ...overlay,
-        text:
-          overlay.overlay_type === OverlayType.standard
-            ? caption
-            : overlay.text,
-      },
-      friend: targetFriends,
-    };
-
-    let task;
-    if (selectedMedia.type === 'video') {
-      task = dispatch(
-        uploadVideoToFirebase({
-          ...commonParams,
-          videoInfo: selectedMedia.uri,
-        }),
-      );
-    } else {
-      task = dispatch(
-        uploadImageToFirebaseStorage({
-          ...commonParams,
-          imageInfo: selectedMedia,
-        }),
-      );
-    }
-    dispatch(setTask(task));
+    onPostMoment({
+      caption,
+      customListFriends,
+      dispatch,
+      optionSend,
+      overlay,
+      selected,
+      selectedMedia,
+      user,
+    });
   };
 
   const handleCancelSelectMedia = () => {

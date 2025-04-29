@@ -3,12 +3,11 @@ import axios from 'axios';
 import {fetchUser} from '../api/user.api';
 import {Friend} from '../models/friend.model';
 
-export const getListIdFriend = async (token: string, userId: string) => {
+export const getListIdFriend = async (token: string) => {
   const response = await axios.post(
     'https://locket.quockhanh020924.id.vn/listen',
     {
       token,
-      userId,
     },
   );
   return response.data.users;

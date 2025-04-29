@@ -229,9 +229,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         visible={isViewerVisible}
         onRequestClose={handleBackPress}
         animationType="slide"
-        transparent={false}
-        presentationStyle="fullScreen" // Tùy chọn trên iOS
-      >
+        transparent={false}>
         <View flex bg-black>
           <PostList
             isLoadPosts={isLoadPosts}
