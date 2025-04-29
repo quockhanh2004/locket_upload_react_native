@@ -234,8 +234,6 @@ export const uploadVideoToFirebase = createAsyncThunk(
         friend || [],
         overlay,
       );
-      console.log(JSON.stringify(bodyPostMoment));
-
       const response = await wrapCancelable(
         axios.post(
           'https://api.locketcamera.com/postMomentV2',

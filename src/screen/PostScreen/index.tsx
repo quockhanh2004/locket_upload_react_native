@@ -81,8 +81,9 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
     hapticFeedback();
     dispatch(
       getOldPosts({
-        userId: user?.localId || '',
         token: user?.idToken || '',
+        userId: user?.localId || '',
+        timestamp: new Date().getTime() / 1000,
       }),
     );
   };
@@ -94,6 +95,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
           userId: user?.localId || '',
           token: user?.idToken || '',
           timestamp: posts[posts?.length - 1]?.date,
+          isLoadMore: true,
         }),
       );
     }

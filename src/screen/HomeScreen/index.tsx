@@ -140,6 +140,7 @@ const HomeScreen = () => {
           getOldPosts({
             userId: user.localId,
             token: user.idToken,
+            timestamp: new Date().getTime() / 1000,
           }),
         );
       }

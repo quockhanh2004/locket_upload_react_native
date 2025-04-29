@@ -13,6 +13,7 @@ interface DataParam {
   token: string;
   userId: string;
   timestamp?: number | string;
+  isLoadMore?: boolean;
 }
 
 const urlGetPosts = 'https://locket.quockhanh020924.id.vn/posts';
@@ -29,7 +30,7 @@ export const getOldPosts = createAsyncThunk(
         post: listOldPosts,
         currentUserId: data.userId,
         deleted: response.data.deleted,
-        isLoadMore: data.timestamp ? true : false,
+        isLoadMore: data.isLoadMore,
       };
     } catch (error: any) {
       console.error('Error fetching list old posts', error);
