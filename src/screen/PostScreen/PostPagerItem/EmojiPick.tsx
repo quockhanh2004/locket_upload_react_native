@@ -42,6 +42,9 @@ const EmojiPick: React.FC<EmojiPickerProps> = ({
 }) => {
   const [visibleEmojiPicker, setVisibleEmojiPicker] = useState(false);
   const [text, setText] = useState('');
+  const [flyingEmojis, setFlyingEmojis] = useState<
+    {id: number; emoji: string; animation: Animated.Value}[]
+  >([]);
 
   // Animated Values
   const reactionsOpacity = useRef(new Animated.Value(1)).current; // Bắt đầu hiển thị
@@ -107,6 +110,19 @@ const EmojiPick: React.FC<EmojiPickerProps> = ({
     const selected = typeof emoji === 'string' ? emoji : emoji.emoji;
     onEmojiSelected(selected);
     setVisibleEmojiPicker(false);
+
+    const id = Date.now();
+    const animation = new Animated.Value(0);
+    setFlyingEmojis(prev => [...prev, {id, emoji: selected, animation}]);
+
+    Animated.timing(animation, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start(() => {
+      // Xóa sau animation
+      setFlyingEmojis(prev => prev.filter(e => e.id !== id));
+    });
   };
 
   const handleSend = () => {
@@ -215,6 +231,36 @@ const EmojiPick: React.FC<EmojiPickerProps> = ({
         }}
         categoryPosition="top"
       />
+      {flyingEmojis.map(item => (
+        <Animated.Text
+          key={item.id}
+          style={{
+            position: 'absolute',
+            bottom: 60, // Tuỳ chỉnh vị trí xuất phát
+            right: 60, // Tùy chỉnh vị trí xuất phát
+            fontSize: 28,
+            transform: [
+              {
+                translateY: item.animation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, -80], // Bay lên
+                }),
+              },
+              {
+                scale: item.animation.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [1, 1.8], // Phóng to nhẹ
+                }),
+              },
+            ],
+            opacity: item.animation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [1, 0], // Mờ dần
+            }),
+          }}>
+          {item.emoji}
+        </Animated.Text>
+      ))}
     </View>
   );
 };

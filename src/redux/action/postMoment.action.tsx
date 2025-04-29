@@ -88,7 +88,7 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
         data: {
           thumbnail_url: downloadUrl,
           recipients: friend || [],
-          overlays: overlay.text.length === 0 ? [] : [createOverlay(overlay)],
+          overlays: overlay?.text?.length === 0 ? [] : [createOverlay(overlay)],
         },
       };
 
@@ -234,6 +234,7 @@ export const uploadVideoToFirebase = createAsyncThunk(
         friend || [],
         overlay,
       );
+      console.log(JSON.stringify(bodyPostMoment));
 
       const response = await wrapCancelable(
         axios.post(

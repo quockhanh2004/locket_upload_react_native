@@ -17,15 +17,18 @@ export const createBodyVideo = (
       md5: getMd5Hash(downloadVideoUrl),
       recipients: friends || [],
       sent_to_all: true,
-      overlays: [
-        createOverlay({
-          overlay_type: overlay?.overlay_type || OverlayType.standard,
-          postStyle: overlay?.postStyle || ColorDefault,
-          payload: overlay?.payload,
-          text: overlay?.text || '',
-          icon: overlay?.icon,
-        }),
-      ],
+      overlays:
+        overlay?.text && overlay?.text?.length > 0
+          ? [
+              createOverlay({
+                overlay_type: overlay?.overlay_type || OverlayType.standard,
+                postStyle: overlay?.postStyle || ColorDefault,
+                payload: overlay?.payload,
+                text: overlay?.text || undefined,
+                icon: overlay?.icon,
+              }),
+            ]
+          : undefined,
     },
   };
 
@@ -48,7 +51,7 @@ export interface IconOverlay {
 
 export interface OverLayCreate {
   overlay_type: OverlayType;
-  text: string;
+  text?: string;
   postStyle: PostStyle;
   icon?: IconOverlay;
   payload?: SimplifiedTrack | any;
