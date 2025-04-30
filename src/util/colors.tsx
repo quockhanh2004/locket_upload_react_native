@@ -1,6 +1,9 @@
 import {Colors} from 'react-native-ui-lib';
 
 export const ColorsSelect = [
+  Colors.red,
+  Colors.yellow,
+  Colors.blue,
   Colors.primary,
   Colors.text,
   Colors.black,

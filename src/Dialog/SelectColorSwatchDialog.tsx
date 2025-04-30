@@ -150,13 +150,16 @@ const SelectColorDialog: React.FC<SelectColorDialogProps> = ({
             initialNumToRender={20}
             renderItem={({item, index}) => {
               return (
-                <ColorSwatch
-                  key={index}
-                  value={item}
-                  color={item}
-                  onPress={handleColorChange}
-                  selected={getCurrentColor() === item}
-                />
+                <View>
+                  <ColorSwatch
+                    key={index}
+                    value={item}
+                    color={item}
+                    onPress={handleColorChange}
+                    selected={getCurrentColor() === item}
+                    style={{borderWidth: 1, borderColor: Colors.white}}
+                  />
+                </View>
               );
             }}
           />
