@@ -13,7 +13,7 @@ import LoginScreen from '../screen/LoginScreen';
 import HomeScreen from '../screen/Home';
 import AccountScreen from '../screen/Account/AccountScreen';
 import CropImageScreen from '../screen/CropImageScreen';
-import SettingScreen from '../screen/SettingScreen';
+import SettingScreen from '../screen/Settings/SettingScreen';
 import CameraScreen from '../screen/Camera/CameraScreen';
 import PostScreen from '../screen/Moment';
 import {Linking} from 'react-native';

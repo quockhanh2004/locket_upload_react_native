@@ -36,6 +36,7 @@
     "react": "18.2.0",
     "react-i18next": "^15.5.1",
     "react-native": "0.73.8",
+    "react-native-app-icon-changer": "^1.3.0",
     "react-native-code-push": "^9.0.1",
     "react-native-create-thumbnail": "^2.0.1",
     "react-native-dotenv": "^3.4.11",

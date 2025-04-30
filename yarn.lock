@@ -6908,6 +6908,11 @@ react-is@^17.0.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
+react-native-app-icon-changer@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-app-icon-changer/-/react-native-app-icon-changer-1.3.0.tgz#b87339ba2d387e4cf6d8db5766b9c77ffee9adc5"
+  integrity sha512-/nj7yq2rtoHwpuDLrbTsLaP0h2hafQT2tQLqDy0FirJNd7LYe5RO/RGAzvLwtXBTeG7ZPLDmBMvOrPhz6dNuKw==
+
 react-native-code-push@^9.0.1:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/react-native-code-push/-/react-native-code-push-9.0.1.tgz#6f70a49a6f11f63c8859a91dfe55dd7911f9fceb"

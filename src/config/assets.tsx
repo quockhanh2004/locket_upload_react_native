@@ -23,4 +23,5 @@ Assets.loadAssetsGroup('icons', {
   ic_copy: require('../assets/icons/ic_copy.png'),
   add_emoji: require('../assets/icons/add_emoji.png'),
   ic_send: require('../assets/icons/ic_send.png'),
+  ic_next: require('../assets/icons/ic_next.png'),
 });
