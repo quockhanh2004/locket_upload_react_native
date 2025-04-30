@@ -25,8 +25,9 @@ import {setLanguage} from '../../redux/slice/language.slice';
 import {TextSwitch} from '../../components/TextSwitch';
 import {Language} from '../../models/language.model';
 import ItemSetting from './ItemSetting';
-import {switchAppIcon} from '../../util/SwitchIconApp';
 import {ItemSettingModel} from '../../models/itemSetting.model';
+import {navigationTo} from '../Home';
+import {nav} from '../../navigation/navName';
 
 const SettingScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -59,17 +60,10 @@ const SettingScreen = () => {
       action: setTrySoftwareEncode,
     },
     {
-      title: t('Test đổi icon'),
+      title: t('change_app_icon'),
       type: 'button',
       action: () => {
-        switchAppIcon('AlternativeIcon');
-      },
-    },
-    {
-      title: t('Icon mặc định'),
-      type: 'button',
-      action: () => {
-        switchAppIcon('Default');
+        navigationTo(nav.selectIcon);
       },
     },
   ];

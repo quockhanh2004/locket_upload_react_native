@@ -67,7 +67,7 @@ const SelectIconScreen: React.FC<SelectIconScreenProps> = () => {
             center
             marginT-xs
             numberOfLines={2}
-            grey10
+            grey40
             style={isSelected && {color: Colors.blue30, fontWeight: 'bold'}}>
             {item.name}
           </Text>

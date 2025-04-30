@@ -83,7 +83,7 @@ export const switchAppIcon = (aliasName: AliasName) => {
     }, 1000);
     return;
   }
-  setIcon('AlternativeIcon');
+  setIcon(aliasName);
 
   setTimeout(() => {
     BackHandler.exitApp();
