@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, Dimensions, View} from 'react-native';
 import {Post} from '../../../models/post.model';
 import {Friend} from '../../../models/friend.model';
-import VideoPlayer from '../PostPagerItem/VideoPlayer';
+import VideoPlayer from './VideoPlayer';
 import ImageView from './ImageView';
 import CaptionContainer from './CaptionContainer';
 import UserInfoBar from './UserInfoBar';

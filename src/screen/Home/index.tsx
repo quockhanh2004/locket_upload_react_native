@@ -154,7 +154,11 @@ const HomeScreen = () => {
       dispatch(clearPostMoment());
       setSelectedMedia(null);
       setCaption('');
-      setOverlay(DefaultOverlayCreate);
+      setOverlay({
+        ...DefaultOverlayCreate,
+        postStyle: postStyle,
+        overlay_type: overlay.overlay_type,
+      });
       setIsVideo(false);
       clearAppCache();
       deleteAllMp4Files(RNFS.DocumentDirectoryPath);

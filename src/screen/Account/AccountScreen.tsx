@@ -23,7 +23,7 @@ import MainButton from '../../components/MainButton';
 import {setMessage} from '../../redux/slice/message.slice';
 import UserInfo from '../../components/UserInfo';
 import {useRoute} from '@react-navigation/native';
-import {navigationTo} from '../HomeScreen';
+import {navigationTo} from '../Home';
 import {nav} from '../../navigation/navName';
 import {AppDispatch, RootState} from '../../redux/store';
 import ModalImageViewBlur from './ModalImageViewBlur';

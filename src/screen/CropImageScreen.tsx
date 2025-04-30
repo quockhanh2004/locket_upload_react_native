@@ -9,7 +9,7 @@ import {resizeImage} from '../util/uploadImage';
 import MainButton from '../components/MainButton';
 import Header from '../components/Header';
 import {BackHandler} from 'react-native';
-import {navigationTo} from './HomeScreen';
+import {navigationTo} from './Home';
 import {t} from '../languages/i18n';
 
 const CropImageScreen = () => {

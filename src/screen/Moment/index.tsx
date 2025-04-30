@@ -10,7 +10,7 @@ import {
 import {View, GridList} from 'react-native-ui-lib';
 import {useDispatch} from 'react-redux';
 import {AppDispatch} from '../../redux/store';
-import {navigationTo} from '../HomeScreen';
+import {navigationTo} from '../Home';
 import {nav} from '../../navigation/navName';
 import {getOldPosts} from '../../redux/action/getOldPost.action';
 import {Friend} from '../../models/friend.model';

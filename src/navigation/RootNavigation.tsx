@@ -10,12 +10,12 @@ import {nav} from './navName';
 import queryString from 'query-string';
 
 import LoginScreen from '../screen/LoginScreen';
-import HomeScreen from '../screen/HomeScreen';
-import AccountScreen from '../screen/AccountScreen/AccountScreen';
+import HomeScreen from '../screen/Home';
+import AccountScreen from '../screen/Account/AccountScreen';
 import CropImageScreen from '../screen/CropImageScreen';
 import SettingScreen from '../screen/SettingScreen';
-import CameraScreen from '../screen/CameraScreen';
-import PostScreen from '../screen/PostScreen';
+import CameraScreen from '../screen/Camera/CameraScreen';
+import PostScreen from '../screen/Moment';
 import {Linking} from 'react-native';
 import {getAccessToken} from '../redux/action/spotify.action';
 import {cleanOldPostAsync} from '../redux/action/getOldPost.action';

@@ -7,7 +7,7 @@ import {
   Text,
   Typography,
 } from 'react-native-ui-lib';
-import {navigationTo} from '../screen/HomeScreen';
+import {navigationTo} from '../screen/Home';
 import {nav} from '../navigation/navName';
 import {hapticFeedback} from '../util/haptic';
 

@@ -4,7 +4,7 @@ import {useEffect} from 'react';
 import {Platform, PermissionsAndroid, Linking} from 'react-native';
 import notifee, {AndroidImportance, EventType} from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {navigationTo} from '../screen/HomeScreen';
+import {navigationTo} from '../screen/Home';
 import {nav} from '../navigation/navName';
 import {
   FirebaseMessagingTypes,

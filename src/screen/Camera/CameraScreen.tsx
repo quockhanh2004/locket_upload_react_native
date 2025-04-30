@@ -18,16 +18,16 @@ import {
 import {BackHandler, Animated} from 'react-native';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 
-import {setCameraSettings} from '../redux/slice/setting.slice';
+import {setCameraSettings} from '../../redux/slice/setting.slice';
 import {useDispatch, useSelector} from 'react-redux';
-import {navigationTo} from './HomeScreen';
-import {nav} from '../navigation/navName';
-import Header from '../components/Header';
-import {setMessage} from '../redux/slice/message.slice';
+import {navigationTo} from '../Home';
+import {nav} from '../../navigation/navName';
+import Header from '../../components/Header';
+import {setMessage} from '../../redux/slice/message.slice';
 import Video from 'react-native-video';
-import {RootState} from '../redux/store';
-import {t} from '../languages/i18n';
-import {hapticFeedback} from '../util/haptic';
+import {RootState} from '../../redux/store';
+import {t} from '../../languages/i18n';
+import {hapticFeedback} from '../../util/haptic';
 
 function CameraScreen() {
   const dispatch = useDispatch();
