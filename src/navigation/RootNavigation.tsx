@@ -21,6 +21,7 @@ import {getAccessToken} from '../redux/action/spotify.action';
 import {cleanOldPostAsync} from '../redux/action/getOldPost.action';
 import MessageDialog from '../Dialog/MessageDialog';
 import DonateDialog from '../Dialog/DonateDiloag';
+import SelectIconScreen from '../screen/SelectIconScreen';
 
 const REDIRECT_URI = 'locketupload.spotify://oauth';
 const Stack = createNativeStackNavigator();
@@ -79,6 +80,7 @@ const HomeNavigator = () => {
       <Stack.Screen name={nav.setting} component={SettingScreen} />
       <Stack.Screen name={nav.camera} component={CameraScreen} />
       <Stack.Screen name={nav.posts} component={PostScreen} />
+      <Stack.Screen name={nav.selectIcon} component={SelectIconScreen} />
     </Stack.Navigator>
   );
 };

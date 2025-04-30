@@ -7,4 +7,5 @@ export const nav = {
   setting: 'setting',
   camera: 'camera',
   posts: 'posts',
+  selectIcon: 'selectIcon',
 };

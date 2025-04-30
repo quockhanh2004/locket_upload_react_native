@@ -1,6 +1,7 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {CameraSetting, SettingState} from '../../models/setting.model';
 import {ColorDefault} from '../../util/colors';
+import {AliasName} from '../../util/SwitchIconApp';
 
 const initialState: SettingState = {
   useCamera: false,
@@ -16,6 +17,7 @@ const initialState: SettingState = {
   usingSpotifyMod: false,
   postStyle: ColorDefault,
   showDonate: true,
+  customIcon: 'Default',
 };
 
 const settingSlice = createSlice({
@@ -57,6 +59,10 @@ const settingSlice = createSlice({
       state.usingSpotifyMod = action.payload;
     },
 
+    setCustomIcon(state, action: PayloadAction<AliasName>) {
+      state.customIcon = action.payload;
+    },
+
     setSetting(state, action) {
       const data = JSON.parse(action.payload);
       state.useCamera = data.useCamera;
@@ -76,6 +82,7 @@ export const {
   setPostStyle,
   setSetting,
   setUsingSpotifyMod,
+  setCustomIcon,
 } = settingSlice.actions;
 
 export default settingSlice.reducer;

@@ -30,7 +30,6 @@
         android:allowBackup="false"
         android:theme="@style/AppTheme">
 
-        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -51,7 +50,7 @@
             </intent-filter>
         </activity>
 
-         <activity-alias
+        <activity-alias
             android:name="${applicationId}.MainActivityDefault"
             android:targetActivity=".MainActivity"
             android:icon="@mipmap/ic_launcher"
@@ -64,12 +63,420 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity-alias>
-        
+
         <activity-alias
-            android:name="${applicationId}.MainActivityAlternativeIcon"
+            android:name="${applicationId}.MainActivityBlackOnGold"
             android:targetActivity=".MainActivity"
-            android:icon="@mipmap/ic_launcher1"
-            android:roundIcon="@mipmap/ic_launcher_round1"
+            android:icon="@mipmap/ic_black_on_gold_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityFlatBlue"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_flat_blue_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityFlatPink"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_flat_pink_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityFlatPurple"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_flat_purple_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityFlatYellow"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_flat_yellow_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityFlowersAutumn"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_flowers_autumn_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityFlowersBeige"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_flowers_beige_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityFlowersMagenta"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_flowers_magenta_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityFlowersPink"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_flowers_pink_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityGemBgCandy"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_gem_bg_candy_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityGemBgMono"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_gem_bg_mono_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityGemBgMulti"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_gem_bg_multi_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityGemBgPink"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_gem_bg_pink_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityGoldOnBlack"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_gold_on_black_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityGoldOnBlackOutline"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_gold_on_black_outline_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityLauncherForeground"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_launcher_foreground"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityLightHearts"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_light_hearts_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityNeonBlue"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_neon_blue_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityNeonGreen"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_neon_green_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityNeonPink"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_neon_pink_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityNeonYellow"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_neon_yellow_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityNotebook"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_notebook_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityPastel3dGold"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_pastel_3d_gold_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityPastel3dGreen"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_pastel_3d_green_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityPastel3dPink"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_pastel_3d_pink_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityPastelIcPastel3dBlue"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_pastel_ic_pastel_3d_blue"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityPendant"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_pendant_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityPhotosHeartsBlack"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_photos_hearts_black_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityPhotosHearts"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_photos_hearts_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityTunnel"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_tunnel_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityWavesBlack"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_waves_black_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityWavesBlue"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_waves_blue_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityWavesGold"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_waves_gold_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityWavesPurple"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_waves_purple_foreground"
+            android:label="@string/app_name"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="${applicationId}.MainActivityLauncherIcon"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/launcher_icon"
             android:label="@string/app_name"
             android:enabled="false"
             android:exported="true">
