@@ -13,7 +13,7 @@ import LoginScreen from '../screen/LoginScreen';
 import HomeScreen from '../screen/Home';
 import AccountScreen from '../screen/Account/AccountScreen';
 import CropImageScreen from '../screen/CropImageScreen';
-import SettingScreen from '../screen/SettingScreen';
+import SettingScreen from '../screen/Settings/SettingScreen';
 import CameraScreen from '../screen/Camera/CameraScreen';
 import PostScreen from '../screen/Moment';
 import {Linking} from 'react-native';
@@ -21,6 +21,7 @@ import {getAccessToken} from '../redux/action/spotify.action';
 import {cleanOldPostAsync} from '../redux/action/getOldPost.action';
 import MessageDialog from '../Dialog/MessageDialog';
 import DonateDialog from '../Dialog/DonateDiloag';
+import SelectIconScreen from '../screen/SelectIconScreen';
 
 const REDIRECT_URI = 'locketupload.spotify://oauth';
 const Stack = createNativeStackNavigator();
@@ -79,6 +80,7 @@ const HomeNavigator = () => {
       <Stack.Screen name={nav.setting} component={SettingScreen} />
       <Stack.Screen name={nav.camera} component={CameraScreen} />
       <Stack.Screen name={nav.posts} component={PostScreen} />
+      <Stack.Screen name={nav.selectIcon} component={SelectIconScreen} />
     </Stack.Navigator>
   );
 };

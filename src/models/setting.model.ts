@@ -1,3 +1,5 @@
+import { AliasName } from "../util/SwitchIconApp";
+
 export interface CameraSetting {
   cameraId?: string;
   format?: number;
@@ -20,4 +22,5 @@ export interface SettingState {
   usingSpotifyMod: boolean;
   postStyle: PostStyle;
   showDonate: boolean;
+  customIcon: AliasName;
 }
