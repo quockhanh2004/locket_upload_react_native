@@ -36,7 +36,7 @@ const ViewMedia: React.FC<ViewMediaProps> = ({
                 width={264}
                 height={264}
                 source={{uri: selectedMedia.uri}}
-                style={{borderRadius: 6}}
+                style={{borderRadius: 6, overflow: 'hidden'}}
               />
               <View absT marginT-4 marginR-4 absR>
                 <TouchableOpacity onPress={onRemoveMedia}>
@@ -54,7 +54,12 @@ const ViewMedia: React.FC<ViewMediaProps> = ({
               <Video
                 source={{uri: selectedMedia.uri}}
                 resizeMode="cover"
-                style={{borderRadius: 6, width: 264, height: 264}}
+                style={{
+                  borderRadius: 6,
+                  width: 264,
+                  height: 264,
+                  overflow: 'hidden',
+                }}
               />
               <View absT marginT-4 marginR-4 absR>
                 <TouchableOpacity onPress={onRemoveMedia}>
