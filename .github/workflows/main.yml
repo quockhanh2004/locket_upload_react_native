@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Build APK
+    name: Build APK test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
