@@ -9,6 +9,13 @@ buildscript {
         ffmpegKitPackage = 'video'
     }
     repositories {
+        maven {
+            url "https://github.com/quockhanh2004/ffmpeg-kit/releases/download/6.0-2/"
+            metadataSources {
+                artifact()
+            }
+            allowInsecureProtocol = true // nếu dùng HTTP, không cần nếu dùng HTTPS
+        }
         google()
         mavenCentral()
     }
