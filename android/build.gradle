@@ -6,7 +6,7 @@ buildscript {
         targetSdkVersion = 34
         ndkVersion = "25.1.8937393"
         kotlinVersion = "1.8.0"
-        ffmpegKitPackage = 'video'
+        javaVersion = JavaVersion.VERSION_17
     }
     repositories {
         google()
@@ -28,6 +28,16 @@ subprojects { subproject ->
         versionPatch = npmVersion[2]
     }
 
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        flatDir {
+            dirs "$rootDir/libs"
+        }
+    }
 }
 
 import groovy.json.JsonSlurper
