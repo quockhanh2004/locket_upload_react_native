@@ -9,7 +9,9 @@ buildscript {
         ffmpegKitPackage = 'video'
     }
     repositories {
-        maven { url "https://jitpack.io" }
+        flatDir {
+            dirs 'libs'
+        }
         google()
         mavenCentral()
     }

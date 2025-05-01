@@ -126,7 +126,7 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
     implementation("com.facebook.react:flipper-integration")
-    implementation 'com.github.quockhanh2004:ffmpeg-kit-android:6.0-2'
+    implementation(name: 'ffmpeg-kit', ext: 'aar')
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {
