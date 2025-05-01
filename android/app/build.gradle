@@ -75,6 +75,7 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
     implementation("com.facebook.react:flipper-integration")
+
     implementation(name: 'ffmpeg-kit-full-gpl', ext: 'aar')
     implementation 'com.arthenica:smart-exception-java:0.2.1'
 

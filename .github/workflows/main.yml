@@ -20,6 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           yarn install
+          yarn postinstall
 
       - name: Get version from package.json
         id: get_version
