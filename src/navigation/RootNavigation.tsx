@@ -18,6 +18,7 @@ import CameraScreen from '../screen/CameraScreen';
 import PostScreen from '../screen/PostScreen';
 import {Linking} from 'react-native';
 import {getAccessToken} from '../redux/action/spotify.action';
+import DonateDialog from '../Dialog/DonateDialog';
 
 const REDIRECT_URI = 'locketupload.spotify://oauth';
 const Stack = createNativeStackNavigator();
@@ -84,6 +85,7 @@ const RootNavigation = () => {
       <NavigationContainer>
         {isLoggedIn.user ? <HomeNavigator /> : <AuthNavigator />}
       </NavigationContainer>
+      <DonateDialog />
     </>
   );
 };

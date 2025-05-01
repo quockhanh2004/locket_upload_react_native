@@ -38,7 +38,7 @@ const App = () => {
 };
 
 const codePushOptions = {
-  checkFrequency: CodePush.CheckFrequency.MANUAL, // Kiểm tra cập nhật
+  checkFrequency: CodePush.CheckFrequency.ON_APP_START, // Kiểm tra cập nhật
   deploymentKey: CODEPUSH_DEPLOYMENTKEY(),
   serverUrl: 'https://code-push.quockhanh020924.id.vn',
 };
