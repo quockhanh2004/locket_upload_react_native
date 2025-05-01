@@ -8,6 +8,7 @@ jobs:
   build:
     name: Build APK
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -26,20 +27,15 @@ jobs:
         id: get_version
         run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
 
-      - name: Get current time
-        id: get_time
-        run: echo "CURRENT_TIME=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
-
-      - name: Set up environment variables
-        run: |
-          cp ./.env.examble ./.env
+      - name: Set up .env
+        run: cp ./.env.examble ./.env || true
 
       - name: Install Android dependencies
         uses: android-actions/setup-android@v2
         with:
           distribution: 'latest'
 
-      - name: Generate local.properties file
+      - name: Generate local.properties
         run: |
           cd android
           echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
@@ -51,14 +47,18 @@ jobs:
       - name: Build APK
         run: |
           cd android
-          ./gradlew assembleRelease -PbuildType=Release
+          ./gradlew assembleRelease --no-daemon --stacktrace
           cd ..
 
-      - name: Rename APK with version
-        run: mv android/app/build/outputs/apk/release/app-release.apk android/app/build/outputs/apk/release/${{ secrets.APP_NAME }}_${{ env.VERSION }}.apk
+      - name: Rename & collect all APKs
+        run: |
+          for apk in android/app/build/outputs/apk/release/*.apk; do
+            base=$(basename "$apk" .apk)
+            mv "$apk" "android/app/build/outputs/apk/release/${{ secrets.APP_NAME }}_${{ env.VERSION }}_${base}.apk"
+          done
 
-      - name: Upload APK as artifact
+      - name: Upload APKs as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: android/app/build/outputs/apk/release/${{ secrets.APP_NAME }}_${{ env.VERSION }}.apk
+          name: ${{ secrets.APP_NAME }}-release
+          path: android/app/build/outputs/apk/release/*.apk
