@@ -3,6 +3,7 @@ name: Build and Release React Native APK
 on:
   push:
     branches: [ "try-workflow" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -27,15 +28,20 @@ jobs:
         id: get_version
         run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
 
-      - name: Set up .env
-        run: cp ./.env.examble ./.env || true
+      - name: Get current time
+        id: get_time
+        run: echo "CURRENT_TIME=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+
+      - name: Set up environment variables
+        run: |
+          cp ./.env.examble ./.env || true
 
       - name: Install Android dependencies
         uses: android-actions/setup-android@v2
         with:
           distribution: 'latest'
 
-      - name: Generate local.properties
+      - name: Generate local.properties file
         run: |
           cd android
           echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
@@ -47,7 +53,7 @@ jobs:
       - name: Build APK
         run: |
           cd android
-          ./gradlew assembleRelease --no-daemon --stacktrace
+          ./gradlew assembleRelease -PbuildType=Release --no-daemon --stacktrace
           cd ..
 
       - name: Rename & collect all APKs
@@ -57,8 +63,8 @@ jobs:
             mv "$apk" "android/app/build/outputs/apk/release/${{ secrets.APP_NAME }}_${{ env.VERSION }}_${base}.apk"
           done
 
-      - name: Upload APKs as artifact
+      - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ secrets.APP_NAME }}-release
+          name: ${{ secrets.APP_NAME }}-release-${{ env.VERSION }}
           path: android/app/build/outputs/apk/release/*.apk
