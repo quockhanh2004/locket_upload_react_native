@@ -11,9 +11,6 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        flatDir {
-            dirs "${rootProject.projectDir}/app/libs"
-        }
     }
     dependencies {
         classpath("com.android.tools.build:gradle")
