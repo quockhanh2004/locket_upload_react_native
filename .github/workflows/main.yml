@@ -2,12 +2,14 @@ name: Build and Release React Native APK
 
 on:
   push:
-    branches: [ "try-workflow" ]
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
     name: Build APK
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -32,7 +34,7 @@ jobs:
 
       - name: Set up environment variables
         run: |
-          cp ./.env.examble ./.env
+          cp ./.env.examble ./.env || true
 
       - name: Install Android dependencies
         uses: android-actions/setup-android@v2
@@ -51,14 +53,18 @@ jobs:
       - name: Build APK
         run: |
           cd android
-          ./gradlew assembleRelease -PbuildType=Release
+          ./gradlew assembleRelease -PbuildType=Release --no-daemon --stacktrace
           cd ..
 
-      - name: Rename APK with version
-        run: mv android/app/build/outputs/apk/release/app-release.apk android/app/build/outputs/apk/release/${{ secrets.APP_NAME }}_${{ env.VERSION }}.apk
+      - name: Rename & collect all APKs
+        run: |
+          for apk in android/app/build/outputs/apk/release/*.apk; do
+            base=$(basename "$apk" .apk)
+            mv "$apk" "android/app/build/outputs/apk/release/${{ secrets.APP_NAME }}_${{ env.VERSION }}_${base}.apk"
+          done
 
-      - name: Upload APK as artifact
+      - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: android/app/build/outputs/apk/release/${{ secrets.APP_NAME }}_${{ env.VERSION }}.apk
+          name: ${{ secrets.APP_NAME }}-release-${{ env.VERSION }}
+          path: android/app/build/outputs/apk/release/*.apk
