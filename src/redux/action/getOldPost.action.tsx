@@ -58,3 +58,35 @@ export const cleanOldPostAsync = createAsyncThunk(
     return postsToKeep;
   },
 );
+
+export const getReaction = createAsyncThunk(
+  'getReaction',
+  async (data: {momentId: string; token: string}, thunkApi) => {
+    try {
+      const response = await axios.post(
+        `${urlGetPosts}/${data.momentId}`,
+        {
+          token: data.token,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      return {
+        momentId: data.momentId,
+        reactions: response.data.reactions,
+      };
+    } catch (error: any) {
+      console.error('Error fetching reaction', error);
+      thunkApi.dispatch(
+        setMessage({
+          message: `${error.message}`,
+          type: t('error'),
+        }),
+      );
+      return thunkApi.rejectWithValue(error);
+    }
+  },
+);

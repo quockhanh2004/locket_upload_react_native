@@ -2,15 +2,16 @@
 import React, {useEffect, useRef} from 'react';
 import {Animated, StyleSheet} from 'react-native';
 import EmojiPick from './EmojiPick'; // chỉnh lại path cho đúng
-import {Colors} from 'react-native-ui-lib';
+import {Colors, View} from 'react-native-ui-lib';
 import {hapticFeedback} from '../../../util/haptic';
+import Reaction from './Reaction';
 
 interface AnimatedEmojiPickerProps {
   isFocusReaction: boolean;
   setIsFocusReaction: (val: boolean) => void;
   onEmojiSelected: (emoji: string) => void;
   onSendMessage: (message: string) => void;
-  isMyMoment: boolean;
+  isMyMoment: string | null;
 }
 
 const AnimatedEmojiPicker: React.FC<AnimatedEmojiPickerProps> = ({
@@ -38,15 +39,15 @@ const AnimatedEmojiPicker: React.FC<AnimatedEmojiPickerProps> = ({
     ]).start();
   }, [isFocusReaction]);
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(opacity, {
-        toValue: isMyMoment ? 0 : 1,
-        duration: 180,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [isMyMoment]);
+  // useEffect(() => {
+  //   Animated.parallel([
+  //     Animated.timing(opacity, {
+  //       toValue: isMyMoment ? 0 : 1,
+  //       duration: 180,
+  //       useNativeDriver: true,
+  //     }),
+  //   ]).start();
+  // }, [isMyMoment]);
 
   return (
     <Animated.View
@@ -57,11 +58,18 @@ const AnimatedEmojiPicker: React.FC<AnimatedEmojiPickerProps> = ({
           opacity,
         },
       ]}>
-      <EmojiPick
-        onFocusInput={setIsFocusReaction}
-        onEmojiSelected={handleEmojiClick}
-        onSendMessage={onSendMessage}
-      />
+      {!isMyMoment && (
+        <EmojiPick
+          onFocusInput={setIsFocusReaction}
+          onEmojiSelected={handleEmojiClick}
+          onSendMessage={onSendMessage}
+        />
+      )}
+      {isMyMoment && (
+        <View row center>
+          <Reaction momentId={isMyMoment} />
+        </View>
+      )}
     </Animated.View>
   );
 };

@@ -252,6 +252,8 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
           <AnimatedEmojiPicker
             isMyMoment={
               listPostByFilter[selectedIndexInModal]?.user === user?.localId
+                ? listPostByFilter[selectedIndexInModal].canonical_uid
+                : null
             }
             isFocusReaction={isFocusReaction}
             setIsFocusReaction={setIsFocusReaction}

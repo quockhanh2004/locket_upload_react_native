@@ -103,5 +103,8 @@
   "thank_for_use_my_app": "Thank you for using my app",
   "donate": "I built this app out of pure passion. If you like it, buy me a coffee so I can keep grinding! ☕❤️",
   "copyed": "Copied \"0382914192\" to your clipboard!",
-  "change_app_icon": "Change app icon"
+  "change_app_icon": "Change app icon",
+  "no_activity_yet": "No activity yet!",
+  "activity": "Activity",
+  "loading": "Loading..."
 }

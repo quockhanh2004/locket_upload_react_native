@@ -54,3 +54,10 @@ export enum OverlayID {
   CaptionStandard = 'caption:standard',
   CaptionTime = 'caption:time',
 }
+
+export interface Reaction {
+  value: string;
+  user: string;
+  viewed_at: string;
+  create_time: string;
+}

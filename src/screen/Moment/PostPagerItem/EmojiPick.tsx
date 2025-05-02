@@ -128,6 +128,7 @@ const EmojiPick: React.FC<EmojiPickerProps> = ({
   const handleSend = () => {
     if (text.trim().length > 0) {
       onSendMessage(text);
+      handleSelectEmoji('💬');
       setText('');
       Keyboard.dismiss();
     }
@@ -243,7 +244,7 @@ const EmojiPick: React.FC<EmojiPickerProps> = ({
               {
                 translateY: item.animation.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0, -80], // Bay lên
+                  outputRange: [0, -200], // Bay lên
                 }),
               },
               {

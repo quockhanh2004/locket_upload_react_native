@@ -1,12 +1,21 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {Post} from '../../models/post.model';
-import {cleanOldPostAsync, getOldPosts} from '../action/getOldPost.action';
+import {Post, Reaction} from '../../models/post.model';
+import {
+  cleanOldPostAsync,
+  getOldPosts,
+  getReaction,
+} from '../action/getOldPost.action';
 import {savePostsToStorage} from '../../helper/post.storage';
 
 interface InitialState {
   posts: Post[];
   isLoadPosts: boolean;
   deleted: string[];
+  isLoadingReaction: boolean;
+  reaction?: {
+    momentId: string;
+    reactions: Reaction[];
+  } | null;
 }
 
 const oldPostsSlice = createSlice({
@@ -15,6 +24,8 @@ const oldPostsSlice = createSlice({
     posts: [],
     isLoadPosts: false,
     deleted: [],
+    reaction: null,
+    isLoadingReaction: false,
   } as InitialState,
   reducers: {
     setOldPosts(state, action) {
@@ -79,6 +90,18 @@ const oldPostsSlice = createSlice({
       .addCase(cleanOldPostAsync.fulfilled, (state, action) => {
         state.posts = action.payload;
         state.isLoadPosts = false;
+      })
+
+      .addCase(getReaction.pending, state => {
+        state.isLoadingReaction = true;
+      })
+      .addCase(getReaction.fulfilled, (state, action) => {
+        const {momentId, reactions} = action.payload;
+        state.isLoadingReaction = false;
+        state.reaction = {momentId, reactions};
+      })
+      .addCase(getReaction.rejected, state => {
+        state.isLoadingReaction = false;
       });
   },
 });
