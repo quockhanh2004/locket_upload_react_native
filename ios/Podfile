@@ -28,7 +28,8 @@ end
 
 target 'locket_upload' do
   config = use_native_modules!
-  pod 'locket-upload-ffmpeg-kit-ios-https', :podspec => '../libs/locket-upload-ffmpeg-kit-ios-https'
+  pod 'ffmpeg-kit-ios-full-gpl' , :podspec => './ffmpeg-kit-ios-full-gpl.podspec' 
+  pod 'ffmpeg-kit-react-native' , :subspecs => [ 'full-gpl' ], :podspec => '../node_modules/ffmpeg-kit-react-native/ffmpeg-kit-react-native.podspec'
   pod 'GoogleUtilities', :modular_headers => true
   # pod 'fmt', '6.2.1'
   use_react_native!(
