@@ -77,11 +77,15 @@ const oldPostsSlice = createSlice({
           temp = [...filteredNewPosts, ...state.posts];
         }
 
+        temp.sort((a: {date: number}, b: {date: number}) => {
+          return b.date - a.date;
+        });
+
         state.posts = temp.filter(
           (post: {id: string}) => !deletedPosts.includes(post.id),
         );
         state.isLoadPosts = false;
-        savePostsToStorage('posts_' + currentUserId, state.posts);
+        savePostsToStorage('posts_' + currentUserId, state.posts.slice(0, 60));
       })
       .addCase(getOldPosts.rejected, state => {
         state.isLoadPosts = false;
