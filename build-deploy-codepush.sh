@@ -47,9 +47,9 @@ if [[ "$send_fcm" != "y" && "$send_fcm" != "Y" ]]; then
 fi
 
 # Gửi thông báo qua Firebase Cloud Messaging (FCM)
-if [ -z "$MESSAGE_VERSION" ]; then
-    read -p "🔹 Nhập phiên bản nhận thông báo: " MESSAGE_VERSION
-fi
+read -p "🔹 Nhập phiên bản nhận thông báo (Enter để dùng mặc định: $TARGET_VERSION): " MESSAGE_VERSION
+MESSAGE_VERSION=${MESSAGE_VERSION:-$TARGET_VERSION}
+
 echo "📢 Đang gửi thông báo cập nhật..."
 PROJECT_ID=$(node -p "require('./google-services.json').project_info.project_id")
 FCM_URL="https://fcm.googleapis.com/v1/projects/$PROJECT_ID/messages:send"
