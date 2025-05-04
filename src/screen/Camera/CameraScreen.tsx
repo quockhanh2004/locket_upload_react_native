@@ -201,7 +201,8 @@ function CameraScreen() {
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'], // Xoay từ 0 đến 360 độ
   });
-
+  
+  //xử lý sự kiện back
   const onPinchGestureEvent = (event: any) => {
     const scale = event.nativeEvent.scale;
     const newZoom = Math.min(Math.max(lastScaleRef.current * scale, 1), 20);
