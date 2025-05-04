@@ -2,7 +2,6 @@ import {Platform, NativeModules} from 'react-native';
 
 export const getDeviceInfo = () => {
   const info = NativeModules.PlatformConstants || {};
-
   return {
     os: Platform.OS,
     androidVersion: Platform.Version,

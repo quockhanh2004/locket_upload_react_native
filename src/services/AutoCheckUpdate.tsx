@@ -1,46 +1,44 @@
 /* eslint-disable react/react-in-jsx-scope */
-/* eslint-disable react-hooks/exhaustive-deps */
-import {useCallback, useEffect, useState} from 'react';
+import {useEffect, useState, useCallback} from 'react';
+import {Linking} from 'react-native';
 import codePush from 'react-native-code-push';
+import {useDispatch} from 'react-redux';
 
 import AutoCheckUpdateDialog from '../Dialog/AutoCheckUpdateDialog';
-import {UpdateInfoType} from '../models/update.model';
 import {checkUpdateApk} from '../util/update';
 import {CODEPUSH_DEPLOYMENTKEY, getStatusFromCodePush} from '../util/codepush';
-import {useDispatch} from 'react-redux';
-import {AppDispatch} from '../redux/store';
 import {setMessage} from '../redux/slice/message.slice';
+import {AppDispatch} from '../redux/store';
 import {t} from '../languages/i18n';
-import {Linking} from 'react-native';
+import {UpdateInfoType} from '../models/update.model';
 
 const AutoCheckUpdate: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+
   const [updateInfo, setUpdateInfo] = useState<UpdateInfoType | null>(null);
-  const [updateAPKInfo, setupdateAPKInfo] = useState<any>(null);
+  const [apkUpdateInfo, setApkUpdateInfo] = useState<any>(null);
   const [downloadProgress, setDownloadProgress] = useState(0);
-  const [decriptionUpdate, setDecriptionUpdate] = useState('');
+  const [description, setDescription] = useState('');
+
   useEffect(() => {
     const checkUpdate = async () => {
       setUpdateInfo('CHECKING_FOR_UPDATE');
       try {
         const apkUpdate = await checkUpdateApk();
         if (apkUpdate) {
-          setupdateAPKInfo(apkUpdate);
-          setDecriptionUpdate(apkUpdate?.decriptionUpdate);
+          setUpdateInfo('UPDATE_AVAILABLE');
+          setApkUpdateInfo(apkUpdate);
+          setDescription(apkUpdate?.decriptionUpdate);
           return;
         }
-        const update = await codePush.checkForUpdate(CODEPUSH_DEPLOYMENTKEY());
 
-        if (!update) {
-          setUpdateInfo('UP_TO_DATE');
-          setDecriptionUpdate('');
-        } else {
+        const update = await codePush.checkForUpdate(CODEPUSH_DEPLOYMENTKEY());
+        if (update) {
           setUpdateInfo('UPDATE_AVAILABLE');
-          setDecriptionUpdate(update?.description);
+          setDescription(update.description || '');
         }
       } catch (error) {
         console.log(error);
-
         dispatch(
           setMessage({
             message: JSON.stringify(error),
@@ -51,33 +49,26 @@ const AutoCheckUpdate: React.FC = () => {
       }
     };
     checkUpdate();
-  }, []);
+  }, [dispatch]);
 
   const onUpdate = useCallback(() => {
     setUpdateInfo('DOWNLOADING_PACKAGE');
     codePush.sync(
       {
-        updateDialog: undefined,
         installMode: codePush.InstallMode.IMMEDIATE,
         deploymentKey: CODEPUSH_DEPLOYMENTKEY(),
       },
       status => {
         switch (status) {
           case codePush.SyncStatus.UPDATE_INSTALLED:
-            setUpdateInfo('UPDATE_INSTALLED');
-            setDecriptionUpdate('');
-            break;
           case codePush.SyncStatus.UP_TO_DATE:
-            setUpdateInfo('UP_TO_DATE');
-            setDecriptionUpdate('');
-            break;
           case codePush.SyncStatus.UNKNOWN_ERROR:
           case codePush.SyncStatus.UPDATE_IGNORED:
-            setUpdateInfo('ERROR');
-            setDecriptionUpdate('');
+            setUpdateInfo(getStatusFromCodePush(status));
+            setDescription('');
             break;
           default:
-            setUpdateInfo(getStatusFromCodePush(status)); // Hàm helper để map status
+            setUpdateInfo(getStatusFromCodePush(status));
         }
       },
       progress => {
@@ -86,29 +77,33 @@ const AutoCheckUpdate: React.FC = () => {
     );
   }, []);
 
-  const handleUpdateAPK = useCallback(async () => {
-    Linking.openURL(updateAPKInfo.downloadUrl);
-  }, [updateAPKInfo]);
+  const handleUpdateAPK = () => {
+    if (apkUpdateInfo?.downloadUrl) {
+      Linking.openURL(apkUpdateInfo.downloadUrl);
+    }
+  };
+
+  const shouldShowDialog =
+    updateInfo === 'UPDATE_AVAILABLE' ||
+    updateInfo === 'APK_UPDATE_AVAILABLE' ||
+    updateInfo === 'DOWNLOADING_PACKAGE' ||
+    updateInfo === 'INSTALLING_UPDATE' ||
+    updateInfo === 'UPDATE_INSTALLED';
+
   return (
     <AutoCheckUpdateDialog
-      isVisible={
-        updateInfo === 'UPDATE_AVAILABLE' ||
-        updateInfo === 'APK_UPDATE_AVAILABLE' ||
-        updateInfo === 'DOWNLOADING_PACKAGE' ||
-        updateInfo === 'INSTALLING_UPDATE' ||
-        updateInfo === 'UPDATE_INSTALLED'
-      }
+      isVisible={shouldShowDialog}
       updateInfo={updateInfo}
       onUpdate={onUpdate}
       onUpdateApk={handleUpdateAPK}
-      onCheckUpdate={() => {}}
       onPostpone={() => {
         setUpdateInfo(null);
-        setDecriptionUpdate('');
+        setDescription('');
       }}
       progress={downloadProgress}
-      apkUpdateInfo={updateAPKInfo}
-      decriptionUpdate={decriptionUpdate}
+      apkUpdateInfo={apkUpdateInfo}
+      decriptionUpdate={description}
+      onCheckUpdate={() => {}}
     />
   );
 };

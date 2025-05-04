@@ -10,7 +10,7 @@ export const checkUpdateApk = async () => {
   if (version !== latestVersionNumber) {
     return {
       latestVersion: latestVersionNumber,
-      downloadUrl: response.data.assets[0].browser_download_url,
+      downloadUrl: response.data.html_url,
       updateInfo: 'APK_UPDATE_AVAILABLE',
       decriptionUpdate: response.data.body,
     };
