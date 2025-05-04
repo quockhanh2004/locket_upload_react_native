@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Colors,
   Icon,
-  Image,
   Card,
   Text,
 } from 'react-native-ui-lib';
@@ -15,7 +14,7 @@ import {
   useCameraDevices,
   useCameraFormat,
 } from 'react-native-vision-camera';
-import {BackHandler, Animated} from 'react-native';
+import {BackHandler, Animated, Dimensions, Image} from 'react-native';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import {PinchGestureHandler, State} from 'react-native-gesture-handler';
 
@@ -30,10 +29,12 @@ import {RootState} from '../../redux/store';
 import {t} from '../../languages/i18n';
 import {hapticFeedback} from '../../util/haptic';
 
+const screenWidth = Dimensions.get('window').width;
+
 function CameraScreen() {
   const dispatch = useDispatch();
   const camera = useRef<any>(null);
-  const pinchRef = useRef(null);
+  // const pinchRef = useRef(null);
   const scaleRef = useRef(1);
   const lastScaleRef = useRef(1);
 
@@ -43,11 +44,9 @@ function CameraScreen() {
   const device =
     devices.find(cam => cam.position === cameraSettings?.cameraId) ||
     devices[0];
+  console.log(JSON.stringify(device));
 
-  const format = useCameraFormat(device, [
-    {videoResolution: {width: 1920, height: 1080}},
-    {photoAspectRatio: 4 / 3},
-  ]);
+  const format = useCameraFormat(device, []);
 
   const timeoutRef = useRef<any>(null);
   const timeIntervalRef = useRef<any>(null);
@@ -66,6 +65,10 @@ function CameraScreen() {
         cameraId: cameraSettings.cameraId === 'front' ? 'back' : 'front',
       }),
     );
+    // Reset zoom khi chuyển camera
+    setZoom(1);
+    scaleRef.current = 1;
+    lastScaleRef.current = 1;
   };
 
   const handleFlash = () => {
@@ -182,8 +185,13 @@ function CameraScreen() {
     if (photo) {
       setPhoto(null);
       setType(null);
+      // Reset zoom khi quay lại camera
+      setZoom(1);
+      scaleRef.current = 1;
+      lastScaleRef.current = 1;
       return true;
     }
+    return false; // Thêm return false nếu không có gì để clear
   };
 
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -201,7 +209,7 @@ function CameraScreen() {
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'], // Xoay từ 0 đến 360 độ
   });
-  
+
   //xử lý sự kiện back
   const onPinchGestureEvent = (event: any) => {
     const scale = event.nativeEvent.scale;
@@ -230,27 +238,28 @@ function CameraScreen() {
   return (
     <>
       <Header />
-      <View flex bg-black spread>
-        <View
-          style={{
-            borderRadius: 20,
-            overflow: 'hidden',
-          }}>
+      <View flex bg-black centerH>
+        <View margin-12 flex-5 center>
           {photo ? (
             type === 'image' ? (
               <Image
                 source={{uri: photo}}
                 style={{
-                  aspectRatio:
-                    (format?.photoHeight || 4) / (format?.photoWidth || 3),
+                  width: screenWidth - 24,
+                  height: screenWidth - 24,
+                  borderRadius: 20,
+                  overflow: 'hidden',
                 }}
+                resizeMode="cover"
               />
             ) : (
               <Video
                 source={{uri: photo}}
                 style={{
-                  aspectRatio:
-                    (format?.photoHeight || 16) / (format?.photoWidth || 9),
+                  width: screenWidth - 24,
+                  height: screenWidth - 24,
+                  borderRadius: 20,
+                  overflow: 'hidden',
                 }}
                 resizeMode="cover"
               />
@@ -259,25 +268,28 @@ function CameraScreen() {
             <PinchGestureHandler
               onGestureEvent={onPinchGestureEvent}
               onHandlerStateChange={onPinchStateChange}>
-              <Camera
-                ref={camera}
-                style={{
-                  aspectRatio:
-                    (format?.photoHeight || 4) / (format?.photoWidth || 3),
-                }}
-                preview={true}
-                isActive={true}
-                photo={true}
-                video={true}
-                resizeMode="cover"
-                device={device}
-                format={format}
-                zoom={zoom}
-              />
+              <View style={{borderRadius: 20, overflow: 'hidden'}}>
+                <Camera
+                  ref={camera}
+                  style={{
+                    width: screenWidth - 24,
+                    height: screenWidth - 24,
+                    aspectRatio: 1,
+                  }}
+                  preview={true}
+                  isActive={true}
+                  photo={true}
+                  video={true}
+                  resizeMode="cover"
+                  device={device}
+                  format={format}
+                  zoom={zoom}
+                />
+              </View>
             </PinchGestureHandler>
           )}
         </View>
-        <View width={'100%'} absB>
+        <View width={'100%'} flex-2>
           {isRecording && (
             <View center width={'100%'}>
               <Text white text50BL>

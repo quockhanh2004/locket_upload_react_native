@@ -115,7 +115,12 @@ const HomeScreen = () => {
         setIsVideo(false);
         processed = true;
       } else if (params?.from === nav.camera && params?.camera) {
-        compressMedia(params.camera);
+        if (params.camera.type?.startsWith('video')) {
+          compressMedia(params.camera);
+        } else {
+          setSelectedMedia({uri: params.camera.uri ?? '', type: 'image'});
+          setIsVideo(false);
+        }
         processed = true;
       }
 
