@@ -106,5 +106,6 @@
   "change_app_icon": "Đổi biểu tượng ứng dụng",
   "no_activity_yet": "Chưa có hoạt động nào!",
   "activity": "Hoạt động",
-  "loading": "Đang tải..."
+  "loading": "Đang tải...",
+  "skip_this_version": "Bỏ qua phiên bản này"
 }

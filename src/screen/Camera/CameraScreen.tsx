@@ -45,7 +45,20 @@ function CameraScreen() {
     devices.find(cam => cam.position === cameraSettings?.cameraId) ||
     devices[0];
 
-  const format = useCameraFormat(device, [{fps: 60}, {photoHdr: true}]);
+  const format = useCameraFormat(device, [
+    {
+      fps: 60,
+    },
+    {
+      photoHdr: true,
+    },
+    {
+      videoHdr: true,
+    },
+    {
+      videoStabilizationMode: 'auto',
+    },
+  ]);
 
   // Refs cho việc quay video
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);

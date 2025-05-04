@@ -22,6 +22,7 @@ import {cleanOldPostAsync} from '../redux/action/getOldPost.action';
 import MessageDialog from '../Dialog/MessageDialog';
 import DonateDialog from '../Dialog/DonateDiloag';
 import SelectIconScreen from '../screen/SelectIconScreen';
+import AutoCheckUpdate from '../services/AutoCheckUpdate';
 
 const REDIRECT_URI = 'locketupload.spotify://oauth';
 const Stack = createNativeStackNavigator();
@@ -95,6 +96,7 @@ const RootNavigation = () => {
       </NavigationContainer>
       <MessageDialog />
       <DonateDialog />
+      <AutoCheckUpdate />
     </>
   );
 };
