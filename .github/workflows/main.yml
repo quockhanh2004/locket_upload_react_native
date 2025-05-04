@@ -1,8 +1,6 @@
 name: Build and Release React Native APK
 
 on:
-  push:
-    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:

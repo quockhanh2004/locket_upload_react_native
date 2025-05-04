@@ -17,6 +17,7 @@ import {
 } from 'react-native-vision-camera';
 import {BackHandler, Animated} from 'react-native';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
+import {PinchGestureHandler, State} from 'react-native-gesture-handler';
 
 import {setCameraSettings} from '../../redux/slice/setting.slice';
 import {useDispatch, useSelector} from 'react-redux';
@@ -32,8 +33,11 @@ import {hapticFeedback} from '../../util/haptic';
 function CameraScreen() {
   const dispatch = useDispatch();
   const camera = useRef<any>(null);
-  const devices = useCameraDevices();
+  const pinchRef = useRef(null);
+  const scaleRef = useRef(1);
+  const lastScaleRef = useRef(1);
 
+  const devices = useCameraDevices();
   const {cameraSettings} = useSelector((state: RootState) => state.setting);
 
   const device =
@@ -52,6 +56,7 @@ function CameraScreen() {
   const [isRecording, setIsRecording] = useState(false);
   const [timeRecording, setTimeRecording] = useState(0);
   const [type, setType] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(1);
 
   const handleSwitchCamera = () => {
     hapticFeedback();
@@ -196,8 +201,21 @@ function CameraScreen() {
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'], // Xoay từ 0 đến 360 độ
   });
-
+  
   //xử lý sự kiện back
+  const onPinchGestureEvent = (event: any) => {
+    const scale = event.nativeEvent.scale;
+    const newZoom = Math.min(Math.max(lastScaleRef.current * scale, 1), 20);
+    scaleRef.current = newZoom;
+    setZoom(newZoom);
+  };
+
+  const onPinchStateChange = (event: any) => {
+    if (event.nativeEvent.state === State.END) {
+      lastScaleRef.current = scaleRef.current;
+    }
+  };
+
   useEffect(() => {
     const backAction = () => {
       return handleClearMedia() || false;
@@ -238,20 +256,25 @@ function CameraScreen() {
               />
             )
           ) : (
-            <Camera
-              ref={camera}
-              style={{
-                aspectRatio:
-                  (format?.photoHeight || 4) / (format?.photoWidth || 3),
-              }}
-              preview={true}
-              isActive={true}
-              photo={true}
-              video={true}
-              resizeMode="cover"
-              device={device}
-              format={format}
-            />
+            <PinchGestureHandler
+              onGestureEvent={onPinchGestureEvent}
+              onHandlerStateChange={onPinchStateChange}>
+              <Camera
+                ref={camera}
+                style={{
+                  aspectRatio:
+                    (format?.photoHeight || 4) / (format?.photoWidth || 3),
+                }}
+                preview={true}
+                isActive={true}
+                photo={true}
+                video={true}
+                resizeMode="cover"
+                device={device}
+                format={format}
+                zoom={zoom}
+              />
+            </PinchGestureHandler>
           )}
         </View>
         <View width={'100%'} absB>
