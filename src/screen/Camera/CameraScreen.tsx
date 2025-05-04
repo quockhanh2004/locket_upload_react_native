@@ -1,22 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useRef, useEffect} from 'react';
-import {
-  View,
-  TouchableOpacity,
-  Colors,
-  Icon,
-  Card,
-  Text,
-} from 'react-native-ui-lib';
+import React, {useState, useRef, useEffect, useCallback} from 'react';
+import {View, Text} from 'react-native-ui-lib';
 import {
   Camera,
   useCameraDevices,
   useCameraFormat,
 } from 'react-native-vision-camera';
-import {BackHandler, Animated, Dimensions, Image} from 'react-native';
+import {BackHandler, AppState} from 'react-native';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
-import {PinchGestureHandler, State} from 'react-native-gesture-handler';
 
 import {setCameraSettings} from '../../redux/slice/setting.slice';
 import {useDispatch, useSelector} from 'react-redux';
@@ -24,426 +16,345 @@ import {navigationTo} from '../Home';
 import {nav} from '../../navigation/navName';
 import Header from '../../components/Header';
 import {setMessage} from '../../redux/slice/message.slice';
-import Video from 'react-native-video';
-import {RootState} from '../../redux/store';
-import {t} from '../../languages/i18n';
 import {hapticFeedback} from '../../util/haptic';
 
-const screenWidth = Dimensions.get('window').width;
+import CameraPreview from './CameraPreview';
+import CameraControls from './CameraControls';
+import MediaPreviewControls from './MediaPreviewControls';
+import {RootState} from '../../redux/store';
+import {resizeImage} from '../../util/uploadImage';
 
 function CameraScreen() {
   const dispatch = useDispatch();
-  const camera = useRef<any>(null);
-  // const pinchRef = useRef(null);
-  const scaleRef = useRef(1);
-  const lastScaleRef = useRef(1);
+  const cameraRef = useRef<Camera>(null);
+
+  const [isCameraActive, setIsCameraActive] = useState(true);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      console.log('App State:', nextAppState);
+      setIsCameraActive(nextAppState === 'active');
+    });
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   const devices = useCameraDevices();
   const {cameraSettings} = useSelector((state: RootState) => state.setting);
-
   const device =
     devices.find(cam => cam.position === cameraSettings?.cameraId) ||
     devices[0];
-  console.log(JSON.stringify(device));
 
-  const format = useCameraFormat(device, []);
+  const format = useCameraFormat(device, [{fps: 60}, {photoHdr: true}]);
 
-  const timeoutRef = useRef<any>(null);
-  const timeIntervalRef = useRef<any>(null);
+  // Refs cho việc quay video
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // State quản lý media và trạng thái quay
   const [photo, setPhoto] = useState<string | null>(null);
+  const [mediaType, setMediaType] = useState<'image' | 'video' | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [timeRecording, setTimeRecording] = useState(0);
-  const [type, setType] = useState<string | null>(null);
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(device?.minZoom ?? 1);
 
-  const handleSwitchCamera = () => {
-    hapticFeedback();
-    startRotation();
+  // Reset zoom khi device thay đổi
+  useEffect(() => {
+    setZoom(device?.minZoom ?? 1);
+  }, [device]);
+
+  // --- Camera Action Handlers (Callbacks cho các component con) ---
+
+  const handleSwitchCamera = useCallback(() => {
+    // startRotation() sẽ được gọi trong CameraControls
     dispatch(
       setCameraSettings({
         cameraId: cameraSettings.cameraId === 'front' ? 'back' : 'front',
       }),
     );
-    // Reset zoom khi chuyển camera
-    setZoom(1);
-    scaleRef.current = 1;
-    lastScaleRef.current = 1;
-  };
+    // Zoom sẽ tự reset trong useEffect [device]
+  }, [dispatch, cameraSettings]);
 
-  const handleFlash = () => {
-    hapticFeedback();
+  const handleFlashToggle = useCallback(() => {
     dispatch(
       setCameraSettings({
         flash: !cameraSettings?.flash,
       }),
     );
-  };
+  }, [dispatch, cameraSettings]);
 
-  const handleTakePicture = () => {
-    hapticFeedback();
-    if (camera.current) {
-      camera.current
-        .takePhoto({
-          flash: cameraSettings.flash ? 'on' : 'off',
-        })
-        .then((data: {path: string}) => {
-          setPhoto('file://' + data?.path);
-          setType('image');
-        });
+  const handleTakePicture = useCallback(() => {
+    if (!cameraRef.current || !isCameraActive) {
+      return;
     }
-  };
+    console.log('Taking Picture...');
+    cameraRef.current
+      .takePhoto({
+        flash: cameraSettings.flash ? 'on' : 'off',
+      })
+      .then(async data => {
+        console.log('Photo taken:', data.path);
+        const newImage = await resizeImage(data.path);
+        setPhoto(newImage?.uri || '');
+        setMediaType('image');
+      })
+      .catch(error => {
+        console.error('Take photo error:', error);
+        dispatch(
+          setMessage({
+            message: `Error taking photo: ${error.message}`,
+            type: 'error',
+          }),
+        );
+      });
+  }, [cameraRef, cameraSettings, isCameraActive, dispatch]);
 
-  const handleRecordVideo = async () => {
-    hapticFeedback();
-    if (camera.current) {
-      setIsRecording(true);
-      await camera.current.startRecording({
-        videoCodec: 'h264',
+  const handleStartRecord = useCallback(async () => {
+    if (!cameraRef.current || isRecording || !isCameraActive) {
+      return;
+    }
+    console.log('Starting Record...');
+    setIsRecording(true);
+    setTimeRecording(0);
+
+    if (timeIntervalRef.current) {
+      clearInterval(timeIntervalRef.current);
+    }
+    timeIntervalRef.current = setInterval(() => {
+      setTimeRecording(prev => prev + 1);
+    }, 1000);
+
+    // Xóa timeout cũ nếu có
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    // Đặt timeout dừng quay (ví dụ 10 giây)
+    timeoutRef.current = setTimeout(async () => {
+      console.log('Recording timeout');
+      await handleStopRecord();
+    }, 10000);
+
+    try {
+      await cameraRef.current.startRecording({
+        videoCodec: 'h264', // Hoặc 'h265' nếu thiết bị hỗ trợ tốt
         fileType: 'mp4',
         flash: cameraSettings.flash ? 'on' : 'off',
-        onRecordingFinished: (video: {path: string}) => {
+        onRecordingFinished: video => {
+          console.log('onRecordingFinished:', video.path);
+          // Chỉ set photo nếu không phải do lỗi và state isRecording vẫn là true
+          // (để tránh ghi đè nếu stop bị gọi nhiều lần)
+          // Logic này sẽ đơn giản hơn nếu isRecording được set false ở stop
+          // Tạm thời vẫn set ở đây
           setPhoto('file://' + video.path);
-          setType('video');
+          setMediaType('video');
+          setIsRecording(false);
+          setTimeRecording(0);
+          if (timeIntervalRef.current) {
+            clearInterval(timeIntervalRef.current);
+          }
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
         },
-        onRecordingError: (error: any) => {
+        onRecordingError: error => {
+          console.error('onRecordingError:', error);
+          setIsRecording(false); // Dừng nếu lỗi
+          setTimeRecording(0);
+          if (timeIntervalRef.current) {
+            clearInterval(timeIntervalRef.current);
+          }
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
           dispatch(
             setMessage({
-              message: JSON.stringify(error),
-              type: t('error'),
+              message: `Recording error: ${error.message}`,
+              type: 'error',
             }),
           );
         },
       });
-      timeoutRef.current = setTimeout(async () => {
-        await stopRecording();
-        clearTimeout(timeoutRef.current);
-        clearInterval(timeIntervalRef.current);
-        timeoutRef.current = null;
-        timeIntervalRef.current = null;
-      }, 10000);
-      timeIntervalRef.current = setInterval(() => {
-        setTimeRecording(prevTime => prevTime + 1);
-      }, 1000);
-    }
-  };
-
-  const stopRecording = async () => {
-    hapticFeedback();
-    if (camera.current) {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        clearInterval(timeIntervalRef.current);
-        timeoutRef.current = null;
-        timeIntervalRef.current = null;
-      }
-      await camera.current.stopRecording();
+    } catch (e) {
+      console.error('Error calling startRecording:', e);
       setIsRecording(false);
       setTimeRecording(0);
-    }
-  };
-
-  const handleSavePicture = async () => {
-    hapticFeedback();
-    if (photo) {
-      try {
-        const newUri = await CameraRoll.saveAsset(photo, {});
-        console.log('Saved to camera roll:', newUri);
-        dispatch(
-          setMessage({
-            message: `${type?.toUpperCase()} saved to camera roll`,
-            type: 'success',
-          }),
-        );
-      } catch (error: any) {
-        console.error('error saving camera roll', error);
-        dispatch(
-          setMessage({
-            message: `Error saving ${type} to camera roll: ${error.message}`,
-            type: t('error'),
-          }),
-        );
+      if (timeIntervalRef.current) {
+        clearInterval(timeIntervalRef.current);
       }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      dispatch(
+        setMessage({message: `Failed to start recording: ${e}`, type: 'error'}),
+      );
     }
-  };
+  }, [cameraRef, isRecording, cameraSettings, isCameraActive, dispatch]);
 
-  const handleReturnMedia = async () => {
-    hapticFeedback();
-    if (photo) {
-      navigationTo(nav.home, {
-        camera: {
-          uri: photo,
-          type: type,
-        },
-        from: nav.camera,
-      });
+  const handleStopRecord = useCallback(async () => {
+    if (!cameraRef.current || !isRecording) {
+      return;
     }
-  };
-
-  const handleClearMedia = () => {
-    hapticFeedback();
-    if (photo) {
-      setPhoto(null);
-      setType(null);
-      // Reset zoom khi quay lại camera
-      setZoom(1);
-      scaleRef.current = 1;
-      lastScaleRef.current = 1;
-      return true;
+    console.log('Stopping Record...');
+    // Clear các timer ngay lập tức
+    if (timeIntervalRef.current) {
+      clearInterval(timeIntervalRef.current);
     }
-    return false; // Thêm return false nếu không có gì để clear
-  };
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeIntervalRef.current = null;
+    timeoutRef.current = null;
 
-  const rotateAnim = useRef(new Animated.Value(0)).current;
+    try {
+      await cameraRef.current.stopRecording();
+      // onRecordingFinished sẽ được gọi và cập nhật state photo, isRecording,...
+      console.log('stopRecording called successfully');
+    } catch (error: any) {
+      console.error('Stop recording error:', error);
+      // Vẫn reset state nếu stopRecording bị lỗi
+      setIsRecording(false);
+      setTimeRecording(0);
+      dispatch(
+        setMessage({
+          message: `Error stopping recording: ${error.message}`,
+          type: 'error',
+        }),
+      );
+    }
+  }, [cameraRef, isRecording, dispatch]);
 
-  const startRotation = () => {
-    rotateAnim.setValue(0); // Reset animation về 0 trước khi chạy lại
-    Animated.timing(rotateAnim, {
-      toValue: 0.5, // Giá trị 1 sẽ tương ứng với 360 độ
-      duration: 500, // Thời gian quay (ms)
-      useNativeDriver: true, // Tăng hiệu suất
-    }).start();
-  };
-
-  const rotateInterpolate = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'], // Xoay từ 0 đến 360 độ
-  });
-
-  //xử lý sự kiện back
-  const onPinchGestureEvent = (event: any) => {
-    const scale = event.nativeEvent.scale;
-    const newZoom = Math.min(Math.max(lastScaleRef.current * scale, 1), 20);
-    scaleRef.current = newZoom;
+  const handleZoomChange = useCallback((newZoom: number) => {
     setZoom(newZoom);
-  };
+  }, []);
 
-  const onPinchStateChange = (event: any) => {
-    if (event.nativeEvent.state === State.END) {
-      lastScaleRef.current = scaleRef.current;
+  // --- Media Preview Action Handlers ---
+
+  const handleSaveMedia = useCallback(async () => {
+    if (!photo || !mediaType) {
+      return;
     }
-  };
+    hapticFeedback();
+    try {
+      const typeToSave = mediaType === 'image' ? 'photo' : 'video';
+      // Đảm bảo URI có tiền tố file:// nếu cần (CameraRoll thường tự xử lý)
+      const saveUri = photo;
+      await CameraRoll.save(saveUri, {type: typeToSave});
+      dispatch(
+        setMessage({
+          message: `${mediaType.toUpperCase()} saved to gallery`,
+          type: 'success',
+        }),
+      );
+    } catch (error: any) {
+      console.error('Save media error:', error);
+      dispatch(
+        setMessage({
+          message: `Error saving ${mediaType}: ${error.message}`,
+          type: 'error',
+        }),
+      );
+    }
+  }, [photo, mediaType, dispatch]);
 
+  const handleReturnMedia = useCallback(async () => {
+    if (!photo || !mediaType) {
+      return;
+    }
+    hapticFeedback();
+    navigationTo(nav.home, {
+      camera: {uri: photo, type: mediaType},
+      from: nav.camera,
+    });
+  }, [photo, mediaType]);
+
+  const handleClearMedia = useCallback(() => {
+    hapticFeedback();
+    setPhoto(null);
+    setMediaType(null);
+    // Reset zoom khi quay lại camera
+    setZoom(device?.minZoom ?? 1);
+    return true; // Luôn trả về true cho BackHandler
+  }, [device]);
+
+  // --- Back Handler ---
   useEffect(() => {
     const backAction = () => {
-      return handleClearMedia() || false;
+      if (photo) {
+        return handleClearMedia(); // Xử lý back khi đang xem preview
+      }
+      return false; // Cho phép back mặc định nếu đang ở camera
     };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [photo, handleClearMedia]); // Phụ thuộc vào photo và hàm clear
 
-    BackHandler.addEventListener('hardwareBackPress', backAction);
-
-    return () =>
-      BackHandler.removeEventListener('hardwareBackPress', backAction);
-  }, [photo]);
+  // --- Render ---
+  if (!device) {
+    return (
+      <>
+        <Header />
+        <View flex center bg-black>
+          <Text white>Loading Camera...</Text>
+        </View>
+      </>
+    );
+  }
 
   return (
     <>
       <Header />
       <View flex bg-black centerH>
-        <View margin-12 flex-5 center>
-          {photo ? (
-            type === 'image' ? (
-              <Image
-                source={{uri: photo}}
-                style={{
-                  width: screenWidth - 24,
-                  height: screenWidth - 24,
-                  borderRadius: 20,
-                  overflow: 'hidden',
-                }}
-                resizeMode="cover"
-              />
-            ) : (
-              <Video
-                source={{uri: photo}}
-                style={{
-                  width: screenWidth - 24,
-                  height: screenWidth - 24,
-                  borderRadius: 20,
-                  overflow: 'hidden',
-                }}
-                resizeMode="cover"
-              />
-            )
-          ) : (
-            <PinchGestureHandler
-              onGestureEvent={onPinchGestureEvent}
-              onHandlerStateChange={onPinchStateChange}>
-              <View style={{borderRadius: 20, overflow: 'hidden'}}>
-                <Camera
-                  ref={camera}
-                  style={{
-                    width: screenWidth - 24,
-                    height: screenWidth - 24,
-                    aspectRatio: 1,
-                  }}
-                  preview={true}
-                  isActive={true}
-                  photo={true}
-                  video={true}
-                  resizeMode="cover"
-                  device={device}
-                  format={format}
-                  zoom={zoom}
-                />
-              </View>
-            </PinchGestureHandler>
-          )}
+        {/* Phần hiển thị Camera hoặc Preview */}
+        <View flex-5 center marginT-s4>
+          {/* Chiếm phần lớn không gian */}
+          <CameraPreview
+            ref={cameraRef}
+            cameraRef={cameraRef}
+            device={device}
+            format={format}
+            isActive={isCameraActive}
+            zoom={zoom}
+            photoUri={photo}
+            mediaType={mediaType}
+            setZoom={setZoom}
+          />
         </View>
-        <View width={'100%'} flex-2>
+        {/* Phần điều khiển */}
+        <View width={'100%'} flex-2 centerV>
+          {/* Hiển thị timer khi đang quay */}
           {isRecording && (
-            <View center width={'100%'}>
-              <Text white text50BL>
-                {timeRecording < 10 ? `0${timeRecording}` : timeRecording} / 10
-              </Text>
-            </View>
-          )}
-
-          {!photo && (
-            <View
-              centerV
-              width={'100%'}
-              row
-              marginT-12
-              style={{justifyContent: 'space-around'}}
-              backgroundColor={Colors.black}>
-              <TouchableOpacity onPress={handleFlash}>
-                <Icon
-                  assetGroup="icons"
-                  assetName={
-                    cameraSettings?.flash ? 'ic_flash' : 'ic_flash_off'
-                  }
-                  size={24}
-                  tintColor={Colors.grey40}
-                />
-              </TouchableOpacity>
-              <View row center>
-                <TouchableOpacity onPress={handleTakePicture}>
-                  <View
-                    style={{
-                      borderRadius: 99,
-                      borderWidth: 2,
-                      borderColor: Colors.grey40,
-                    }}
-                    padding-5>
-                    <View
-                      width={50}
-                      height={50}
-                      style={{borderRadius: 50}}
-                      bg-grey40
-                    />
-                  </View>
-                </TouchableOpacity>
-
-                <View
-                  style={{
-                    borderTopRightRadius: 99,
-                    borderBottomRightRadius: 99,
-                    marginLeft: -9,
-                    borderLeftWidth: 0,
-                    borderWidth: 2,
-                    borderColor: Colors.grey40,
-                  }}
-                  padding-5>
-                  <TouchableOpacity
-                    onPress={!isRecording ? handleRecordVideo : stopRecording}>
-                    {!isRecording ? (
-                      <View
-                        marginL-8
-                        width={30}
-                        height={30}
-                        style={{
-                          borderRadius: 50,
-                        }}
-                        bg-red40
-                      />
-                    ) : (
-                      <View
-                        marginL-8
-                        width={30}
-                        height={30}
-                        style={{
-                          borderRadius: 50,
-                        }}
-                        center
-                        bg-grey40>
-                        <View width={10} height={10} backgroundColor="black" />
-                      </View>
-                    )}
-                  </TouchableOpacity>
-                </View>
+            <View absT centerH marginT-s2 style={{zIndex: 1, width: '100%'}}>
+              <View bg-red40 br10 paddingH-s1 paddingV-xs>
+                <Text white text60>
+                  {timeRecording < 10 ? `0${timeRecording}` : timeRecording}s
+                </Text>
               </View>
-
-              <TouchableOpacity onPress={handleSwitchCamera}>
-                <Animated.View
-                  style={{transform: [{rotate: rotateInterpolate}]}}>
-                  <Icon
-                    assetGroup="icons"
-                    assetName="ic_camera_rotate"
-                    size={24}
-                    tintColor={Colors.grey40}
-                  />
-                </Animated.View>
-              </TouchableOpacity>
             </View>
           )}
-
-          {photo && (
-            <View
-              centerV
-              width={'100%'}
-              row
-              spread
-              marginT-12
-              style={{justifyContent: 'space-around'}}
-              backgroundColor={Colors.transparent}>
-              <TouchableOpacity onPress={handleClearMedia}>
-                <Icon
-                  assetGroup="icons"
-                  assetName="ic_cancel"
-                  size={24}
-                  margin-12
-                  tintColor={Colors.grey40}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleReturnMedia}>
-                <View
-                  style={{
-                    borderRadius: 99,
-                    borderWidth: 2,
-                    borderColor: Colors.grey40,
-                  }}
-                  padding-10
-                  bg-black>
-                  <View
-                    bg-grey40
-                    width={50}
-                    height={50}
-                    style={{
-                      borderRadius: 50,
-                    }}
-                    center>
-                    <Icon
-                      assetGroup="icons"
-                      assetName="ic_check"
-                      size={25}
-                      tintColor={Colors.black}
-                    />
-                  </View>
-                </View>
-              </TouchableOpacity>
-
-              <Card backgroundColor={Colors.black}>
-                <TouchableOpacity onPress={handleSavePicture}>
-                  <Icon
-                    assetGroup="icons"
-                    assetName="ic_save"
-                    size={24}
-                    margin-12
-                    tintColor={Colors.grey40}
-                  />
-                </TouchableOpacity>
-              </Card>
-            </View>
+          {/* Chọn bộ điều khiển phù hợp */}
+          {!photo ? (
+            <CameraControls
+              isRecording={isRecording}
+              flashEnabled={!!cameraSettings?.flash}
+              zoom={zoom}
+              minZoom={device.minZoom ?? 1}
+              maxZoom={device.maxZoom ?? 10}
+              onFlashToggle={handleFlashToggle}
+              onSwitchCamera={handleSwitchCamera}
+              onTakePicture={handleTakePicture}
+              onStartRecord={handleStartRecord}
+              onStopRecord={handleStopRecord}
+              onZoomChange={handleZoomChange}
+            />
+          ) : (
+            <MediaPreviewControls
+              onClearMedia={handleClearMedia}
+              onReturnMedia={handleReturnMedia}
+              onSaveMedia={handleSaveMedia}
+            />
           )}
         </View>
       </View>
