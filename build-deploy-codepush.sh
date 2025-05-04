@@ -6,10 +6,11 @@ set -e
 # Xử lý khi nhấn Ctrl + C
 trap "echo -e '\n❌ Quá trình đã bị hủy!'; exit 1" SIGINT
 
+default_version=$(node -p "require('./package.json').version")
+
 # Yêu cầu nhập target version nếu chưa có
-if [ -z "$TARGET_VERSION" ]; then
-    read -p "🔹 Nhập phiên bản mục tiêu (dùng dấu phẩy hoặc dấu gạch ngang): " TARGET_VERSION
-fi
+read -p "Nhập phiên bản CodePush (nhấn Enter để dùng $default_version): " TARGET_VERSION
+TARGET_VERSION=${TARGET_VERSION:-$default_version}
 
 # Yêu cầu nhập description nếu chưa có
 echo "📝 Nhập mô tả phiên bản (nhấn Enter xuống dòng, Ctrl+D để kết thúc):"
