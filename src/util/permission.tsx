@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable curly */
 import {PermissionsAndroid, Platform} from 'react-native';
 import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {Camera} from 'react-native-vision-camera';
@@ -6,39 +6,37 @@ import {Camera} from 'react-native-vision-camera';
 export const requestMediaPermission = async (): Promise<boolean> => {
   try {
     if (Platform.OS === 'android') {
-      if (Platform.Version >= 33) {
-        // Android 13 (API level 33) trở lên
+      const sdk = Platform.Version;
+
+      if (sdk >= 33) {
+        // Android 13+
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
         );
-
-        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-          return false;
-        }
-      } else if (Platform.Version >= 13) {
-        // Android từ 13 đến 32
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } else if (sdk >= 30) {
+        // Android 11–12
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
         );
-
-        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-          return false;
-        }
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
       }
-      // Android < 13 không cần xin quyền
+      // Android < 11 (API 30) không cần quyền hoặc xử lý tùy app
     }
-    // iOS và các platform khác không cần yêu cầu quyền media
+
+    // iOS hoặc platform khác
     return true;
   } catch (err) {
-    console.warn(err);
-    return false; // Trả về false nếu có lỗi xảy ra
+    console.warn('requestMediaPermission error:', err);
+    return false;
   }
 };
 
 export const requestCameraPermission = async (): Promise<boolean> => {
   try {
     if (Platform.OS === 'android') {
-      // Yêu cầu quyền cho Android
+      const sdk = Platform.Version;
+
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.CAMERA,
         {
@@ -54,23 +52,20 @@ export const requestCameraPermission = async (): Promise<boolean> => {
         PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
       );
 
-      // = await PermissionsAndroid.request(
-      //   PermissionsAndroid.PERMISSIONS.MANAGE_EXTERNAL_STORAGE,
-      // );
-      console.log('sdk: ' + Platform.Version);
-      let manager_file;
-      if (Platform.Version >= 33) {
-        manager_file = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
-        );
-      } else if (Platform.Version >= 30) {
-        manager_file = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.MANAGE_EXTERNAL_STORAGE,
-        );
+      let filePermission: any | null = null;
+
+      if (sdk >= 33) {
+        filePermission = PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES;
+      } else if (sdk >= 30) {
+        // Kiểm tra xem permission có tồn tại trước khi gọi
+        filePermission = PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
       } else {
-        manager_file = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-        );
+        filePermission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+      }
+
+      if (filePermission) {
+        const grantedFile = await PermissionsAndroid.request(filePermission);
+        console.log('File permission granted:', grantedFile);
       }
 
       if (
@@ -79,27 +74,18 @@ export const requestCameraPermission = async (): Promise<boolean> => {
       ) {
         return true;
       } else {
-        console.log('Camera permission denied');
+        console.log('Camera or mic permission denied');
         return false;
       }
     } else if (Platform.OS === 'ios') {
-      // Yêu cầu quyền cho iOS
       const cameraStatus = await check(PERMISSIONS.IOS.CAMERA);
+      if (cameraStatus === RESULTS.GRANTED) return true;
 
-      if (cameraStatus === RESULTS.GRANTED) {
-        return true;
-      } else {
-        const requestStatus = await request(PERMISSIONS.IOS.CAMERA);
-        if (requestStatus === RESULTS.GRANTED) {
-          return true;
-        }
-        console.log('Camera permission denied after request');
-        return false;
-      }
-    } else {
-      console.log('Not Android or IOS');
-      return false;
+      const requestStatus = await request(PERMISSIONS.IOS.CAMERA);
+      return requestStatus === RESULTS.GRANTED;
     }
+
+    return false;
   } catch (error) {
     console.error('Error requesting camera permission:', error);
     return false;
