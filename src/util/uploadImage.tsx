@@ -111,7 +111,7 @@ export const resizeImage = async (
   const inputPath = uri.replace('file://', '');
   const outputPath = `${RNFS.CachesDirectoryPath}/resized_${Date.now()}.jpg`;
 
-  const ffmpegCommand = `-y -i "${inputPath}" -vf "crop=in_w:in_w:0:(in_h-in_w)/2,scale=1020:1020" -q:v 5 "${outputPath}"`;
+  const ffmpegCommand = `-y -i "${inputPath}" -vf "crop='if(gt(in_w\,in_h)\,in_h\,in_w)':'if(gt(in_w\,in_h)\,in_h\,in_w)':(in_w-if(gt(in_w\\,in_h)\\,in_h\\,in_w))/2:(in_h-if(gt(in_w\\,in_h)\\,in_h\\,in_w))/2,scale=1020:1020" -q:v 5 "${outputPath}"`;
 
   const session = await FFmpegKit.execute(ffmpegCommand);
   const returnCode = await session.getReturnCode();

@@ -103,7 +103,10 @@ function CameraScreen() {
     console.log('Taking Picture...');
     cameraRef.current
       .takePhoto({
-        flash: cameraSettings.flash ? 'on' : 'off',
+        flash:
+          cameraSettings.flash && cameraSettings.cameraId === 'back'
+            ? 'on'
+            : 'off',
       })
       .then(async data => {
         console.log('Photo taken:', data.path);
@@ -149,7 +152,7 @@ function CameraScreen() {
 
     try {
       await cameraRef.current.startRecording({
-        videoCodec: 'h264', // Hoặc 'h265' nếu thiết bị hỗ trợ tốt
+        videoCodec: 'h265', // Hoặc 'h265' nếu thiết bị hỗ trợ tốt
         fileType: 'mp4',
         flash: cameraSettings.flash ? 'on' : 'off',
         onRecordingFinished: video => {

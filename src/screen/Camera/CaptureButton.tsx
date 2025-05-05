@@ -151,8 +151,8 @@ const CaptureButton: React.FC<CaptureButtonProps> = ({
               }}>
               <View // Chấm/Hình vuông bên trong
                 style={{
-                  width: 50,
-                  height: 50,
+                  width: isRecording ? 30 : 50,
+                  height: isRecording ? 30 : 50,
                   borderRadius: isRecording ? 8 : 25, // Chuyển sang vuông khi quay
                   backgroundColor: isRecording ? Colors.red40 : Colors.white, // Đổi màu
                 }}

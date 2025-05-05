@@ -1,5 +1,5 @@
 import './src/config';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {View} from 'react-native-ui-lib';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {StatusBar} from 'react-native';
@@ -11,14 +11,9 @@ import {persistor, store} from './src/redux/store';
 import CodePush from 'react-native-code-push';
 import {NotificationService} from './src/services/Notification';
 import {CODEPUSH_DEPLOYMENTKEY} from './src/util/codepush';
-import {clearAppCache} from './src/util/uploadImage';
 import {LanguageService} from './src/services/Language';
 
 const App = () => {
-  useEffect(() => {
-    clearAppCache();
-  }, []);
-
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor} loading={null}>

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, {forwardRef, useRef, useState} from 'react';
 import {View, Image as RNUIImage, Colors} from 'react-native-ui-lib'; // Đổi tên Image của ui-lib
-import {StyleSheet, Dimensions, Animated} from 'react-native';
+import {StyleSheet, Dimensions, Animated, Platform} from 'react-native';
 import {Camera, CameraProps} from 'react-native-vision-camera';
 import Video from 'react-native-video';
 import {
@@ -151,6 +151,13 @@ const CameraPreview = forwardRef<Camera, CameraPreviewProps>(
     };
 
     const renderContent = () => {
+      const getSafeUri = (uri: string) => {
+        if (Platform.OS === 'android' && uri.startsWith('file://')) {
+          return uri.replace('file://', '');
+        }
+        return uri;
+      };
+
       if (photoUri) {
         if (mediaType === 'image') {
           return (
@@ -163,7 +170,7 @@ const CameraPreview = forwardRef<Camera, CameraPreviewProps>(
         } else {
           return (
             <Video
-              source={{uri: photoUri}}
+              source={{uri: getSafeUri(photoUri)}}
               style={styles.mediaStyle}
               resizeMode="cover"
               repeat={true}
