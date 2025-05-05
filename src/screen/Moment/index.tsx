@@ -95,6 +95,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
           userId: user?.localId || '',
           token: user?.idToken || '',
           timestamp: posts[posts?.length - 1]?.date,
+          byUserId: filterFriendShow?.uid,
           isLoadMore: true,
         }),
       );

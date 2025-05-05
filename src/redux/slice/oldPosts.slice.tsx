@@ -85,7 +85,7 @@ const oldPostsSlice = createSlice({
           (post: {id: string}) => !deletedPosts.includes(post.id),
         );
         state.isLoadPosts = false;
-        savePostsToStorage('posts_' + currentUserId, state.posts.slice(0, 60));
+        savePostsToStorage('posts_' + currentUserId, state.posts);
       })
       .addCase(getOldPosts.rejected, state => {
         state.isLoadPosts = false;

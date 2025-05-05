@@ -8,11 +8,13 @@ import {
 import {setOldPosts} from '../slice/oldPosts.slice';
 import {t} from '../../languages/i18n';
 import {Post} from '../../models/post.model';
+import {cleanObject} from '../../util/cleanObject';
 
 interface DataParam {
   token: string;
   userId: string;
   timestamp?: number | string;
+  byUserId?: string;
   isLoadMore?: boolean;
 }
 
@@ -24,7 +26,7 @@ export const getOldPosts = createAsyncThunk(
     try {
       const oldPosts = await loadPostsFromStorage('posts_' + data.userId);
       thunkApi.dispatch(setOldPosts(oldPosts));
-      const response = await axios.post(urlGetPosts, data);
+      const response = await axios.post(urlGetPosts, cleanObject(data));
       const listOldPosts = response.data.post;
       return {
         post: listOldPosts,
