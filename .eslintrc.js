@@ -15,7 +15,7 @@ module.exports = {
     },
     sourceType: 'module',
   },
-  plugins: ['react-native', 'react', 'react-hooks', 'prettier'],
+  plugins: ['react-native', 'react-hooks', 'prettier'],
   rules: {
     'prettier/prettier': [
       'error',

@@ -31,7 +31,6 @@ const useUserNotificationsAndData = (
       if (user) {
         const now = new Date().getTime();
         const expires = user.timeExpires ? +user.timeExpires : 0;
-
         if (expires < now && user.refreshToken) {
           dispatch(getToken({refreshToken: user.refreshToken}));
         } else if (expires >= now && user.idToken) {

@@ -35,8 +35,18 @@ export const login = createAsyncThunk(
         body,
         {headers: loginHeader},
       );
-      if (response.status < 400) {
+      if (
+        !response.data.result?.status ||
+        response.data?.result?.status < 400
+      ) {
         return response.data;
+      } else {
+        thunkApi.dispatch(
+          setMessage({
+            message: `${response.data.result.status}`,
+            type: t('error'),
+          }),
+        );
       }
     } catch (error: any) {
       if (error?.response) {
@@ -78,8 +88,18 @@ export const loginPhone = createAsyncThunk(
         body,
         {headers: loginHeader},
       );
-      if (response.status < 400) {
+      if (
+        !response.data.result?.status ||
+        response.data?.result?.status < 400
+      ) {
         return response.data;
+      } else {
+        thunkApi.dispatch(
+          setMessage({
+            message: `${response.data.result.status}`,
+            type: t('error'),
+          }),
+        );
       }
     } catch (error: any) {
       if (error?.response) {
