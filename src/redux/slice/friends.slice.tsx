@@ -22,7 +22,10 @@ const friendsSlice = createSlice({
   reducers: {
     setFriends(state, action: PayloadAction<Friend[]>) {
       state.friends = action.payload;
-      state.isLoadFriends = true;
+      state.isLoadFriends = false;
+      state.selected = [];
+      state.customListFriends = [];
+      state.optionSend = 'manual';
     },
 
     setIsLoadFriend(state, action: PayloadAction<boolean>) {

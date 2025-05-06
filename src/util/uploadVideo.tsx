@@ -16,6 +16,7 @@ import {uploadLogToServer} from '../api/error.api';
 import {getTrySoftwareEncode} from './migrateOldPersist';
 import {getDeviceInfo} from './deviceInfo';
 import {t} from '../languages/i18n';
+import {resizeImage} from './uploadImage';
 
 export type VideoInfo = {
   extension: string;
@@ -517,7 +518,7 @@ export const getVideoThumbnail = async (
   const formattedTime = timestamp.toFixed(2);
 
   // Tạo thumbnail bằng FFmpeg
-  const ffmpegCmd = `-y -ss ${formattedTime} -i "${filePath}" -frames:v 1 -q:v 2 "${outputPath}"`;
+  const ffmpegCmd = `-y -ss ${formattedTime} -i "${filePath}" -vf "crop='min(in_w\\,in_h)':'min(in_w\\,in_h)':(in_w-min(in_w\\,in_h))/2:(in_h-min(in_w\\,in_h))/2" -frames:v 1 -q:v 2 "${outputPath}"`;
   const session = await FFmpegKit.execute(ffmpegCmd);
   const returnCode = await session.getReturnCode();
 

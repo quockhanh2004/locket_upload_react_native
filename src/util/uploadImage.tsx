@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import axios, {AxiosProgressEvent} from 'axios';
 import {uploadHeaders} from './header';
 import RNFS from 'react-native-fs';

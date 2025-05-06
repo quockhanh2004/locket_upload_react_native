@@ -19,6 +19,7 @@ import {
   TouchableOpacity,
   Icon,
   Colors,
+  Text,
 } from 'react-native-ui-lib';
 
 // Redux Imports
@@ -298,11 +299,29 @@ const HomeScreen = () => {
     <View flex bg-black padding-12>
       {/* Header */}
       <View row spread centerV>
-        <Avatar
-          source={{uri: userInfo?.photoUrl || undefined}}
-          size={36}
-          onPress={handleViewProfile}
-        />
+        {userInfo?.photoUrl ? (
+          <Avatar
+            source={{uri: userInfo?.photoUrl || undefined}}
+            size={36}
+            onPress={handleViewProfile}
+          />
+        ) : (
+          <TouchableOpacity
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 18,
+              backgroundColor: Colors.grey40,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={handleViewProfile}>
+            <Text white text80BL>
+              {userInfo?.firstName?.at(0)}
+              {userInfo?.lastName?.at(0)}
+            </Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity onPress={handleViewPost}>
           <View
             padding-8

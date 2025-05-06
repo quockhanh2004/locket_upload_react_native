@@ -2,7 +2,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useMemo} from 'react';
 import {Modal, FlatList, Dimensions} from 'react-native';
-import {TouchableOpacity, Text, View, Image} from 'react-native-ui-lib';
+import {TouchableOpacity, Text, View, Image, Colors} from 'react-native-ui-lib';
 import {Friend} from '../../models/friend.model';
 import {User} from '../../models/user.model';
 import {t} from '../../languages/i18n';
@@ -78,6 +78,23 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
               marginRight: 12,
             }}
           />
+        ) : item.uid === 'all' ? (
+          <View
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 18,
+              backgroundColor: '#555',
+              marginRight: 12,
+            }}
+            center>
+            <Image
+              assetName="ic_group"
+              width={22}
+              height={22}
+              tintColor={Colors.grey80}
+            />
+          </View>
         ) : (
           <View
             style={{
@@ -87,7 +104,12 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
               backgroundColor: '#555',
               marginRight: 12,
             }}
-          />
+            center>
+            <Text text80BL white>
+              {item.first_name?.at(0)}
+              {item.last_name?.at(0)}
+            </Text>
+          </View>
         )}
         <Text
           style={{

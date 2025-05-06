@@ -11,9 +11,10 @@ import {
 } from 'react-native-ui-lib';
 import {converTime} from '../util/convertTime';
 import {t} from '../languages/i18n';
+import {User} from '../models/user.model';
 
 interface UserInfoProps {
-  dataUser: any;
+  dataUser: User | null | undefined;
   updateAvatarLoading: boolean;
   handleUpdateAvatar: () => void;
   handleEditName: () => void;
@@ -38,12 +39,28 @@ const UserInfo: React.FC<UserInfoProps> = ({
   return (
     <View center>
       {!updateAvatarLoading ? (
-        <Avatar
-          source={{uri: dataUser?.photoUrl}}
-          size={100}
-          onPress={handleUpdateAvatar}
-          animate
-        />
+        dataUser?.photoUrl ? (
+          <Avatar
+            source={{uri: dataUser?.photoUrl}}
+            size={100}
+            onPress={handleUpdateAvatar}
+            animate
+          />
+        ) : (
+          <View
+            style={{
+              width: 100,
+              height: 100,
+              borderRadius: 50,
+              backgroundColor: Colors.grey40,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Text text30BL white>{`${dataUser?.firstName?.at(
+              0,
+            )}${dataUser.lastName?.at(0)}`}</Text>
+          </View>
+        )
       ) : (
         <LoaderScreen color={Colors.white} size={'large'} />
       )}
@@ -66,7 +83,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
         {dataUser?.email}
       </Text>
       <Text text70BL color={Colors.white} marginT-10>
-        {t('invate_to_locket')} {converTime(dataUser?.createdAt)}
+        {t('invate_to_locket')} {converTime(dataUser?.createdAt || '0')}
       </Text>
     </View>
   );
