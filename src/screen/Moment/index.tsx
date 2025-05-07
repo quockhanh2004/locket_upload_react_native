@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useRef, useState, useEffect, useCallback, useMemo} from 'react';
 import {
   Dimensions,
@@ -48,6 +49,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
 
   const listPostByFilter = useMemo(() => {
     if (!filterFriendShow) {
+      handleLoadMore();
       return posts;
     }
     return posts.filter(p => p.user === filterFriendShow?.uid);
@@ -94,7 +96,8 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         getOldPosts({
           userId: user?.localId || '',
           token: user?.idToken || '',
-          timestamp: posts[posts?.length - 1]?.date,
+          timestamp:
+            posts[posts?.length - 1]?.date || new Date().getTime() / 1000,
           byUserId: filterFriendShow?.uid,
           isLoadMore: true,
         }),

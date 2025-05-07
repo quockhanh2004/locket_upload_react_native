@@ -35,6 +35,8 @@ const ItemStandard: React.FC<ItemStandardProps> = ({
           cursorColor={Colors.primary}
           style={{...Typography.text70BL}}
           onChangeText={onChangeText}
+          multiline
+          numberOfLines={4}
           value={caption}
         />
       </LinearGradient>
