@@ -18,6 +18,7 @@ interface HeaderProps {
   leftIconAction?: () => void;
 
   //custom component
+  backgroundColor?: string;
   customCenter?: React.ReactNode;
 }
 
@@ -25,6 +26,7 @@ const Header = ({
   title,
   customCenter,
   rightIcon,
+  backgroundColor,
   rightIconAction,
   leftIconAction,
 }: HeaderProps) => {
@@ -38,7 +40,14 @@ const Header = ({
   };
 
   return (
-    <View bg-black row spread paddingH-20 paddingT-20 centerV>
+    <View
+      bg-black
+      row
+      spread
+      paddingH-20
+      paddingT-20
+      centerV
+      backgroundColor={backgroundColor}>
       <TouchableOpacity onPress={handleBack}>
         <Icon
           assetGroup="icons"

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useRef, useState, useEffect, useCallback, useMemo} from 'react';
 import {
@@ -7,6 +8,7 @@ import {
   Modal,
   InteractionManager,
   RefreshControl,
+  ImageBackground,
 } from 'react-native';
 import {View, GridList} from 'react-native-ui-lib';
 import {useDispatch} from 'react-redux';
@@ -47,11 +49,26 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   const [selectedIndexInModal, setSelectedIndexInModal] =
     useState<number>(initialIndex);
 
+  const handleLoadMore = () => {
+    if (!isLoadPosts) {
+      dispatch(
+        getOldPosts({
+          userId: user?.localId || '',
+          token: user?.idToken || '',
+          timestamp:
+            posts[posts?.length - 1]?.date || new Date().getTime() / 1000,
+          byUserId: filterFriendShow?.uid,
+          isLoadMore: true,
+        }),
+      );
+    }
+  };
+
   const listPostByFilter = useMemo(() => {
     if (!filterFriendShow) {
-      handleLoadMore();
       return posts;
     }
+    handleLoadMore();
     return posts.filter(p => p.user === filterFriendShow?.uid);
   }, [posts, filterFriendShow]);
 
@@ -88,21 +105,6 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         timestamp: new Date().getTime() / 1000,
       }),
     );
-  };
-
-  const handleLoadMore = () => {
-    if (!isLoadPosts) {
-      dispatch(
-        getOldPosts({
-          userId: user?.localId || '',
-          token: user?.idToken || '',
-          timestamp:
-            posts[posts?.length - 1]?.date || new Date().getTime() / 1000,
-          byUserId: filterFriendShow?.uid,
-          isLoadMore: true,
-        }),
-      );
-    }
   };
 
   const handleReaction = (emoji: string) => {
@@ -236,7 +238,14 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         onRequestClose={handleBackPress}
         animationType="slide"
         transparent={false}>
-        <View flex bg-black>
+        <ImageBackground
+          style={{
+            flex: 1,
+            overflow: 'hidden',
+            backgroundColor: 'black',
+          }}
+          blurRadius={50}
+          source={{uri: listPostByFilter[selectedIndexInModal]?.thumbnail_url}}>
           <PostList
             ref={flatListRef}
             isLoadPosts={isLoadPosts}
@@ -256,7 +265,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
           <AnimatedEmojiPicker
             isMyMoment={
               listPostByFilter[selectedIndexInModal]?.user === user?.localId
-                ? listPostByFilter[selectedIndexInModal].canonical_uid
+                ? listPostByFilter[selectedIndexInModal]?.canonical_uid
                 : null
             }
             isFocusReaction={isFocusReaction}
@@ -277,7 +286,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
               setFilterFriendShow={setFilterFriendShow}
             />
           </View>
-        </View>
+        </ImageBackground>
       </Modal>
     </View>
   );

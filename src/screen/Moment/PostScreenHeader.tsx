@@ -2,6 +2,7 @@ import React from 'react';
 import {Friend} from '../../models/friend.model';
 import Header from '../../components/Header';
 import FriendPicker from './FriendPicker';
+import {Colors} from 'react-native-ui-lib';
 
 interface PostScreenHeaderProps {
   friends: Friend[];
@@ -26,6 +27,7 @@ const PostScreenHeader: React.FC<PostScreenHeaderProps> = ({
           value={filterFriendShow}
         />
       }
+      backgroundColor={Colors.transparent}
     />
   );
 };

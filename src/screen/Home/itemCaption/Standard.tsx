@@ -36,7 +36,6 @@ const ItemStandard: React.FC<ItemStandardProps> = ({
           style={{...Typography.text70BL}}
           onChangeText={onChangeText}
           multiline
-          numberOfLines={4}
           value={caption}
         />
       </LinearGradient>
