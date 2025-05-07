@@ -246,45 +246,51 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
           }}
           blurRadius={50}
           source={{uri: listPostByFilter[selectedIndexInModal]?.thumbnail_url}}>
-          <PostList
-            ref={flatListRef}
-            isLoadPosts={isLoadPosts}
-            listPostByFilter={listPostByFilter}
-            handleRefresh={handleRefresh}
-            handleLoadMore={handleLoadMore}
-            selectedIndexInModal={selectedIndexInModal}
-            filterFriends={filterFriends}
-            filterFriendShow={filterFriendShow}
-            setFilterFriendShow={setFilterFriendShow}
-            friends={friends}
-            user={user}
-            screenHeight={screenHeight}
-            onViewableItemsChangedInModal={onViewableItemsChangedInModal}
-            viewabilityConfig={viewabilityConfig}
-          />
-          <AnimatedEmojiPicker
-            isMyMoment={
-              listPostByFilter[selectedIndexInModal]?.user === user?.localId
-                ? listPostByFilter[selectedIndexInModal]?.canonical_uid
-                : null
-            }
-            isFocusReaction={isFocusReaction}
-            setIsFocusReaction={setIsFocusReaction}
-            onEmojiSelected={handleReaction}
-            onSendMessage={handleSendMessage}
-          />
-          <AnimatedButtons
-            isFocusReaction={isFocusReaction}
-            handleRefresh={handleRefresh}
-            viewAll={viewAll}
-          />
-          <View absT width={screenWidth}>
-            <PostScreenHeader
-              friends={friends}
-              user={user}
+          <View
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.6)', // chỉnh độ tối ở đây
+              flex: 1,
+            }}>
+            <PostList
+              ref={flatListRef}
+              isLoadPosts={isLoadPosts}
+              listPostByFilter={listPostByFilter}
+              handleRefresh={handleRefresh}
+              handleLoadMore={handleLoadMore}
+              selectedIndexInModal={selectedIndexInModal}
+              filterFriends={filterFriends}
               filterFriendShow={filterFriendShow}
               setFilterFriendShow={setFilterFriendShow}
+              friends={friends}
+              user={user}
+              screenHeight={screenHeight}
+              onViewableItemsChangedInModal={onViewableItemsChangedInModal}
+              viewabilityConfig={viewabilityConfig}
             />
+            <AnimatedEmojiPicker
+              isMyMoment={
+                listPostByFilter[selectedIndexInModal]?.user === user?.localId
+                  ? listPostByFilter[selectedIndexInModal]?.canonical_uid
+                  : null
+              }
+              isFocusReaction={isFocusReaction}
+              setIsFocusReaction={setIsFocusReaction}
+              onEmojiSelected={handleReaction}
+              onSendMessage={handleSendMessage}
+            />
+            <AnimatedButtons
+              isFocusReaction={isFocusReaction}
+              handleRefresh={handleRefresh}
+              viewAll={viewAll}
+            />
+            <View absT width={screenWidth}>
+              <PostScreenHeader
+                friends={friends}
+                user={user}
+                filterFriendShow={filterFriendShow}
+                setFilterFriendShow={setFilterFriendShow}
+              />
+            </View>
           </View>
         </ImageBackground>
       </Modal>
