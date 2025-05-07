@@ -518,7 +518,7 @@ export const getVideoThumbnail = async (
   const formattedTime = timestamp.toFixed(2);
 
   // Tạo thumbnail bằng FFmpeg
-  const ffmpegCmd = `-y -ss ${formattedTime} -i "${filePath}" -vf "crop='min(in_w\\,in_h)':'min(in_w\\,in_h)':(in_w-min(in_w\\,in_h))/2:(in_h-min(in_w\\,in_h))/2" -frames:v 1 -q:v 2 "${outputPath}"`;
+  const ffmpegCmd = `-y -ss ${formattedTime} -i "${filePath}" -frames:v 1 -q:v 2 "${outputPath}"`;
   const session = await FFmpegKit.execute(ffmpegCmd);
   const returnCode = await session.getReturnCode();
 
@@ -526,7 +526,9 @@ export const getVideoThumbnail = async (
     throw new Error(t('error_create_thumbnail'));
   }
 
-  return {path: `file://${outputPath}`};
+  const thumbnail = await resizeImage(outputPath);
+
+  return {path: thumbnail?.uri || `file://${outputPath}`};
 };
 
 export const getMd5Hash = (str: string) => {
