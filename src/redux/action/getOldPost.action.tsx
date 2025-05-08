@@ -9,6 +9,7 @@ import {setOldPosts} from '../slice/oldPosts.slice';
 import {t} from '../../languages/i18n';
 import {Post} from '../../models/post.model';
 import {cleanObject} from '../../util/cleanObject';
+import {MY_SERVER_URL} from '../../util/header';
 
 interface DataParam {
   token: string;
@@ -18,15 +19,16 @@ interface DataParam {
   isLoadMore?: boolean;
 }
 
-const urlGetPosts = 'https://locket.quockhanh020924.id.vn/posts';
-
 export const getOldPosts = createAsyncThunk(
   'getListOldPost',
   async (data: DataParam, thunkApi) => {
     try {
       const oldPosts = await loadPostsFromStorage('posts_' + data.userId);
       thunkApi.dispatch(setOldPosts(oldPosts));
-      const response = await axios.post(urlGetPosts, cleanObject(data));
+      const response = await axios.post(
+        `${MY_SERVER_URL}/posts`,
+        cleanObject(data),
+      );
       const listOldPosts = response.data.post;
       return {
         post: listOldPosts,
@@ -66,7 +68,7 @@ export const getReaction = createAsyncThunk(
   async (data: {momentId: string; token: string}, thunkApi) => {
     try {
       const response = await axios.post(
-        `${urlGetPosts}/${data.momentId}`,
+        `${MY_SERVER_URL}/posts/${data.momentId}`,
         {
           token: data.token,
         },

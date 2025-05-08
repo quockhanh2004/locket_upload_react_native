@@ -8,4 +8,6 @@ export const nav = {
   camera: 'camera',
   posts: 'posts',
   selectIcon: 'selectIcon',
+  chatList: 'chatList',
+  chat: 'chat',
 };

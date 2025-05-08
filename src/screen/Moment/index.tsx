@@ -68,7 +68,6 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
     if (!filterFriendShow) {
       return posts;
     }
-    handleLoadMore();
     return posts.filter(p => p.user === filterFriendShow?.uid);
   }, [posts, filterFriendShow]);
 
@@ -195,6 +194,12 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
     },
     [],
   );
+
+  useEffect(() => {
+    if (filterFriendShow) {
+      handleLoadMore();
+    }
+  }, [filterFriendShow]);
 
   const viewabilityConfig = useRef({
     itemVisiblePercentThreshold: 50,

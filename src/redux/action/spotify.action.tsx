@@ -4,6 +4,7 @@ import axios from 'axios';
 import {parseSpotifyTrack} from '../../services/Spotify';
 import {clearTokenData} from '../slice/spotify.slice';
 import {t} from '../../languages/i18n';
+import {MY_SERVER_URL} from '../../util/header';
 
 interface DataParam {
   code?: string | null;
@@ -15,7 +16,7 @@ export const getAccessToken = createAsyncThunk(
     try {
       const {code} = data;
       const response = await axios.post(
-        'https://locket.quockhanh020924.id.vn/spotify/exchange-code',
+        `${MY_SERVER_URL}/spotify/exchange-code`,
         {
           code,
         },
@@ -43,12 +44,9 @@ export const refreshAccessToken = createAsyncThunk(
   async (data: RefreshTokenParam, thunkApi) => {
     try {
       const {refreshToken} = data;
-      const response = await axios.post(
-        'https://locket.quockhanh020924.id.vn/spotify/refresh',
-        {
-          refresh_token: refreshToken,
-        },
-      );
+      const response = await axios.post(`${MY_SERVER_URL}/spotify/refresh`, {
+        refresh_token: refreshToken,
+      });
       return response.data;
     } catch (error: any) {
       console.error('Error refreshing Spotify access token', error);

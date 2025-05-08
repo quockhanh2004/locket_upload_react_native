@@ -194,7 +194,7 @@ const HomeScreen = () => {
 
   const handleViewPost = () => {
     hapticFeedback();
-    navigationTo(nav.posts);
+    navigationTo(nav.chat);
   };
 
   const handleSelectMedia = async () => {
@@ -211,6 +211,7 @@ const HomeScreen = () => {
   };
 
   const handleViewProfile = () => {
+    hapticFeedback();
     navigationTo(nav.accountInfo);
   };
 
