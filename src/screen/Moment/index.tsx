@@ -68,9 +68,14 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
     if (!filterFriendShow) {
       return posts;
     }
-    handleLoadMore();
     return posts.filter(p => p.user === filterFriendShow?.uid);
   }, [posts, filterFriendShow]);
+
+  useEffect(() => {
+    if (filterFriendShow) {
+      handleLoadMore();
+    }
+  }, [filterFriendShow]);
 
   const flatListRef = useRef<FlatList>(null);
 
