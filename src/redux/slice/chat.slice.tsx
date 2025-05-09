@@ -2,10 +2,9 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {ListChatType} from '../../models/chat.model';
 
 interface InitialState {
-  listChat: any[];
+  listChat: ListChatType[];
   isLoadChat: boolean;
   isSending: boolean;
-  chat: any[];
 }
 
 const chatSlice = createSlice({
@@ -28,7 +27,9 @@ const chatSlice = createSlice({
       }
 
       // sort nếu cần
-      state.listChat.sort((a, b) => b.timestamp - a.timestamp);
+      state.listChat.sort(
+        (a, b) => parseInt(b.create_time, 10) - parseInt(a.create_time, 10),
+      );
     },
 
     setItemListChat(state, action: PayloadAction<ListChatType>) {
@@ -67,18 +68,9 @@ const chatSlice = createSlice({
     setIsSending(state, action: PayloadAction<boolean>) {
       state.isSending = action.payload;
     },
-
-    setChat(state, action: PayloadAction<any[]>) {
-      state.chat = action.payload;
-    },
   },
 });
 
-export const {
-  setListChat,
-  setItemListChat,
-  setIsLoadChat,
-  setIsSending,
-  setChat,
-} = chatSlice.actions;
+export const {setListChat, setItemListChat, setIsLoadChat, setIsSending} =
+  chatSlice.actions;
 export const chatReducer = chatSlice.reducer;

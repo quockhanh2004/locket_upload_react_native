@@ -1,88 +1,70 @@
 import {useEffect, useRef, useState} from 'react';
-import {io, Socket} from 'socket.io-client';
-import {SocketEvents} from '../../../models/chat.model';
-import {MY_SERVER_URL} from '../../../util/constrain';
+import {Socket} from 'socket.io-client';
+import {getSocket} from '../../../services/Chat';
 
 interface UseSocketEventProps {
-  event: string;
   eventListen: string;
   token: string;
-  initData?: any;
-  debounceTime?: number; // Thời gian debounce, mặc định 300ms
+  debounceTime?: number; // default: 300ms
 }
 
 export const useSocketEvent = ({
-  event,
-  token,
   eventListen,
-  initData,
+  token,
   debounceTime = 300,
 }: UseSocketEventProps) => {
-  const [data, setData] = useState<any[]>(initData || []);
+  const [data, setData] = useState<any[]>([]);
   const [connected, setConnected] = useState(false);
+
+  const bufferRef = useRef<any[]>([]);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const socketRef = useRef<Socket | null>(null);
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Dùng để giữ timeout ID
 
   useEffect(() => {
-    const socket = io(MY_SERVER_URL, {
-      transports: ['websocket'],
-      secure: true,
-      auth: {
-        access_token: token,
-      },
-      reconnection: true,
-    });
-
+    const socket = getSocket(token);
     socketRef.current = socket;
 
-    socket.on(SocketEvents.CONNECT, () => {
-      setConnected(true);
-      console.log('✅ Socket connected');
-    });
+    const onConnect = () => setConnected(true);
+    const onDisconnect = () => setConnected(false);
 
-    socket.on(SocketEvents.DISCONNECT, () => {
-      setConnected(false);
-      console.log('❌ Socket disconnected');
-    });
+    const onEvent = (incoming: any) => {
+      bufferRef.current = updateBuffer(bufferRef.current, incoming);
 
-    socket.on(SocketEvents.ERROR, err => {
-      console.log('❗ Server error:', err);
-    });
-
-    // Lắng nghe sự kiện cụ thể được yêu cầu
-    socket.on(eventListen, incomingData => {
-      // Nếu có timeout trước đó, hủy nó để không cập nhật quá sớm
-      if (debounceTimeoutRef.current) {
-        clearTimeout(debounceTimeoutRef.current);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
 
-      // Đặt lại timeout để chỉ cập nhật dữ liệu khi đã hết thời gian debounce
-      debounceTimeoutRef.current = setTimeout(() => {
-        setData(prevData => {
-          const existingIndex = prevData.findIndex(
-            item => item.uid === incomingData.uid,
-          );
-
-          if (existingIndex !== -1) {
-            const updatedData = [...prevData];
-            updatedData[existingIndex] = incomingData;
-            return updatedData;
-          } else {
-            return prevData.concat(incomingData);
-          }
-        });
+      timeoutRef.current = setTimeout(() => {
+        setData([...bufferRef.current]);
+        bufferRef.current = []; // Clear buffer after emitting
       }, debounceTime);
-    });
+    };
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on(eventListen, onEvent);
 
     return () => {
-      socket.off(eventListen);
-      socket.disconnect();
-      // Dọn dẹp timeout khi component unmount
-      if (debounceTimeoutRef.current) {
-        clearTimeout(debounceTimeoutRef.current);
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.off(eventListen, onEvent);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
     };
-  }, [event, eventListen, token, debounceTime]);
+  }, [eventListen, token, debounceTime]);
 
   return {data, connected, socket: socketRef.current};
 };
+
+// helper: update or insert into array by uid
+function updateBuffer(prevArray: any[], incoming: any): any[] {
+  const index = prevArray.findIndex(item => item.uid === incoming.uid);
+  if (index !== -1) {
+    const updated = [...prevArray];
+    updated[index] = incoming;
+    return updated;
+  } else {
+    return [...prevArray, incoming];
+  }
+}

@@ -16,6 +16,7 @@ import {Linking} from 'react-native';
 import {getAccessToken} from '../redux/action/spotify.action';
 import queryString from 'query-string';
 import {REDIRECT_URI} from '../util/constrain';
+import {getSocket} from './Chat';
 
 export const OnOpenAppService = () => {
   const messaging = getMessaging(getApp());
@@ -96,6 +97,7 @@ export const OnOpenAppService = () => {
   useFocusEffect(
     useCallback(() => {
       if (user?.localId) {
+        getSocket(user?.idToken || '');
         const now = new Date().getTime();
         const expires = user.timeExpires ? +user.timeExpires : 0;
 

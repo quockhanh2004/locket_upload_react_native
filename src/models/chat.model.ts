@@ -17,3 +17,12 @@ export interface ListChatType {
   sender: string;
   uid: string;
 }
+
+export interface ChatMessageType {
+  create_time: string;
+  id: string;
+  reply_moment?: string;
+  sender: string;
+  text: string;
+  thumbnail_url?: string;
+}

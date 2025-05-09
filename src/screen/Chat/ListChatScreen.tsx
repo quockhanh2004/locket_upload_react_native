@@ -20,16 +20,15 @@ const ListChatScreen: React.FC<ListChatScreenProps> = () => {
   const dispatch = useDispatch<AppDispatch>();
   const {user} = useSelector((state: RootState) => state.user);
   const {listChat} = useSelector((state: RootState) => state.chat);
+  const {friends} = useSelector((state: RootState) => state.friends);
 
   const {
     data: message,
     connected,
     socket,
   } = useSocketEvent({
-    event: SocketEvents.LIST_MESSAGE,
     token: user?.idToken || '',
     eventListen: SocketEvents.LIST_MESSAGE,
-    initData: listChat,
   });
 
   const onGetListMessage = () => {
@@ -37,7 +36,10 @@ const ListChatScreen: React.FC<ListChatScreenProps> = () => {
   };
 
   const handlePressItem = useCallback((item: ListChatType) => {
-    navigationTo(nav.chat, {uid: item.uid});
+    navigationTo(nav.chat, {
+      uid: item.uid,
+      friend: friends.find(f => f.uid === item.with_user),
+    });
   }, []);
 
   useEffect(() => {
@@ -58,7 +60,11 @@ const ListChatScreen: React.FC<ListChatScreenProps> = () => {
 
   const renderItem = useCallback(
     ({item}: {item: ListChatType}) => (
-      <ItemListChat itemChat={item} onPress={() => handlePressItem(item)} />
+      <>
+        {item.uid ? (
+          <ItemListChat itemChat={item} onPress={() => handlePressItem(item)} />
+        ) : null}
+      </>
     ),
     [handlePressItem],
   );

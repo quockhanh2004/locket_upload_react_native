@@ -16,11 +16,11 @@ const ItemListChat: React.FC<ItemListChatProps> = ({itemChat, onPress}) => {
   const {create_time, is_read, latest_message, sender, with_user} = itemChat;
   const {friends} = useSelector((state: RootState) => state.friends);
 
-  const friend = friends.find(item => item.uid === with_user);
+  const friend = friends?.find(item => item.uid === with_user);
 
   const cropText = (text: string) => {
-    if (text.length > 30) {
-      return text.slice(0, 25) + '...';
+    if (text?.length > 30) {
+      return text?.slice(0, 25) + '...';
     }
     return text;
   };

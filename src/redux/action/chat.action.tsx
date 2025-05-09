@@ -7,10 +7,9 @@ import {loginHeader} from '../../util/constrain';
 
 interface DataParam {
   idToken: string;
-  receiver_uid: string;
-  client_token: string;
+  receiver_uid?: string | null;
   msg: string;
-  moment_uid?: string;
+  moment_uid?: string | null;
   from_memory?: boolean;
 }
 
