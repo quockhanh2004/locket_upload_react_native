@@ -3,7 +3,7 @@ import RNFS, {writeFile} from 'react-native-fs';
 import axios from 'axios';
 import MD5 from 'crypto-js/md5';
 
-import {uploadHeaders} from './header';
+import {uploadHeaders} from './constraints';
 import {
   FFmpegKit,
   FFmpegKitConfig,

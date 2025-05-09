@@ -90,7 +90,7 @@
   "upload_failed": "Upload failed",
   "can_not_get_duration_video": "Cannot get video duration",
   "video_compression_cancelled": "Video compression cancelled",
-  "video_compression_failed": "Video compression failed, try again with \"Use software video encoding\"",
+  "video_compression_failed": "Video compression failed, try again with 'Use software video encoding' in settings",
   "compression_failed": "Compression failed",
   "processing_video": "Processing video...",
   "uploading_video": "Uploading video...",

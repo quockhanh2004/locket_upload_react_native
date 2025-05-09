@@ -1,6 +1,5 @@
 
 # 📸 Locket Upload - React Native
-
 Ứng dụng **Locket Upload** giúp bạn tải ảnh và video lên **Locket Camera** một cách nhanh chóng và dễ dàng trên Android. Với giao diện thân thiện và tính năng thông minh, đây là công cụ lý tưởng để bạn chia sẻ khoảnh khắc với người thân và bạn bè ngay trên màn hình chính của họ.
 
 ## ✨ Tính năng nổi bật
@@ -15,7 +14,7 @@
 - 💬 **Reaction các moment của bạn bè**: Thể hiện cảm xúc với moment của người khác.
 - 🚀 **Cập nhật trong app**: Nhận bản cập nhật mới ngay trong ứng dụng, không cần tải APK thủ công.
 
-## [📦 Bản dựng sẵn có thể tải](https://github.com/quockhanh2004/locket_upload_react_native/releases)
+## 📦 Bản dựng sẵn có thể tải [Tại đây](https://github.com/quockhanh2004/locket_upload_react_native/releases)
 
 [![GitHub Releases](https://img.shields.io/github/downloads/quockhanh2004/locket_upload_react_native/total?label=Downloads&logo=android)](https://github.com/quockhanh2004/locket_upload_react_native/releases)
 

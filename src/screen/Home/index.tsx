@@ -51,7 +51,6 @@ import {DefaultOverlayCreate, OverLayCreate} from '../../util/bodyMoment';
 import {t} from 'i18next';
 import {hapticFeedback} from '../../util/haptic';
 import {onPostMoment} from './functions/PostMoment';
-import useUserNotificationsAndData from './functions/useUserNotificationsAndData';
 
 // --- Type Definitions ---
 
@@ -83,7 +82,7 @@ const HomeScreen = () => {
   const {useCamera, unlimitedTrimVideo, postStyle} = useSelector(
     (state: RootState) => state.setting,
   );
-  const {selected, optionSend, customListFriends, isLoadFriends} = useSelector(
+  const {selected, optionSend, customListFriends} = useSelector(
     (state: RootState) => state.friends,
   );
 
@@ -101,10 +100,6 @@ const HomeScreen = () => {
   const [localLoading, setLocalLoading] = useState(false);
 
   // --- Effects ---
-
-  // Effect chạy 1 lần khi mount: Xử lý notification ban đầu và kiểm tra/làm mới token/lấy thông tin user
-  useUserNotificationsAndData(user, isLoadFriends);
-
   // Effect xử lý kết quả trả về từ màn hình Crop hoặc Camera
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {

@@ -1,4 +1,4 @@
-import {uploadHeaders} from './header';
+import {uploadHeaders} from './constraints';
 
 export const addTypeImage = (sizeFile: String) => {
   return {

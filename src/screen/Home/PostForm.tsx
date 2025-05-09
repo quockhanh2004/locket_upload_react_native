@@ -9,10 +9,7 @@ import {OverLayCreate, OverlayType} from '../../util/bodyMoment';
 import GuideDialog from '../../Dialog/GuideDialog';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../redux/store';
-import {
-  setGuideSpotify,
-  setShowSelectColor,
-} from '../../redux/slice/guide.slice';
+import {setShowSelectColor} from '../../redux/slice/guide.slice';
 import {t} from '../../languages/i18n';
 
 interface Props {
@@ -49,9 +46,10 @@ const PostForm: React.FC<Props> = ({
   setOverlay,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const {showSelectColor, guideSpotify} = useSelector(
-    (state: RootState) => state.guide,
-  );
+  const {
+    showSelectColor,
+    // guideSpotify
+  } = useSelector((state: RootState) => state.guide);
   const {currentPlay} = useSelector((state: RootState) => state.spotify);
 
   const [type, setType] = useState(OverlayType.standard);
@@ -61,9 +59,9 @@ const PostForm: React.FC<Props> = ({
     dispatch(setShowSelectColor(false));
   };
 
-  const handleNotShowAgainSelectSpotify = () => {
-    dispatch(setGuideSpotify(false));
-  };
+  // const handleNotShowAgainSelectSpotify = () => {
+  //   dispatch(setGuideSpotify(false));
+  // };
 
   useEffect(() => {
     if (setOverlay) {
@@ -146,7 +144,7 @@ const PostForm: React.FC<Props> = ({
         }}
         onDismiss={handelNotShowAgainSelectColor}
       />
-      <GuideDialog
+      {/* <GuideDialog
         visible={guideSpotify}
         label={t('guied_open_select_music')}
         decription={t('guied_open_select_music_desc')}
@@ -154,7 +152,7 @@ const PostForm: React.FC<Props> = ({
           uri: 'https://quockhanh020924.id.vn/drive/videos/guide_spotify.mp4',
         }}
         onDismiss={handleNotShowAgainSelectSpotify}
-      />
+      /> */}
     </View>
   );
 };

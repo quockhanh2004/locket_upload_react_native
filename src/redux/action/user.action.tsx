@@ -1,5 +1,5 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import {loginHeader} from '../../util/header';
+import {loginHeader} from '../../util/constraints';
 import {setMessage} from '../slice/message.slice';
 import instanceFirebase from '../../util/axios_firebase';
 import instanceLocket from '../../util/axios_locketcamera';
@@ -76,6 +76,34 @@ export const loginPhone = createAsyncThunk(
   async (data: DataLogin, thunkApi) => {
     try {
       const {email, password} = data;
+      const bodyVerify = {
+        data: {
+          phone: email,
+          operation: 'sign_in',
+          use_password_if_available: true,
+        },
+      };
+
+      const responseVerify = await instanceLocket.post(
+        'sendVerificationCode',
+        bodyVerify,
+        {
+          headers: loginHeader,
+        },
+      );
+
+      if (responseVerify.data?.result?.status !== 602) {
+        console.log('response verify', responseVerify.data);
+
+        thunkApi.dispatch(
+          setMessage({
+            message: `${responseVerify.data?.result}`,
+            type: t('error'),
+          }),
+        );
+        return thunkApi.rejectWithValue({});
+      }
+
       const body = {
         data: {
           phone: email,
@@ -103,6 +131,8 @@ export const loginPhone = createAsyncThunk(
       }
     } catch (error: any) {
       if (error?.response) {
+        console.log(error.response);
+
         thunkApi.dispatch(
           setMessage({
             message: `${error?.response?.data?.error?.message}`,
