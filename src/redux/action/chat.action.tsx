@@ -3,7 +3,7 @@ import {setMessage} from '../slice/message.slice';
 import axios from 'axios';
 import {t} from '../../languages/i18n';
 import {generateUUIDv4} from '../../util/chat';
-import {loginHeader} from '../../util/constraints';
+import {loginHeader} from '../../util/constrain';
 
 interface DataParam {
   idToken: string;

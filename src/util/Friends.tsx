@@ -2,7 +2,7 @@
 import axios from 'axios';
 import {fetchUser} from '../api/user.api';
 import {Friend} from '../models/friend.model';
-import {MY_SERVER_URL} from './header';
+import {MY_SERVER_URL} from './constrain';
 
 export const getListIdFriend = async (token: string) => {
   const response = await axios.post(`${MY_SERVER_URL}/listen`, {

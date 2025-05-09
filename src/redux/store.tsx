@@ -12,6 +12,7 @@ import languageReducer from './slice/language.slice';
 import {oldPostsReducer} from './slice/oldPosts.slice';
 import {guideReducer} from './slice/guide.slice';
 import {spotifyReducer} from './slice/spotify.slice';
+import {chatReducer} from './slice/chat.slice';
 
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
@@ -56,6 +57,12 @@ const languagePersistConfig: PersistConfig<ReturnType<typeof languageReducer>> =
     stateReconciler: autoMergeLevel2,
   };
 
+const chatPersistConfig: PersistConfig<ReturnType<typeof chatReducer>> = {
+  key: 'chat',
+  storage: AsyncStorage,
+  stateReconciler: autoMergeLevel2,
+};
+
 // Kết hợp reducer với từng persistReducer
 const rootReducer = combineReducers({
   user: persistReducer(userPersistConfig, userReducer),
@@ -67,6 +74,7 @@ const rootReducer = combineReducers({
   guide: persistReducer(guidePersistConfig, guideReducer),
   spotify: persistReducer(spotifyPersistConfig, spotifyReducer),
   language: persistReducer(languagePersistConfig, languageReducer),
+  chat: persistReducer(chatPersistConfig, chatReducer),
 });
 
 // Tạo store

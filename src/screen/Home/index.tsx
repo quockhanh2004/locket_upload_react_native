@@ -189,7 +189,7 @@ const HomeScreen = () => {
 
   const handleViewPost = () => {
     hapticFeedback();
-    navigationTo(nav.chat);
+    navigationTo(nav.chatList);
   };
 
   const handleSelectMedia = async () => {

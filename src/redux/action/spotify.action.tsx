@@ -4,7 +4,7 @@ import axios from 'axios';
 import {parseSpotifyTrack} from '../../services/Spotify';
 import {clearTokenData} from '../slice/spotify.slice';
 import {t} from '../../languages/i18n';
-import {MY_SERVER_URL} from '../../util/header';
+import {MY_SERVER_URL} from '../../util/constrain';
 
 interface DataParam {
   code?: string | null;

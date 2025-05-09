@@ -7,7 +7,7 @@ import {
   UPLOAD_PROGRESS_STAGE,
   uploadImage,
 } from '../../util/uploadImage';
-import {loginHeader} from '../../util/constraints';
+import {loginHeader} from '../../util/constrain';
 import {
   compressVideo,
   getDownloadVideoUrl,

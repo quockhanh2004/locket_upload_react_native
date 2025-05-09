@@ -1,5 +1,5 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import {loginHeader} from '../../util/constraints';
+import {loginHeader} from '../../util/constrain';
 import {setMessage} from '../slice/message.slice';
 import instanceFirebase from '../../util/axios_firebase';
 import instanceLocket from '../../util/axios_locketcamera';

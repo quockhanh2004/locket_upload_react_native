@@ -9,7 +9,7 @@ import {setOldPosts} from '../slice/oldPosts.slice';
 import {t} from '../../languages/i18n';
 import {Post} from '../../models/post.model';
 import {cleanObject} from '../../util/cleanObject';
-import {MY_SERVER_URL} from '../../util/header';
+import {MY_SERVER_URL} from '../../util/constrain';
 
 interface DataParam {
   token: string;

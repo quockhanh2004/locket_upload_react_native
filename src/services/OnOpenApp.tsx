@@ -15,7 +15,7 @@ import {cleanOldPostAsync} from '../redux/action/getOldPost.action';
 import {Linking} from 'react-native';
 import {getAccessToken} from '../redux/action/spotify.action';
 import queryString from 'query-string';
-import {REDIRECT_URI} from '../util/constraints';
+import {REDIRECT_URI} from '../util/constrain';
 
 export const OnOpenAppService = () => {
   const messaging = getMessaging(getApp());
