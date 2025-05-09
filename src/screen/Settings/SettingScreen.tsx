@@ -26,8 +26,6 @@ import {TextSwitch} from '../../components/TextSwitch';
 import {Language} from '../../models/language.model';
 import ItemSetting from './ItemSetting';
 import {ItemSettingModel} from '../../models/itemSetting.model';
-import {navigationTo} from '../Home';
-import {nav} from '../../navigation/navName';
 
 const SettingScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -59,13 +57,13 @@ const SettingScreen = () => {
       value: trySoftwareEncode,
       action: setTrySoftwareEncode,
     },
-    {
-      title: t('change_app_icon'),
-      type: 'button',
-      action: () => {
-        navigationTo(nav.selectIcon);
-      },
-    },
+    // {
+    //   title: t('change_app_icon'),
+    //   type: 'button',
+    //   action: () => {
+    //     navigationTo(nav.selectIcon);
+    //   },
+    // },
   ];
 
   const handleToggle = useCallback(

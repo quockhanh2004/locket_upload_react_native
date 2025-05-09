@@ -54,21 +54,24 @@ export const OnOpenAppService = () => {
 
   useFocusEffect(
     useCallback(() => {
+      let isActive = true;
+
       const fetchData = async () => {
-        // Xử lý thông báo ban đầu
         const remoteMessage = await getInitialNotification(messaging);
         if (remoteMessage?.data) {
           const notiData = {
             ...remoteMessage.data,
             timestamp: remoteMessage.sentTime,
           };
-          handleNotificationClick(notiData);
+          if (isActive) {
+            handleNotificationClick(notiData);
+          }
         }
 
-        // Kiểm tra và xử lý thông tin người dùng
-        if (user) {
-          const now = new Date().getTime();
-          const expires = user.timeExpires ? +user.timeExpires : 0;
+        if (user && isActive) {
+          const now = Date.now();
+          const expires = Number(user.timeExpires) || 0;
+
           if (expires < now && user.refreshToken) {
             dispatch(getToken({refreshToken: user.refreshToken}));
           } else if (expires >= now && user.idToken) {
@@ -83,6 +86,10 @@ export const OnOpenAppService = () => {
       };
 
       fetchData();
+
+      return () => {
+        isActive = false;
+      };
     }, [user, dispatch]),
   );
 
