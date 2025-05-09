@@ -5,7 +5,7 @@ import {Text, View} from 'react-native-ui-lib';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../redux/store';
 import {useSocketEvent} from './hooks/useSocketEvent';
-import {FlatList, InteractionManager} from 'react-native';
+import {FlatList} from 'react-native';
 import {ListChatType, SocketEvents} from '../../models/chat.model';
 import ItemListChat from './ItemListChat';
 import Header from '../../components/Header';
@@ -13,7 +13,6 @@ import {t} from '../../languages/i18n';
 import {navigationTo} from '../Home';
 import {nav} from '../../navigation/navName';
 import {setListChat} from '../../redux/slice/chat.slice';
-import {useDebouncedQueue} from './hooks/useDebouncedQueue';
 
 interface ListChatScreenProps {}
 
@@ -21,16 +20,6 @@ const ListChatScreen: React.FC<ListChatScreenProps> = () => {
   const dispatch = useDispatch<AppDispatch>();
   const {user} = useSelector((state: RootState) => state.user);
   const {listChat} = useSelector((state: RootState) => state.chat);
-
-  const {push} = useDebouncedQueue<ListChatType>(
-    batch => {
-      InteractionManager.runAfterInteractions(() => {
-        dispatch(setListChat(batch));
-      });
-    },
-    200,
-    10,
-  );
 
   const {
     data: message,
@@ -40,6 +29,7 @@ const ListChatScreen: React.FC<ListChatScreenProps> = () => {
     event: SocketEvents.LIST_MESSAGE,
     token: user?.idToken || '',
     eventListen: SocketEvents.LIST_MESSAGE,
+    initData: listChat,
   });
 
   const onGetListMessage = () => {
@@ -52,7 +42,7 @@ const ListChatScreen: React.FC<ListChatScreenProps> = () => {
 
   useEffect(() => {
     if (message) {
-      push(message);
+      dispatch(setListChat(message));
     }
   }, [message]);
 
