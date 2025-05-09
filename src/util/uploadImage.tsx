@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-escape */
 import axios, {AxiosProgressEvent} from 'axios';
-import {uploadHeaders} from './header';
+import {uploadHeaders} from './constraints';
 import RNFS from 'react-native-fs';
 import {FFmpegKit, FFmpegKitConfig} from 'ffmpeg-kit-react-native';
 import {t} from '../languages/i18n';

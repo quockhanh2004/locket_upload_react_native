@@ -92,17 +92,28 @@ interface DataNotification {
   update_url?: string;
   local_update?: string;
   navigation_to?: string;
+  timestamp?: number;
 }
 
 export const handleNotificationClick = async (data?: DataNotification) => {
   let lastData: DataNotification | undefined;
+  const localData = await AsyncStorage.getItem('lastNotificationData');
 
   if (data) {
     console.log('📌 Nhấn thông báo khi có `data` trực tiếp từ sự kiện.');
-    lastData = data;
+    if (
+      JSON.parse(localData || '{}')?.timestamp === data?.timestamp &&
+      data?.timestamp
+    ) {
+      return;
+    }
+    lastData = {...data};
+    await AsyncStorage.setItem(
+      'lastNotificationData',
+      JSON.stringify(lastData),
+    );
   } else {
     console.log('📌 Nhấn thông báo khi lấy từ AsyncStorage.');
-    const localData = await AsyncStorage.getItem('lastNotificationData');
     await AsyncStorage.setItem('lastNotificationData', '{}');
     // Kiểm tra nếu có dữ liệu, mới parse JSON
     if (localData) {
@@ -192,7 +203,11 @@ export const NotificationService = () => {
 
   onNotificationOpenedApp(messaging, async remoteMessage => {
     console.log('🔘 App chưa kill:', remoteMessage);
-    await handleNotificationClick(remoteMessage.data);
+    const data = {
+      ...remoteMessage.data,
+      timestamp: remoteMessage.sentTime,
+    };
+    await handleNotificationClick(data);
   });
 
   return null;

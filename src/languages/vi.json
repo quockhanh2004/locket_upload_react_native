@@ -90,7 +90,7 @@
   "upload_failed": "Tải lên thất bại",
   "can_not_get_duration_video": "Không thể lấy lượng video",
   "video_compression_cancelled": "Đã hủy nén video",
-  "video_compression_failed": "Nén video thất bại, hãy thử lại với \"Mã hóa video bằng phần mềm\"",
+  "video_compression_failed": "Nén video thất bại, hãy thử lại với 'Mã hóa video bằng phần mềm' trong cài đặt",
   "compression_failed": "Nén video thất bại",
   "processing_video": "Đang xử lý video...",
   "uploading_video": "Đang tải video lên...",
