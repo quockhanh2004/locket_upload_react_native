@@ -49,21 +49,6 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   const [selectedIndexInModal, setSelectedIndexInModal] =
     useState<number>(initialIndex);
 
-  const handleLoadMore = () => {
-    if (!isLoadPosts) {
-      dispatch(
-        getOldPosts({
-          userId: user?.localId || '',
-          token: user?.idToken || '',
-          timestamp:
-            posts[posts?.length - 1]?.date || new Date().getTime() / 1000,
-          byUserId: filterFriendShow?.uid,
-          isLoadMore: true,
-        }),
-      );
-    }
-  };
-
   const listPostByFilter = useMemo(() => {
     if (!filterFriendShow) {
       return posts;
@@ -76,6 +61,22 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
       handleLoadMore();
     }
   }, [filterFriendShow]);
+
+  const handleLoadMore = () => {
+    if (!isLoadPosts) {
+      dispatch(
+        getOldPosts({
+          userId: user?.localId || '',
+          token: user?.idToken || '',
+          timestamp:
+            listPostByFilter[listPostByFilter?.length - 1]?.date ||
+            new Date().getTime() / 1000,
+          byUserId: filterFriendShow?.uid,
+          isLoadMore: true,
+        }),
+      );
+    }
+  };
 
   const flatListRef = useRef<FlatList>(null);
 
