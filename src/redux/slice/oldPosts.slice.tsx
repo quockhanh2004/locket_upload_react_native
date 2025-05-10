@@ -16,6 +16,13 @@ interface InitialState {
     momentId: string;
     reactions: Reaction[];
   } | null;
+  response: {
+    post: Post[];
+    currentUserId?: string;
+    deleted?: string[];
+    isLoadMore?: boolean;
+    byUserId?: string;
+  } | null;
 }
 
 const oldPostsSlice = createSlice({
@@ -26,6 +33,7 @@ const oldPostsSlice = createSlice({
     deleted: [],
     reaction: null,
     isLoadingReaction: false,
+    response: null,
   } as InitialState,
   reducers: {
     setOldPosts(state, action) {
@@ -60,6 +68,12 @@ const oldPostsSlice = createSlice({
         const incomingPosts = action.payload.post;
         const currentUserId = action.payload.currentUserId;
         const deletedPosts = action.payload.deleted;
+
+        state.response = action.payload;
+        if (incomingPosts?.length === 0) {
+          state.isLoadPosts = false;
+          return;
+        }
 
         const isLoadMore = action.payload.isLoadMore;
         let existingIds: Set<string> = new Set();
