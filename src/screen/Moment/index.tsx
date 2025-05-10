@@ -137,7 +137,6 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         idToken: user?.idToken || '',
         moment_uid: currentPost?.id,
         receiver_uid: currentPost.user,
-        client_token: '',
       }),
     );
   };
