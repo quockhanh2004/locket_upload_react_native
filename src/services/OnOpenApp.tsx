@@ -3,16 +3,16 @@ import {
   getInitialNotification,
   getMessaging,
 } from '@react-native-firebase/messaging';
-import {useCallback, useEffect} from 'react';
+import {useCallback, useEffect, useRef} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {handleNotificationClick} from './Notification';
 import {getAccountInfo, getToken} from '../redux/action/user.action';
 import {AppDispatch, RootState} from '../redux/store';
 import {getFriends} from '../redux/action/getFriend.action';
 import {getApp} from '@react-native-firebase/app';
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import {cleanOldPostAsync} from '../redux/action/getOldPost.action';
-import {Linking} from 'react-native';
+import {AppState, Linking} from 'react-native';
 import {getAccessToken} from '../redux/action/spotify.action';
 import queryString from 'query-string';
 import {REDIRECT_URI} from '../util/constrain';
@@ -53,46 +53,52 @@ export const OnOpenAppService = () => {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      let isActive = true;
+  const isFocused = useIsFocused();
+  const appState = useRef(AppState.currentState);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/background|inactive/) &&
+        nextAppState === 'active'
+      ) {
+        if (isFocused) {
+          const fetchData = async () => {
+            const remoteMessage = await getInitialNotification(messaging);
+            if (remoteMessage?.data) {
+              const notiData = {
+                ...remoteMessage.data,
+                timestamp: remoteMessage.sentTime,
+              };
+              if (isFocused) {
+                handleNotificationClick(notiData);
+              }
+            }
 
-      const fetchData = async () => {
-        const remoteMessage = await getInitialNotification(messaging);
-        if (remoteMessage?.data) {
-          const notiData = {
-            ...remoteMessage.data,
-            timestamp: remoteMessage.sentTime,
+            if (user && isFocused) {
+              const now = Date.now();
+              const expires = Number(user.timeExpires) || 0;
+              if (expires < now && user.refreshToken) {
+                dispatch(getToken({refreshToken: user.refreshToken}));
+              } else if (expires >= now && user.idToken) {
+                dispatch(
+                  getAccountInfo({
+                    idToken: user.idToken,
+                    refreshToken: user.refreshToken || '',
+                  }),
+                );
+              }
+            }
           };
-          if (isActive) {
-            handleNotificationClick(notiData);
-          }
+          fetchData();
         }
+      }
+      appState.current = nextAppState;
+    });
 
-        if (user && isActive) {
-          const now = Date.now();
-          const expires = Number(user.timeExpires) || 0;
-
-          if (expires < now && user.refreshToken) {
-            dispatch(getToken({refreshToken: user.refreshToken}));
-          } else if (expires >= now && user.idToken) {
-            dispatch(
-              getAccountInfo({
-                idToken: user.idToken,
-                refreshToken: user.refreshToken || '',
-              }),
-            );
-          }
-        }
-      };
-
-      fetchData();
-
-      return () => {
-        isActive = false;
-      };
-    }, [user, dispatch]),
-  );
+    return () => {
+      subscription.remove();
+    };
+  }, [dispatch, isFocused]);
 
   useFocusEffect(
     useCallback(() => {
@@ -101,12 +107,14 @@ export const OnOpenAppService = () => {
         const now = new Date().getTime();
         const expires = user.timeExpires ? +user.timeExpires : 0;
 
-        if (expires >= now && user.idToken && !isLoadFriends) {
+        if (expires >= now && user?.idToken && !isLoadFriends) {
           dispatch(
             getFriends({
               idToken: user?.idToken || '',
             }),
           );
+        } else {
+          dispatch(getToken({refreshToken: user.refreshToken}));
         }
       }
     }, [user?.localId, dispatch]),
