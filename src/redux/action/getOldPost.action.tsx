@@ -35,6 +35,7 @@ export const getOldPosts = createAsyncThunk(
         currentUserId: data.userId,
         deleted: response.data.deleted,
         isLoadMore: data.isLoadMore,
+        byUserId: data?.byUserId,
       };
     } catch (error: any) {
       console.error('Error fetching list old posts', error);

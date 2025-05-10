@@ -40,7 +40,7 @@ const screenHeight = Dimensions.get('window').height;
 
 const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   const dispatch = useDispatch<AppDispatch>();
-  const {posts, isLoadPosts, friends, user} = useOldPostsData();
+  const {posts, isLoadPosts, friends, user, response} = useOldPostsData();
 
   const [isViewerVisible, setIsViewerVisible] = useState<boolean>(true);
   const [indexToView, setIndexToView] = useState<number>(initialIndex);
@@ -63,19 +63,28 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   }, [filterFriendShow]);
 
   const handleLoadMore = () => {
-    if (!isLoadPosts) {
-      dispatch(
-        getOldPosts({
-          userId: user?.localId || '',
-          token: user?.idToken || '',
-          timestamp:
-            listPostByFilter[listPostByFilter?.length - 1]?.date ||
-            new Date().getTime() / 1000,
-          byUserId: filterFriendShow?.uid,
-          isLoadMore: true,
-        }),
-      );
+    if (isLoadPosts) {
+      return;
     }
+
+    if (
+      response?.post?.length === 0 &&
+      response?.byUserId === filterFriendShow?.uid
+    ) {
+      return;
+    }
+
+    dispatch(
+      getOldPosts({
+        userId: user?.localId || '',
+        token: user?.idToken || '',
+        timestamp:
+          listPostByFilter[listPostByFilter?.length - 1]?.date ||
+          new Date().getTime() / 1000,
+        byUserId: filterFriendShow?.uid,
+        isLoadMore: true,
+      }),
+    );
   };
 
   const flatListRef = useRef<FlatList>(null);
