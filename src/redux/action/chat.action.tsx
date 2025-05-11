@@ -74,3 +74,38 @@ export const getMessage = createAsyncThunk(
     }
   },
 );
+
+export const markReadMessage = createAsyncThunk(
+  'markReadMessage',
+  async (data: {idToken: string; conversation_uid: string}, thunkApi) => {
+    try {
+      const {idToken, conversation_uid} = data;
+      const body = {
+        data: {
+          conversation_uid,
+        },
+      };
+      const response = await axios.post(
+        'https://api.locketcamera.com/markAsRead',
+        body,
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+            ...loginHeader,
+          },
+        },
+      );
+      return response.data;
+    } catch (error: any) {
+      thunkApi.dispatch(
+        setMessage({
+          message: `${JSON.stringify(error?.response?.data) || error.message}`,
+          type: t('error'),
+        }),
+      );
+      return thunkApi.rejectWithValue(
+        error?.response?.data?.error || error.message,
+      );
+    }
+  },
+);

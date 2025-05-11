@@ -5,7 +5,7 @@ import {RootState} from '../../redux/store';
 import {useSelector} from 'react-redux';
 import CustomAvatar from '../../components/Avatar';
 import {t} from '../../languages/i18n';
-import {timeDiffFromNow} from '../../util/convertTime';
+import useRelativeTime from './hooks/useRelativeTime';
 
 interface ItemListChatProps {
   itemChat: ListChatType;
@@ -24,6 +24,8 @@ const ItemListChat: React.FC<ItemListChatProps> = ({itemChat, onPress}) => {
     }
     return text;
   };
+  const relativeTime = useRelativeTime(update_time); // số hoặc string đều được
+
   return (
     <TouchableOpacity onPress={onPress}>
       <View row gap-12 margin-12 centerV>
@@ -47,11 +49,11 @@ const ItemListChat: React.FC<ItemListChatProps> = ({itemChat, onPress}) => {
               {cropText(latest_message)}
             </Text>
           </View>
-          <Text white>{timeDiffFromNow(parseInt(update_time, 10))}</Text>
+          <Text white>{relativeTime}</Text>
         </View>
       </View>
     </TouchableOpacity>
   );
 };
 
-export default React.memo(ItemListChat);
+export default ItemListChat;

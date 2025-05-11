@@ -10,7 +10,12 @@ import {
 } from 'react-native-ui-lib';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../redux/store';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import {getSocket} from '../../services/Chat';
 import {useChatMessages} from './hooks/useChatMessages';
 import MessageList from './MessageList';
@@ -18,7 +23,7 @@ import {StyleSheet, FlatList} from 'react-native';
 import {Friend} from '../../models/friend.model';
 import Header from '../../components/Header';
 import CustomAvatar from '../../components/Avatar';
-import {sendMessage} from '../../redux/action/chat.action';
+import {markReadMessage, sendMessage} from '../../redux/action/chat.action';
 
 interface RouteParams {
   uid: string;
@@ -53,11 +58,22 @@ const ChatScreen = () => {
     }
   }, [dispatch, friend.uid, message, user?.idToken]);
 
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(
+        markReadMessage({
+          conversation_uid: uid,
+          idToken: user?.idToken || '',
+        }),
+      );
+    }, [dispatch, uid, user?.idToken]),
+  );
+
   useLayoutEffect(() => {
     if (listRef.current && isFocusTextField) {
       try {
         setTimeout(() => {
-          listRef.current?.scrollToEnd({animated: false});
+          listRef.current?.scrollToEnd({animated: true});
         }, 300);
       } catch (error) {}
     }
@@ -65,7 +81,7 @@ const ChatScreen = () => {
 
   const CustomCenterHeader = () => {
     return (
-      <>
+      <View row centerV gap-12>
         <CustomAvatar
           size={36}
           url={friend.profile_picture_url}
@@ -74,7 +90,7 @@ const ChatScreen = () => {
         <Text white text70BL>
           {`${friend.first_name} ${friend.last_name}`}
         </Text>
-      </>
+      </View>
     );
   };
 

@@ -51,14 +51,22 @@ const MessageList = forwardRef<FlatList<ChatMessageType>, Props>(
         ref={flatListRef}
         data={messages}
         keyExtractor={(item, index) => item.id || index.toString()}
-        renderItem={({item}) => (
-          <ItemMessage item={item} sendByMe={item.sender === currentUserId} />
+        renderItem={({item, index}) => (
+          <ItemMessage
+            item={item}
+            sendByMe={item.sender === currentUserId}
+            previousItem={index === 0 ? undefined : messages[index - 1]}
+            nextItem={
+              index < messages.length - 1 ? messages[index + 1] : undefined
+            }
+          />
         )}
+        onStartReached={() => {}}
         showsVerticalScrollIndicator={false}
         ListFooterComponent={ListFooterComponent}
         getItemLayout={(data, index) => ({
-          length: 70, // Chiều cao của mỗi item (tính theo pixel)
-          offset: 70 * index, // Vị trí của item này
+          length: 70,
+          offset: 70 * index,
           index,
         })}
       />
