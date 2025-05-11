@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useState, useCallback, useLayoutEffect} from 'react';
 import {
@@ -66,7 +67,7 @@ const ChatScreen = () => {
           idToken: user?.idToken || '',
         }),
       );
-    }, [dispatch, uid, user?.idToken]),
+    }, [dispatch, uid, user?.idToken, messages]),
   );
 
   useLayoutEffect(() => {

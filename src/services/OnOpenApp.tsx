@@ -45,21 +45,11 @@ export const OnOpenAppService = () => {
   useEffect(() => {
     const socket = getSocket(user?.idToken);
     if (socket) {
-      socket.on(SocketEvents.CONNECT, () => {
-        console.log('Socket connected');
-      });
-
-      socket.on(SocketEvents.DISCONNECT, () => {
-        console.log('Socket disconnected');
-      });
-
       socket.on(SocketEvents.ERROR, error => {
         console.error('Socket error:', error);
       });
 
       socket.on(SocketEvents.LIST_MESSAGE, (data: ListChatType) => {
-        console.log('List message:', data);
-
         dispatch(setItemListChat(data));
       });
     }
