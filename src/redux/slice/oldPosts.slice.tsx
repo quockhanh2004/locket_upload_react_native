@@ -16,8 +16,8 @@ interface InitialState {
     momentId: string;
     reactions: Reaction[];
   } | null;
-  response?: {
-    post?: Post[];
+  response: {
+    post: Post[];
     currentUserId?: string;
     deleted?: string[];
     isLoadMore?: boolean;
@@ -68,9 +68,10 @@ const oldPostsSlice = createSlice({
         const incomingPosts = action.payload.post;
         const deletedPosts = action.payload.deleted;
         const currentUserId = action.payload.currentUserId;
+        const deletedPosts = action.payload.deleted;
 
         state.response = action.payload;
-        if (!incomingPosts || incomingPosts.length === 0) {
+        if (incomingPosts?.length === 0) {
           state.isLoadPosts = false;
           return;
         }
