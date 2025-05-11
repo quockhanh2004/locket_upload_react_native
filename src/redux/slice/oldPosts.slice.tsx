@@ -68,7 +68,6 @@ const oldPostsSlice = createSlice({
         const incomingPosts = action.payload.post;
         const deletedPosts = action.payload.deleted;
         const currentUserId = action.payload.currentUserId;
-        const deletedPosts = action.payload.deleted;
 
         state.response = action.payload;
         if (incomingPosts?.length === 0) {
