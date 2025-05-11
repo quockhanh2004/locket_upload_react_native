@@ -28,7 +28,7 @@
     "@reduxjs/toolkit": "^2.5.0",
     "@types/base-64": "^1.0.2",
     "add": "^2.0.6",
-    "axios": "^1.7.9",
+    "axios": "1.7.9",
     "crypto-js": "^4.2.0",
     "ffmpeg-kit-react-native": "https://github.com/quockhanh2004/ffmpeg-kit-react-native.git",
     "i18next": "^25.0.1",
