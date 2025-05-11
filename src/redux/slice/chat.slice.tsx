@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {ListChatType} from '../../models/chat.model';
+import {getMessage} from '../action/chat.action';
 
 interface InitialState {
   listChat: ListChatType[];
@@ -27,8 +28,14 @@ const chatSlice = createSlice({
       }
 
       // sort nếu cần
-      state.listChat.sort(
-        (a, b) => parseInt(b.create_time, 10) - parseInt(a.create_time, 10),
+      if (
+        state.listChat.length === 0 ||
+        state.listChat[0]?.update_time === action.payload[0]?.update_time
+      ) {
+        return;
+      }
+      state.listChat?.sort(
+        (a, b) => parseInt(b.update_time, 10) - parseInt(a.update_time, 10),
       );
     },
 
@@ -38,26 +45,15 @@ const chatSlice = createSlice({
       );
 
       if (index !== -1) {
-        const target = state.listChat[index];
-        if (target.latest_message !== action.payload.latest_message) {
-          // Cập nhật mới → cần clone
-          const updated = {
-            ...target,
-            latest_message: action.payload.latest_message,
-          };
-          state.listChat.splice(index, 1, updated);
-        } else {
-          return; // Không thay đổi gì → không cần sort lại
-        }
+        state.listChat[index] = action.payload;
       } else {
-        // Push mới
         state.listChat.push(action.payload);
       }
 
       // Sort giảm dần theo thời gian
       state.listChat.sort(
         (a, b) =>
-          new Date(b.create_time).getTime() - new Date(a.create_time).getTime(),
+          new Date(b.update_time).getTime() - new Date(a.update_time).getTime(),
       );
     },
 
@@ -68,9 +64,31 @@ const chatSlice = createSlice({
     setIsSending(state, action: PayloadAction<boolean>) {
       state.isSending = action.payload;
     },
+
+    clearListChat(state) {
+      state.listChat = [];
+    },
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(getMessage.pending, state => {
+        state.isLoadChat = true;
+      })
+      .addCase(getMessage.fulfilled, (state, action) => {
+        state.isLoadChat = false;
+        state.listChat = action.payload?.chat;
+      })
+      .addCase(getMessage.rejected, state => {
+        state.isLoadChat = false;
+      });
   },
 });
 
-export const {setListChat, setItemListChat, setIsLoadChat, setIsSending} =
-  chatSlice.actions;
+export const {
+  setListChat,
+  setItemListChat,
+  setIsLoadChat,
+  setIsSending,
+  clearListChat,
+} = chatSlice.actions;
 export const chatReducer = chatSlice.reducer;

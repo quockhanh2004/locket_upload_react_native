@@ -26,10 +26,13 @@ import {TextSwitch} from '../../components/TextSwitch';
 import {Language} from '../../models/language.model';
 import ItemSetting from './ItemSetting';
 import {ItemSettingModel} from '../../models/itemSetting.model';
+import {clearListChat} from '../../redux/slice/chat.slice';
+import {getSocket} from '../../services/Chat';
 
 const SettingScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
+  const socket = getSocket();
 
   const {language} = useSelector((state: RootState) => state.language);
   const {tokenData} = useSelector((state: RootState) => state.spotify);
@@ -161,6 +164,8 @@ const SettingScreen = () => {
           dispatch(logout());
           dispatch(setOldPosts([]));
           dispatch(setFriends([]));
+          dispatch(clearListChat());
+          socket?.disconnect();
         }}
       />
     </View>

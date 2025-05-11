@@ -44,22 +44,21 @@ const ChatScreen = () => {
         sendMessage({
           idToken: user?.idToken || '',
           msg: message,
-          receiver_uid: null,
+          receiver_uid: friend.uid,
           from_memory: false,
           moment_uid: null,
         }),
       );
-      console.log('Send message:', message);
       setMessage('');
     }
-  }, [dispatch, message, user?.idToken]);
+  }, [dispatch, friend.uid, message, user?.idToken]);
 
   useLayoutEffect(() => {
     if (listRef.current && isFocusTextField) {
       try {
         setTimeout(() => {
           listRef.current?.scrollToEnd({animated: false});
-        }, 100); // Delay để đảm bảo layout đã xong
+        }, 300);
       } catch (error) {}
     }
   }, [isFocusTextField, messages]);

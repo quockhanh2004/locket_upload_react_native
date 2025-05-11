@@ -49,11 +49,14 @@ export function useChatMessages(uid: string, socket: any) {
     if (!socket) {
       return;
     }
+    socket.emit(SocketEvents.GET_MESSAGE, {
+      with_user: uid,
+    });
     socket.on(SocketEvents.NEW_MESSAGE, handleIncomingMessage);
     return () => {
       socket.off(SocketEvents.NEW_MESSAGE, handleIncomingMessage);
     };
-  }, [socket, handleIncomingMessage]);
+  }, [socket, handleIncomingMessage, uid]);
 
   return {messages, lastReadMessageId};
 }

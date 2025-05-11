@@ -3,7 +3,7 @@ import {MY_SERVER_URL} from '../util/constrain';
 
 let socket: Socket | null = null;
 
-export const getSocket = (token: string): Socket => {
+export const getSocket = (token?: string): Socket => {
   if (!socket) {
     socket = io(MY_SERVER_URL, {
       transports: ['websocket'],

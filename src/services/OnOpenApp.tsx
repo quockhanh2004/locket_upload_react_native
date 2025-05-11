@@ -17,13 +17,14 @@ import {getAccessToken} from '../redux/action/spotify.action';
 import queryString from 'query-string';
 import {REDIRECT_URI} from '../util/constrain';
 import {getSocket} from './Chat';
+import {ListChatType, SocketEvents} from '../models/chat.model';
+import {setItemListChat} from '../redux/slice/chat.slice';
 
 export const OnOpenAppService = () => {
   const messaging = getMessaging(getApp());
   const dispatch = useDispatch<AppDispatch>();
   const {user} = useSelector((state: RootState) => state.user);
   const {isLoadFriends} = useSelector((state: RootState) => state.friends);
-
   useEffect(() => {
     if (user?.localId) {
       dispatch(cleanOldPostAsync(user.localId));
@@ -40,6 +41,29 @@ export const OnOpenAppService = () => {
       subscription.remove();
     };
   }, []);
+
+  useEffect(() => {
+    const socket = getSocket(user?.idToken);
+    if (socket) {
+      socket.on(SocketEvents.CONNECT, () => {
+        console.log('Socket connected');
+      });
+
+      socket.on(SocketEvents.DISCONNECT, () => {
+        console.log('Socket disconnected');
+      });
+
+      socket.on(SocketEvents.ERROR, error => {
+        console.error('Socket error:', error);
+      });
+
+      socket.on(SocketEvents.LIST_MESSAGE, (data: ListChatType) => {
+        console.log('List message:', data);
+
+        dispatch(setItemListChat(data));
+      });
+    }
+  }, [user?.localId]);
 
   const handleOpenURL = (event: any) => {
     const url = event.url || event;
@@ -103,7 +127,6 @@ export const OnOpenAppService = () => {
   useFocusEffect(
     useCallback(() => {
       if (user?.localId) {
-        getSocket(user?.idToken || '');
         const now = new Date().getTime();
         const expires = user.timeExpires ? +user.timeExpires : 0;
 
@@ -111,6 +134,12 @@ export const OnOpenAppService = () => {
           dispatch(
             getFriends({
               idToken: user?.idToken || '',
+            }),
+          );
+          dispatch(
+            getAccountInfo({
+              idToken: user.idToken,
+              refreshToken: user.refreshToken || '',
             }),
           );
         } else {

@@ -9,7 +9,7 @@ export enum SocketEvents {
 }
 
 export interface ListChatType {
-  create_time: string;
+  update_time: string;
   is_read: boolean;
   last_read_at: string;
   latest_message: string;

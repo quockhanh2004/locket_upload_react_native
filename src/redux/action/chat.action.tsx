@@ -3,7 +3,7 @@ import {setMessage} from '../slice/message.slice';
 import axios from 'axios';
 import {t} from '../../languages/i18n';
 import {generateUUIDv4} from '../../util/chat';
-import {loginHeader} from '../../util/constrain';
+import {loginHeader, MY_SERVER_URL} from '../../util/constrain';
 
 interface DataParam {
   idToken: string;
@@ -37,6 +37,29 @@ export const sendMessage = createAsyncThunk(
           },
         },
       );
+      return response.data;
+    } catch (error: any) {
+      thunkApi.dispatch(
+        setMessage({
+          message: `${JSON.stringify(error?.response?.data) || error.message}`,
+          type: t('error'),
+        }),
+      );
+      return thunkApi.rejectWithValue(
+        error?.response?.data?.error || error.message,
+      );
+    }
+  },
+);
+
+export const getMessage = createAsyncThunk(
+  'getMessage',
+  async (token: string, thunkApi) => {
+    try {
+      const body = {
+        token,
+      };
+      const response = await axios.post(`${MY_SERVER_URL}/message`, body);
       return response.data;
     } catch (error: any) {
       thunkApi.dispatch(

@@ -13,7 +13,7 @@ interface ItemListChatProps {
 }
 
 const ItemListChat: React.FC<ItemListChatProps> = ({itemChat, onPress}) => {
-  const {create_time, is_read, latest_message, sender, with_user} = itemChat;
+  const {update_time, is_read, latest_message, sender, with_user} = itemChat;
   const {friends} = useSelector((state: RootState) => state.friends);
 
   const friend = friends?.find(item => item.uid === with_user);
@@ -47,7 +47,7 @@ const ItemListChat: React.FC<ItemListChatProps> = ({itemChat, onPress}) => {
               {cropText(latest_message)}
             </Text>
           </View>
-          <Text white>{timeDiffFromNow(parseInt(create_time, 10))}</Text>
+          <Text white>{timeDiffFromNow(parseInt(update_time, 10))}</Text>
         </View>
       </View>
     </TouchableOpacity>
