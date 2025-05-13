@@ -11,13 +11,16 @@ import {
   ImageBackground,
 } from 'react-native';
 import {View, GridList} from 'react-native-ui-lib';
-import {useDispatch} from 'react-redux';
-import {AppDispatch} from '../../redux/store';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, RootState} from '../../redux/store';
 import {getOldPosts} from '../../redux/action/getOldPost.action';
 import {Friend} from '../../models/friend.model';
 import {Post} from '../../models/post.model';
 import PostScreenHeader from './PostScreenHeader';
-import {removePost} from '../../redux/slice/oldPosts.slice';
+import {
+  removePost,
+  setFilterFriendShow,
+} from '../../redux/slice/oldPosts.slice';
 import {useGlobalMusicPlayer} from '../../hooks/useGlobalMusicPlayer';
 import {useOldPostsData} from '../../hooks/useOldPostData';
 import AnimatedButtons from './AnimatedButton';
@@ -39,11 +42,11 @@ const screenHeight = Dimensions.get('window').height;
 const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   const dispatch = useDispatch<AppDispatch>();
   const {posts, isLoadPosts, friends, user, response} = useOldPostsData();
+  const {filterFriendShow} = useSelector((state: RootState) => state.oldPosts);
 
   const [isViewerVisible, setIsViewerVisible] = useState<boolean>(false);
   const [indexToView, setIndexToView] = useState<number>(initialIndex);
   const [isFocusReaction, setIsFocusReaction] = useState(false);
-  const [filterFriendShow, setFilterFriendShow] = useState<Friend | null>(null);
   const [selectedIndexInModal, setSelectedIndexInModal] =
     useState<number>(initialIndex);
 
@@ -261,7 +264,9 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
                 return filterFriends(friends, item.user, user);
               }}
               filterFriendShow={filterFriendShow}
-              setFilterFriendShow={setFilterFriendShow}
+              setFilterFriendShow={(friend: Friend | null) => {
+                dispatch(setFilterFriendShow(friend));
+              }}
               friends={friends}
               user={user}
               screenHeight={screenHeight}
@@ -291,7 +296,9 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
                 friends={friends}
                 user={user}
                 filterFriendShow={filterFriendShow}
-                setFilterFriendShow={setFilterFriendShow}
+                setFilterFriendShow={(friend: Friend | null) => {
+                  dispatch(setFilterFriendShow(friend));
+                }}
                 leftIconAction={() => {
                   setIsViewerVisible(false);
                 }}

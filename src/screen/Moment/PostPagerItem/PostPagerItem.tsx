@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {StyleSheet, Dimensions, View} from 'react-native';
 import {Post} from '../../../models/post.model';
@@ -25,7 +26,7 @@ const PostPagerItem: React.FC<PostPagerItemProps> = ({
 
   return (
     <View style={styles.modalItemContainer}>
-      <View>
+      <View style={{marginTop: -80}}>
         {showVideoComponent && item.video_url && (
           <VideoPlayer uri={item.video_url} isActive={isActive} />
         )}

@@ -6,6 +6,7 @@ import {
   getReaction,
 } from '../action/getOldPost.action';
 import {savePostsToStorage} from '../../helper/post.storage';
+import {Friend} from '../../models/friend.model';
 
 interface InitialState {
   posts: Post[];
@@ -23,6 +24,7 @@ interface InitialState {
     isLoadMore?: boolean;
     byUserId?: string;
   } | null;
+  filterFriendShow: Friend | null;
 }
 
 const oldPostsSlice = createSlice({
@@ -34,6 +36,7 @@ const oldPostsSlice = createSlice({
     reaction: null,
     isLoadingReaction: false,
     response: null,
+    filterFriendShow: null,
   } as InitialState,
   reducers: {
     setOldPosts(state, action) {
@@ -56,6 +59,10 @@ const oldPostsSlice = createSlice({
       if (!state.deleted.includes(postId)) {
         state.deleted.push(postId);
       }
+    },
+
+    setFilterFriendShow(state, action) {
+      state.filterFriendShow = action.payload;
     },
   },
 
@@ -124,6 +131,11 @@ const oldPostsSlice = createSlice({
   },
 });
 
-export const {setOldPosts, setIsLoadOldPosts, removePost} =
-  oldPostsSlice.actions;
+export const {
+  setOldPosts,
+  setIsLoadOldPosts,
+  removePost,
+  addPost,
+  setFilterFriendShow,
+} = oldPostsSlice.actions;
 export const oldPostsReducer = oldPostsSlice.reducer;

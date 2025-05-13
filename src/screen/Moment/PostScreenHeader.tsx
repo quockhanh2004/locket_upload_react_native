@@ -3,6 +3,8 @@ import {Friend} from '../../models/friend.model';
 import Header from '../../components/Header';
 import FriendPicker from './FriendPicker';
 import {Colors} from 'react-native-ui-lib';
+import {navigationTo} from '../Home';
+import {nav} from '../../navigation/navName';
 
 interface PostScreenHeaderProps {
   friends: Friend[];
@@ -31,6 +33,10 @@ const PostScreenHeader: React.FC<PostScreenHeaderProps> = ({
       }
       backgroundColor={Colors.transparent}
       leftIconAction={leftIconAction}
+      rightIcon="ic_message"
+      rightIconAction={() => {
+        navigationTo(nav.chatList);
+      }}
     />
   );
 };

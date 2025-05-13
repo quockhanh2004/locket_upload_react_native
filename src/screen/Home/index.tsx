@@ -53,6 +53,9 @@ import {t} from 'i18next';
 import {hapticFeedback} from '../../util/haptic';
 import {onPostMoment} from './functions/PostMoment';
 import PostScreen from '../Moment';
+import FriendPicker from '../Moment/FriendPicker';
+import {setFilterFriendShow} from '../../redux/slice/oldPosts.slice';
+import {Friend} from '../../models/friend.model';
 
 // --- Type Definitions ---
 
@@ -84,9 +87,11 @@ const HomeScreen = () => {
   const {useCamera, unlimitedTrimVideo, postStyle} = useSelector(
     (state: RootState) => state.setting,
   );
-  const {selected, optionSend, customListFriends} = useSelector(
+  const {selected, optionSend, customListFriends, friends} = useSelector(
     (state: RootState) => state.friends,
   );
+
+  const {filterFriendShow} = useSelector((state: RootState) => state.oldPosts);
 
   // --- Component State ---
   const [selectedMedia, setSelectedMedia] = useState<MediaType | null>(null);
@@ -101,6 +106,13 @@ const HomeScreen = () => {
   const [visibleSelectColor, setVisibleSelectColor] = useState(false);
   const [localLoading, setLocalLoading] = useState(false);
 
+  const [currentPage, setCurrentPage] = useState<'form' | 'screen'>('form');
+
+  const handleScrollEnd = (event: any) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    const page = offsetY < screenHeight / 2 ? 'form' : 'screen';
+    setCurrentPage(page);
+  };
   // --- Effects ---
   // Effect xử lý kết quả trả về từ màn hình Crop hoặc Camera
   useEffect(() => {
@@ -321,6 +333,16 @@ const HomeScreen = () => {
             </Text>
           </TouchableOpacity>
         )}
+        {currentPage === 'screen' && user && (
+          <FriendPicker
+            friends={friends}
+            onSelect={(friend: Friend | null) => {
+              dispatch(setFilterFriendShow(friend));
+            }}
+            user={user}
+            value={filterFriendShow}
+          />
+        )}
         <TouchableOpacity onPress={handleViewPost}>
           <View
             padding-8
@@ -345,6 +367,7 @@ const HomeScreen = () => {
         keyboardShouldPersistTaps="handled"
         pagingEnabled
         nestedScrollEnabled
+        onMomentumScrollEnd={handleScrollEnd}
         showsVerticalScrollIndicator={false}>
         <View height={screenHeight - 120}>
           <PostForm

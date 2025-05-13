@@ -1,8 +1,14 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useMemo} from 'react';
-import {Modal, FlatList, Dimensions} from 'react-native';
-import {TouchableOpacity, Text, View, Image, Colors} from 'react-native-ui-lib';
+import {Modal, FlatList, Dimensions, StyleSheet} from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  View,
+  Image,
+  Colors,
+  BorderRadiuses,
+} from 'react-native-ui-lib';
 import {Friend} from '../../models/friend.model';
 import {User} from '../../models/user.model';
 import {t} from '../../languages/i18n';
@@ -31,15 +37,17 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
     setModalVisible(false);
   };
 
-  const me: Friend = {
-    uid: user.localId,
-    first_name: t('you'),
-    last_name: '',
-    profile_picture_url: user.profilePicture,
-  };
+  const me: Friend = useMemo(() => {
+    return {
+      uid: user.localId,
+      first_name: t('you'),
+      last_name: '',
+      profile_picture_url: user.photoUrl,
+    };
+  }, [user]);
 
-  const data = useMemo(() => {
-    return [
+  const data = useMemo(
+    () => [
       {
         uid: 'all',
         first_name: t('all'),
@@ -48,8 +56,9 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
       },
       ...friends,
       me,
-    ];
-  }, [friends, me]);
+    ],
+    [friends, me],
+  );
 
   const renderItem = ({item}: {item: Friend}) => {
     const isSelected =
@@ -57,37 +66,15 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
 
     return (
       <TouchableOpacity
-        onPress={() =>
-          item.uid === 'all' ? handleSelect(null) : handleSelect(item)
-        }
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          padding: 12,
-          borderBottomWidth: 0.5,
-          borderBottomColor: '#333',
-          backgroundColor: isSelected ? '#999' : '#111',
-        }}>
+        onPress={() => handleSelect(item.uid === 'all' ? null : item)}
+        style={[styles.itemContainer, isSelected && styles.selectedItem]}>
         {item.profile_picture_url ? (
           <Image
             source={{uri: item.profile_picture_url}}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 18,
-              marginRight: 12,
-            }}
+            style={styles.avatar}
           />
         ) : item.uid === 'all' ? (
-          <View
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 18,
-              backgroundColor: '#555',
-              marginRight: 12,
-            }}
-            center>
+          <View style={styles.placeholderAvatar} center>
             <Image
               assetName="ic_group"
               width={22}
@@ -96,15 +83,7 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
             />
           </View>
         ) : (
-          <View
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 18,
-              backgroundColor: '#555',
-              marginRight: 12,
-            }}
-            center>
+          <View style={styles.placeholderAvatar} center>
             <Text text80BL white>
               {item.first_name?.at(0)}
               {item.last_name?.at(0)}
@@ -113,10 +92,11 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
         )}
         <Text
           style={{
-            color: '#fff',
-            fontSize: 16,
-            flex: 1,
-          }}>
+            fontSize: 14,
+            lineHeight: 30,
+          }}
+          center
+          white>
           {`${item.first_name} ${item.last_name}`}
         </Text>
       </TouchableOpacity>
@@ -127,15 +107,8 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
     <>
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
-        style={{
-          padding: 12,
-          borderWidth: 1,
-          borderColor: '#ccc',
-          borderRadius: 8,
-          backgroundColor: '#000',
-          overflow: 'hidden',
-        }}>
-        <Text style={{color: '#fff'}}>
+        style={styles.pickerButton}>
+        <Text white>
           {value ? `${value.first_name} ${value.last_name}` : t('all')}
         </Text>
       </TouchableOpacity>
@@ -148,19 +121,8 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
         <TouchableOpacity
           activeOpacity={1}
           onPressOut={() => setModalVisible(false)}
-          style={{
-            flex: 1,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            justifyContent: 'flex-end',
-          }}>
-          <View
-            style={{
-              height: screenHeight * 0.5,
-              backgroundColor: '#111',
-              borderTopLeftRadius: 16,
-              borderTopRightRadius: 16,
-              overflow: 'hidden',
-            }}>
+          style={styles.modalBackdrop}>
+          <View style={styles.modalContent}>
             <FlatList
               data={data}
               keyExtractor={item => item.uid}
@@ -174,3 +136,50 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
 };
 
 export default FriendPicker;
+
+const styles = StyleSheet.create({
+  pickerButton: {
+    padding: 10,
+    borderWidth: 1,
+    borderColor: Colors.grey50,
+    borderRadius: BorderRadiuses.br20,
+    backgroundColor: Colors.black,
+    overflow: 'hidden',
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.grey30,
+    backgroundColor: Colors.grey10,
+  },
+  selectedItem: {
+    backgroundColor: Colors.grey40,
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    marginRight: 12,
+  },
+  placeholderAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: Colors.grey30,
+    marginRight: 12,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    height: screenHeight * 0.5,
+    backgroundColor: Colors.grey10,
+    borderTopLeftRadius: BorderRadiuses.br40,
+    borderTopRightRadius: BorderRadiuses.br40,
+    overflow: 'hidden',
+  },
+});
