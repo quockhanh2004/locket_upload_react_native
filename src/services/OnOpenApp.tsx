@@ -53,7 +53,7 @@ export const OnOpenAppService = () => {
         dispatch(setItemListChat(data));
       });
     }
-  }, [user?.localId]);
+  }, [user?.idToken]);
 
   const handleOpenURL = (event: any) => {
     const url = event.url || event;
@@ -136,7 +136,7 @@ export const OnOpenAppService = () => {
           dispatch(getToken({refreshToken: user.refreshToken}));
         }
       }
-    }, [user?.localId, dispatch]),
+    }, [user, dispatch]),
   );
 
   return null;

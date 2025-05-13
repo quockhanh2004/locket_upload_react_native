@@ -2,6 +2,8 @@
 import React from 'react';
 import {View, Text, Colors} from 'react-native-ui-lib';
 import {ChatMessageType} from '../../models/chat.model';
+import ImageView from '../Moment/PostPagerItem/ImageView';
+import {Dimensions} from 'react-native';
 
 interface ItemMessageProps {
   previousItem?: ChatMessageType;
@@ -10,6 +12,7 @@ interface ItemMessageProps {
   sendByMe?: boolean;
 }
 
+const screenWidth = Dimensions.get('window').width;
 const MAX_BORDER_RADIUS = 20;
 const MIN_BORDER_RADIUS = 2;
 
@@ -49,27 +52,43 @@ const ItemMessage: React.FC<ItemMessageProps> = ({
     };
   };
   return (
-    <View
-      row
-      flex
-      style={{
-        justifyContent: sendByMe ? 'flex-end' : 'flex-start',
-        alignItems: sendByMe ? 'flex-end' : 'flex-start',
-        marginTop: previousItem?.sender === item.sender ? 2 : 10,
-      }}>
-      <Text
+    <>
+      <View
+        flex
         style={{
-          backgroundColor: sendByMe ? Colors.primary : Colors.grey40,
-          padding: 8,
-          maxWidth: '80%',
-          minWidth: '5%',
-          ...getBorderRadius(),
-        }}
-        color={!sendByMe ? Colors.white : Colors.black}
-        textAlign={sendByMe ? 'right' : 'left'}>
-        {item.text}
-      </Text>
-    </View>
+          justifyContent: sendByMe ? 'flex-end' : 'flex-start',
+          alignItems: sendByMe ? 'flex-end' : 'flex-start',
+          marginTop: previousItem?.sender === item.sender ? 2 : 10,
+        }}>
+        {item?.thumbnail_url && (
+          <View marginT-20 marginB-2>
+            <ImageView
+              uri={item.thumbnail_url}
+              customStyle={{
+                width: screenWidth - 50,
+                height: screenWidth - 50,
+                aspectRatio: 1,
+                borderRadius: 20,
+                backgroundColor: '#333',
+                justifyContent: 'center',
+              }}
+            />
+          </View>
+        )}
+        <Text
+          style={{
+            backgroundColor: sendByMe ? Colors.primary : Colors.grey40,
+            padding: 8,
+            maxWidth: '80%',
+            minWidth: '5%',
+            ...getBorderRadius(),
+          }}
+          color={!sendByMe ? Colors.white : Colors.black}
+          textAlign={sendByMe ? 'right' : 'left'}>
+          {item.text}
+        </Text>
+      </View>
+    </>
   );
 };
 

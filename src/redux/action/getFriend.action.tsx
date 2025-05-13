@@ -1,5 +1,5 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import {getListFriend, getListIdFriend} from '../../util/Friends';
+import {getListFriend, getListIdFriend} from '../../util/friends';
 import {setMessage} from '../slice/message.slice';
 import {t} from '../../languages/i18n';
 

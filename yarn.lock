@@ -2116,6 +2116,11 @@
     prompts "^2.4.2"
     semver "^7.5.2"
 
+"@react-native-community/netinfo@^11.4.1":
+  version "11.4.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-11.4.1.tgz#a3c247aceab35f75dd0aa4bfa85d2be5a4508688"
+  integrity sha512-B0BYAkghz3Q2V09BF88RA601XursIEA111tnc2JOaN7axJWmNefmfjZqw/KdSxKZp7CZUuPpjBmz/WCR9uaHYg==
+
 "@react-native-firebase/app@^21.12.0":
   version "21.12.0"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-21.12.0.tgz#6239c10d53885c40c6a5318ba055aa16f1499aaf"
@@ -6935,11 +6940,6 @@ react-is@^17.0.1:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
-
-react-native-app-icon-changer@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/react-native-app-icon-changer/-/react-native-app-icon-changer-1.3.0.tgz#b87339ba2d387e4cf6d8db5766b9c77ffee9adc5"
-  integrity sha512-/nj7yq2rtoHwpuDLrbTsLaP0h2hafQT2tQLqDy0FirJNd7LYe5RO/RGAzvLwtXBTeG7ZPLDmBMvOrPhz6dNuKw==
 
 react-native-code-push@^9.0.1:
   version "9.0.1"

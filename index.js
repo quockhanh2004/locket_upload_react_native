@@ -18,6 +18,9 @@ setBackgroundMessageHandler(messaging, async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
 });
 
-LogBox.ignoreLogs(['ReactImageView: Image source "null" doesn\'t exist']);
+LogBox.ignoreLogs([
+  'ReactImageView: Image source "null" doesn\'t exist',
+  'VirtualizedLists should never be nested inside plain ScrollViews',
+]);
 
 AppRegistry.registerComponent(appName, () => App);

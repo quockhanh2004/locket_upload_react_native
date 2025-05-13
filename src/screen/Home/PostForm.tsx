@@ -90,7 +90,7 @@ const PostForm: React.FC<Props> = ({
     }
   }, [setOverlay, textOverlay, type, currentPlay]);
   return (
-    <View centerV flex gap-24>
+    <View centerV flex gap-24 padding-12>
       <ViewMedia
         selectedMedia={selectedMedia}
         isVideo={isVideo}

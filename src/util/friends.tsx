@@ -3,6 +3,8 @@ import axios from 'axios';
 import {fetchUser} from '../api/user.api';
 import {Friend} from '../models/friend.model';
 import {MY_SERVER_URL} from './constrain';
+import {t} from '../languages/i18n';
+import {User} from '../models/user.model';
 
 export const getListIdFriend = async (token: string) => {
   const response = await axios.post(`${MY_SERVER_URL}/listen`, {
@@ -41,4 +43,23 @@ export const getListFriend = (
       console.error('Error fetching friends:', error.response?.data);
       throw error;
     });
+};
+
+export const filterFriends = (
+  friends: Friend[],
+  uid: string,
+  myProfile?: User | null,
+) => {
+  if (!myProfile) {
+    return null;
+  }
+  const find = friends.find(friend => friend.uid === uid);
+  if (!find && myProfile.localId === uid) {
+    return {
+      first_name: t('you'),
+      profile_picture_url: myProfile?.photoUrl,
+      uid: myProfile?.localId,
+    };
+  }
+  return find ? find : null;
 };

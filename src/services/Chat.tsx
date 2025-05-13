@@ -2,9 +2,10 @@ import {io, Socket} from 'socket.io-client';
 import {MY_SERVER_URL} from '../util/constrain';
 
 let socket: Socket | null = null;
+let localToken: string | null = null;
 
 export const getSocket = (token?: string): Socket => {
-  if (!socket) {
+  if ((localToken !== token && token) || !socket) {
     socket = io(MY_SERVER_URL, {
       transports: ['websocket'],
       secure: true,
@@ -14,5 +15,6 @@ export const getSocket = (token?: string): Socket => {
       reconnection: true,
     });
   }
+
   return socket;
 };

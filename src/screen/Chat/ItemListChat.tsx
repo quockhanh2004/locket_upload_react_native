@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {View, Text, TouchableOpacity, Typography} from 'react-native-ui-lib';
 import {ListChatType} from '../../models/chat.model';
@@ -38,9 +39,12 @@ const ItemListChat: React.FC<ItemListChatProps> = ({itemChat, onPress}) => {
           <View gap-2>
             <Text
               white
-              style={
-                !is_read ? Typography.text70BL : Typography.text70L
-              }>{`${friend?.first_name} ${friend?.last_name}`}</Text>
+              centerV
+              numberOfLines={1}
+              style={{
+                fontSize: 18,
+                fontWeight: 'bold',
+              }}>{`${friend?.first_name} ${friend?.last_name}`}</Text>
             <Text
               white
               style={!is_read ? Typography.text70BL : Typography.text70L}>

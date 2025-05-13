@@ -75,6 +75,36 @@ export const getMessage = createAsyncThunk(
   },
 );
 
+export const getMessageWith = createAsyncThunk(
+  'getMessageWith',
+  async (data: {idToken: string; conversation_uid: string}, thunkApi) => {
+    try {
+      const {idToken, conversation_uid} = data;
+      const body = {
+        token: idToken,
+      };
+      const response = await axios.post(
+        `${MY_SERVER_URL}/message/${conversation_uid}`,
+        body,
+      );
+      return {
+        uid: conversation_uid,
+        chat: response.data?.message,
+      };
+    } catch (error: any) {
+      thunkApi.dispatch(
+        setMessage({
+          message: `${JSON.stringify(error?.response?.data) || error.message}`,
+          type: t('error'),
+        }),
+      );
+      return thunkApi.rejectWithValue(
+        error?.response?.data?.error || error.message,
+      );
+    }
+  },
+);
+
 export const markReadMessage = createAsyncThunk(
   'markReadMessage',
   async (data: {idToken: string; conversation_uid: string}, thunkApi) => {

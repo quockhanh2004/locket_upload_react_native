@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, forwardRef} from 'react';
+import React, {useEffect, useRef, forwardRef, useImperativeHandle} from 'react';
 import {FlatList} from 'react-native';
 import {ChatMessageType} from '../../models/chat.model';
 import ItemMessage from './ItemMessage';
@@ -15,34 +15,36 @@ interface Props {
 }
 
 const MessageList = forwardRef<FlatList<ChatMessageType>, Props>(
-  (
-    {messages, currentUserId, scrollToMessageId, ListFooterComponent}: Props,
-    ref,
-  ) => {
+  ({messages, currentUserId, scrollToMessageId, ListFooterComponent}, ref) => {
     const flatListRef = useRef<FlatList<ChatMessageType>>(null);
 
-    // Truyền ref từ ngoài vào trong
-    useEffect(() => {
-      if (ref && flatListRef.current) {
-        if (typeof ref === 'function') {
-          ref(flatListRef.current);
-        } else {
-          (ref as React.MutableRefObject<FlatList<ChatMessageType>>).current =
-            flatListRef.current;
-        }
-      }
-    }, [ref]);
+    // Expose internal FlatList to parent
+    useImperativeHandle(
+      ref,
+      () => flatListRef.current as FlatList<ChatMessageType>,
+      [],
+    );
 
     useEffect(() => {
-      if (scrollToMessageId && flatListRef.current) {
+      if (!flatListRef.current) {
+        return;
+      }
+
+      if (scrollToMessageId) {
         const index = messages.findIndex(msg => msg.id === scrollToMessageId);
         if (index !== -1) {
-          setTimeout(() => {
-            flatListRef.current?.scrollToIndex({index, animated: false});
-          }, 100); // Delay để đảm bảo layout đã xong
+          // Scroll đến item nếu đã render (nằm trong visible range)
+          flatListRef.current.scrollToIndex({
+            index,
+            animated: true,
+            viewPosition: 1, // cuộn để item nằm cuối màn hình
+          });
+        } else {
+          // Nếu index không có, fallback: cuộn xuống cuối
+          flatListRef.current.scrollToEnd({animated: true});
         }
       } else {
-        flatListRef.current?.scrollToEnd({animated: false});
+        flatListRef.current.scrollToEnd({animated: true});
       }
     }, [messages, scrollToMessageId]);
 
@@ -55,20 +57,26 @@ const MessageList = forwardRef<FlatList<ChatMessageType>, Props>(
           <ItemMessage
             item={item}
             sendByMe={item.sender === currentUserId}
-            previousItem={index === 0 ? undefined : messages[index - 1]}
+            previousItem={index > 0 ? messages[index - 1] : undefined}
             nextItem={
               index < messages.length - 1 ? messages[index + 1] : undefined
             }
           />
         )}
-        onStartReached={() => {}}
-        showsVerticalScrollIndicator={false}
         ListFooterComponent={ListFooterComponent}
-        getItemLayout={(data, index) => ({
-          length: 70,
-          offset: 70 * index,
-          index,
-        })}
+        showsVerticalScrollIndicator={false}
+        initialNumToRender={20}
+        maxToRenderPerBatch={20}
+        windowSize={10}
+        removeClippedSubviews={true}
+        onScrollToIndexFailed={({index}) => {
+          setTimeout(() => {
+            flatListRef.current?.scrollToOffset({
+              offset: Math.max(0, index - 3) * 100,
+              animated: true,
+            });
+          }, 300);
+        }}
       />
     );
   },

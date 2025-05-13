@@ -17,7 +17,6 @@ import CameraScreen from '../screen/Camera/CameraScreen';
 import PostScreen from '../screen/Moment';
 import MessageDialog from '../Dialog/MessageDialog';
 import DonateDialog from '../Dialog/DonateDiloag';
-import SelectIconScreen from '../screen/SelectIconScreen';
 import AutoCheckUpdate from '../services/AutoCheckUpdate';
 import ChatScreen from '../screen/Chat/ChatScreen';
 import ListChat from '../screen/Chat/ListChatScreen';
@@ -51,7 +50,6 @@ const HomeNavigator = () => {
         <Stack.Screen name={nav.setting} component={SettingScreen} />
         <Stack.Screen name={nav.camera} component={CameraScreen} />
         <Stack.Screen name={nav.posts} component={PostScreen} />
-        <Stack.Screen name={nav.selectIcon} component={SelectIconScreen} />
         <Stack.Screen name={nav.chat} component={ChatScreen} />
         <Stack.Screen name={nav.chatList} component={ListChat} />
       </Stack.Navigator>

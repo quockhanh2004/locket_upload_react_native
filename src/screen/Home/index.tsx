@@ -3,7 +3,8 @@
 
 // React & React Native Imports
 import React, {useCallback, useEffect, useState} from 'react';
-import {ScrollView} from 'react-native';
+import {Dimensions} from 'react-native';
+import {ScrollView} from 'react-native-gesture-handler';
 import {
   useFocusEffect,
   useNavigation,
@@ -51,6 +52,7 @@ import {DefaultOverlayCreate, OverLayCreate} from '../../util/bodyMoment';
 import {t} from 'i18next';
 import {hapticFeedback} from '../../util/haptic';
 import {onPostMoment} from './functions/PostMoment';
+import PostScreen from '../Moment';
 
 // --- Type Definitions ---
 
@@ -64,7 +66,7 @@ interface MediaType {
   uri: string;
   type?: 'video' | 'image' | string; // Thêm gợi ý type
 }
-
+const screenHeight = Dimensions.get('window').height;
 let navigation: NavigationProp<any>;
 
 const HomeScreen = () => {
@@ -150,7 +152,7 @@ const HomeScreen = () => {
 
   // Effect xử lý sau khi đăng bài thành công
   useEffect(() => {
-    if (postMoment) {
+    if (postMoment && user) {
       dispatch(setMessage({message: postMoment, type: t('success')}));
       dispatch(clearPostMoment());
       setSelectedMedia(null);
@@ -162,9 +164,10 @@ const HomeScreen = () => {
       });
       setIsVideo(false);
       clearAppCache();
+      dispatch(getOldPosts({userId: user.localId, token: user.idToken}));
       deleteAllMp4Files(RNFS.DocumentDirectoryPath);
     }
-  }, [postMoment, dispatch]);
+  }, [postMoment, dispatch, user]);
 
   // Effect xử lý kết quả trả về từ hook cắt video
   useEffect(() => {
@@ -292,9 +295,9 @@ const HomeScreen = () => {
 
   // --- Render ---
   return (
-    <View flex bg-black padding-12>
+    <View flex bg-black>
       {/* Header */}
-      <View row spread centerV>
+      <View row spread centerV padding-12>
         {userInfo?.photoUrl ? (
           <Avatar
             source={{uri: userInfo?.photoUrl || undefined}}
@@ -328,7 +331,7 @@ const HomeScreen = () => {
             }}>
             <Icon
               assetGroup="icons"
-              assetName="ic_menu"
+              assetName="ic_message"
               size={24}
               tintColor={Colors.grey40}
             />
@@ -340,29 +343,36 @@ const HomeScreen = () => {
       <ScrollView
         contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
         keyboardShouldPersistTaps="handled"
+        pagingEnabled
+        nestedScrollEnabled
         showsVerticalScrollIndicator={false}>
-        <PostForm
-          selectedMedia={selectedMedia}
-          isVideo={isVideo}
-          onRemoveMedia={handleRemoveMedia}
-          onSelectMedia={handleSelectMedia}
-          caption={caption}
-          setCaption={setCaption}
-          isLoading={isLoading}
-          onPost={handlePost}
-          onSelectFriend={() => setVisibleSelectFriend(true)}
-          localLoading={localLoading}
-          overlay={overlay}
-          setOverlay={setOverlay}
-          onLongPress={() => setVisibleSelectColor(true)}
-          selectedCount={
-            optionSend === 'all'
-              ? 0
-              : optionSend === 'custom_list'
-              ? customListFriends.length
-              : selected.length
-          }
-        />
+        <View height={screenHeight - 120}>
+          <PostForm
+            selectedMedia={selectedMedia}
+            isVideo={isVideo}
+            onRemoveMedia={handleRemoveMedia}
+            onSelectMedia={handleSelectMedia}
+            caption={caption}
+            setCaption={setCaption}
+            isLoading={isLoading}
+            onPost={handlePost}
+            onSelectFriend={() => setVisibleSelectFriend(true)}
+            localLoading={localLoading}
+            overlay={overlay}
+            setOverlay={setOverlay}
+            onLongPress={() => setVisibleSelectColor(true)}
+            selectedCount={
+              optionSend === 'all'
+                ? 0
+                : optionSend === 'custom_list'
+                ? customListFriends.length
+                : selected.length
+            }
+          />
+        </View>
+        <View height={screenHeight - 120}>
+          <PostScreen />
+        </View>
       </ScrollView>
 
       {/* Dialogs */}

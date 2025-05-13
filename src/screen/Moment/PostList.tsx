@@ -48,6 +48,7 @@ const PostList = forwardRef<FlatList<Post>, PostListProps>(
       data={listPostByFilter}
       keyExtractor={item => item.id}
       onEndReachedThreshold={0.7}
+      nestedScrollEnabled
       onEndReached={handleLoadMore}
       renderItem={({item, index}) => (
         <PostPagerItem

@@ -13,14 +13,11 @@ import {
 import {View, GridList} from 'react-native-ui-lib';
 import {useDispatch} from 'react-redux';
 import {AppDispatch} from '../../redux/store';
-import {navigationTo} from '../Home';
-import {nav} from '../../navigation/navName';
 import {getOldPosts} from '../../redux/action/getOldPost.action';
 import {Friend} from '../../models/friend.model';
 import {Post} from '../../models/post.model';
 import PostScreenHeader from './PostScreenHeader';
 import {removePost} from '../../redux/slice/oldPosts.slice';
-import {t} from '../../languages/i18n';
 import {useGlobalMusicPlayer} from '../../hooks/useGlobalMusicPlayer';
 import {useOldPostsData} from '../../hooks/useOldPostData';
 import AnimatedButtons from './AnimatedButton';
@@ -30,6 +27,7 @@ import PostList from './PostList';
 import {momentReaction} from '../../redux/action/postMoment.action';
 import {hapticFeedback} from '../../util/haptic';
 import {sendMessage} from '../../redux/action/chat.action';
+import {filterFriends} from '../../util/friends';
 
 interface PostScreenProps {
   initialIndex?: number;
@@ -42,7 +40,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   const dispatch = useDispatch<AppDispatch>();
   const {posts, isLoadPosts, friends, user, response} = useOldPostsData();
 
-  const [isViewerVisible, setIsViewerVisible] = useState<boolean>(true);
+  const [isViewerVisible, setIsViewerVisible] = useState<boolean>(false);
   const [indexToView, setIndexToView] = useState<number>(initialIndex);
   const [isFocusReaction, setIsFocusReaction] = useState(false);
   const [filterFriendShow, setFilterFriendShow] = useState<Friend | null>(null);
@@ -108,7 +106,8 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   };
 
   const handleBackPress = () => {
-    navigationTo(nav.home);
+    setIsViewerVisible(false);
+    // navigationTo(nav.home);
   };
 
   const handleRefresh = () => {
@@ -148,21 +147,6 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         receiver_uid: currentPost.user,
       }),
     );
-  };
-
-  const filterFriends = (item: Post) => {
-    const find = friends.find(friend => friend.uid === item.user);
-    if (
-      !find &&
-      listPostByFilter[selectedIndexInModal]?.user === user?.localId
-    ) {
-      return {
-        first_name: t('you'),
-        profile_picture_url: user?.photoUrl,
-        uid: user?.localId,
-      };
-    }
-    return find ? find : null;
   };
 
   useEffect(() => {
@@ -221,21 +205,14 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
   }).current;
 
   return (
-    <View flex bg-black useSafeArea>
-      <PostScreenHeader
-        friends={friends}
-        user={user}
-        filterFriendShow={filterFriendShow}
-        setFilterFriendShow={setFilterFriendShow}
-      />
-      <View height={16} />
-
+    <>
       <GridList
         refreshControl={
           <RefreshControl refreshing={isLoadPosts} onRefresh={handleRefresh} />
         }
         data={listPostByFilter}
         numColumns={3}
+        nestedScrollEnabled
         keyExtractor={item => item.id}
         itemSpacing={4}
         onEndReachedThreshold={0.5}
@@ -275,10 +252,14 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
               ref={flatListRef}
               isLoadPosts={isLoadPosts}
               listPostByFilter={listPostByFilter}
-              handleRefresh={handleRefresh}
+              handleRefresh={() => {
+                setIsViewerVisible(false);
+              }}
               handleLoadMore={handleLoadMore}
               selectedIndexInModal={selectedIndexInModal}
-              filterFriends={filterFriends}
+              filterFriends={(item: Post) => {
+                return filterFriends(friends, item.user, user);
+              }}
               filterFriendShow={filterFriendShow}
               setFilterFriendShow={setFilterFriendShow}
               friends={friends}
@@ -298,23 +279,28 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
               onEmojiSelected={handleReaction}
               onSendMessage={handleSendMessage}
             />
-            <AnimatedButtons
-              isFocusReaction={isFocusReaction}
-              handleRefresh={handleRefresh}
-              viewAll={viewAll}
-            />
+            {!isFocusReaction && (
+              <AnimatedButtons
+                isFocusReaction={isFocusReaction}
+                handleRefresh={handleRefresh}
+                viewAll={viewAll}
+              />
+            )}
             <View absT width={screenWidth}>
               <PostScreenHeader
                 friends={friends}
                 user={user}
                 filterFriendShow={filterFriendShow}
                 setFilterFriendShow={setFilterFriendShow}
+                leftIconAction={() => {
+                  setIsViewerVisible(false);
+                }}
               />
             </View>
           </View>
         </ImageBackground>
       </Modal>
-    </View>
+    </>
   );
 };
 

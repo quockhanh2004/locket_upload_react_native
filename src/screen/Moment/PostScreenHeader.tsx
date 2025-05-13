@@ -9,6 +9,7 @@ interface PostScreenHeaderProps {
   user: any;
   filterFriendShow: Friend | null;
   setFilterFriendShow: (friend: Friend | null) => void;
+  leftIconAction?: () => void;
 }
 
 const PostScreenHeader: React.FC<PostScreenHeaderProps> = ({
@@ -16,6 +17,7 @@ const PostScreenHeader: React.FC<PostScreenHeaderProps> = ({
   user,
   filterFriendShow,
   setFilterFriendShow,
+  leftIconAction,
 }) => {
   return (
     <Header
@@ -28,6 +30,7 @@ const PostScreenHeader: React.FC<PostScreenHeaderProps> = ({
         />
       }
       backgroundColor={Colors.transparent}
+      leftIconAction={leftIconAction}
     />
   );
 };

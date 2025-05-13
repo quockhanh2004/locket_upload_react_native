@@ -1,6 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react/no-unstable-nested-components */
-import React, {useState, useCallback, useLayoutEffect} from 'react';
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+  memo,
+} from 'react';
 import {
   Colors,
   Icon,
@@ -9,22 +13,28 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native-ui-lib';
+import {FlatList, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../../redux/store';
 import {
   RouteProp,
   useFocusEffect,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
+
+import {AppDispatch, RootState} from '../../redux/store';
+import {
+  getMessageWith,
+  markReadMessage,
+  sendMessage,
+} from '../../redux/action/chat.action';
 import {getSocket} from '../../services/Chat';
+
 import {useChatMessages} from './hooks/useChatMessages';
 import MessageList from './MessageList';
-import {StyleSheet, FlatList} from 'react-native';
-import {Friend} from '../../models/friend.model';
 import Header from '../../components/Header';
 import CustomAvatar from '../../components/Avatar';
-import {markReadMessage, sendMessage} from '../../redux/action/chat.action';
+import {Friend} from '../../models/friend.model';
 
 interface RouteParams {
   uid: string;
@@ -34,74 +44,67 @@ interface RouteParams {
 const ChatScreen = () => {
   const navigation = useNavigation<any>();
   const dispatch = useDispatch<AppDispatch>();
-  const route = useRoute<RouteProp<{params: RouteParams}>>();
-  const {uid, friend} = route.params;
+  const {
+    params: {uid, friend},
+  } = useRoute<RouteProp<{params: RouteParams}>>();
   const {user} = useSelector((state: RootState) => state.user);
-  const socket = getSocket(user?.idToken || '');
+
+  const socketRef = useRef(getSocket(user?.idToken || ''));
   const [message, setMessage] = useState('');
   const [isFocusTextField, setIsFocusTextField] = useState(false);
-  const listRef = React.useRef<FlatList>(null);
+  const listRef = useRef<FlatList>(null);
 
-  const {messages, lastReadMessageId} = useChatMessages(uid, socket);
+  const {messages, lastReadMessageId} = useChatMessages(uid, socketRef.current);
 
   const handleSendMessage = useCallback(() => {
-    if (message.trim()) {
-      dispatch(
-        sendMessage({
-          idToken: user?.idToken || '',
-          msg: message,
-          receiver_uid: friend.uid,
-          from_memory: false,
-          moment_uid: null,
-        }),
-      );
-      setMessage('');
+    const trimmed = message.trim();
+    if (!trimmed) {
+      return;
     }
+
+    dispatch(
+      sendMessage({
+        idToken: user?.idToken || '',
+        msg: trimmed,
+        receiver_uid: friend.uid,
+        from_memory: false,
+        moment_uid: null,
+      }),
+    );
+    setMessage('');
   }, [dispatch, friend.uid, message, user?.idToken]);
 
   useFocusEffect(
     useCallback(() => {
+      dispatch(
+        getMessageWith({
+          conversation_uid: uid,
+          idToken: user?.idToken || '',
+        }),
+      );
       dispatch(
         markReadMessage({
           conversation_uid: uid,
           idToken: user?.idToken || '',
         }),
       );
-    }, [dispatch, uid, user?.idToken, messages]),
+    }, [dispatch, uid, user?.idToken]),
   );
 
   useLayoutEffect(() => {
     if (listRef.current && isFocusTextField) {
-      try {
-        setTimeout(() => {
-          listRef.current?.scrollToEnd({animated: true});
-        }, 300);
-      } catch (error) {}
+      const timeout = setTimeout(() => {
+        listRef.current?.scrollToEnd({animated: true});
+      }, 300);
+      return () => clearTimeout(timeout);
     }
   }, [isFocusTextField, messages]);
-
-  const CustomCenterHeader = () => {
-    return (
-      <View row centerV gap-12>
-        <CustomAvatar
-          size={36}
-          url={friend.profile_picture_url}
-          text={`${friend.first_name?.at(0)}${friend.last_name?.at(0)}`}
-        />
-        <Text white text70BL>
-          {`${friend.first_name} ${friend.last_name}`}
-        </Text>
-      </View>
-    );
-  };
 
   return (
     <>
       <Header
-        customCenter={<CustomCenterHeader />}
-        leftIconAction={() => {
-          navigation.goBack();
-        }}
+        customCenter={<CustomCenterHeader friend={friend} />}
+        leftIconAction={() => navigation.goBack()}
       />
       <View flex padding-20 bg-black gap-12 spread>
         <MessageList
@@ -110,9 +113,10 @@ const ChatScreen = () => {
           scrollToMessageId={lastReadMessageId}
           ref={listRef}
         />
+
         <View style={styles.inputContainer}>
           <TextField
-            placeholder={'Message...'}
+            placeholder="Message..."
             padding-8
             value={message}
             onChangeText={setMessage}
@@ -121,12 +125,13 @@ const ChatScreen = () => {
           />
           <TouchableOpacity
             center
-            disabled={message.trim().length === 0}
+            disabled={!message.trim()}
             style={[
               styles.sendButton,
               {
-                backgroundColor:
-                  message.trim().length === 0 ? Colors.grey40 : Colors.primary,
+                backgroundColor: message.trim()
+                  ? Colors.primary
+                  : Colors.grey40,
               },
             ]}
             onPress={handleSendMessage}>
@@ -137,6 +142,24 @@ const ChatScreen = () => {
     </>
   );
 };
+
+const CustomCenterHeader = memo(({friend}: {friend: Friend}) => {
+  const initials = `${friend.first_name?.[0] || ''}${
+    friend.last_name?.[0] || ''
+  }`;
+  return (
+    <View row centerV gap-12>
+      <CustomAvatar
+        size={36}
+        url={friend.profile_picture_url}
+        text={initials}
+      />
+      <Text white text70BL>
+        {friend.first_name} {friend.last_name}
+      </Text>
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   inputContainer: {

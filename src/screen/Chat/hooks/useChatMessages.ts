@@ -31,13 +31,13 @@ export function useChatMessages(uid: string, socket: any) {
   // Load tin nhắn từ AsyncStorage khi lần đầu mở
   const loadOldMessages = useCallback(async () => {
     const stored = await loadChatFromStorage(uid);
-    const sorted = stored.sort(
-      (a, b) => parseInt(a.create_time, 10) - parseInt(b.create_time, 10),
-    );
-    sorted.forEach(msg => messageMap.current.set(msg.id, msg));
-    setMessages(sorted);
-    if (sorted.length > 0) {
-      setLastReadMessageId(sorted[sorted.length - 1].id);
+    // const sorted = stored.sort(
+    //   (a, b) => parseInt(a.create_time, 10) - parseInt(b.create_time, 10),
+    // );
+    stored.forEach(msg => messageMap.current.set(msg.id, msg));
+    setMessages(stored);
+    if (stored.length > 0) {
+      setLastReadMessageId(stored[stored.length - 1].id);
     }
     firstLoaded.current = true;
   }, [uid]);

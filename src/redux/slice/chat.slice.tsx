@@ -1,6 +1,7 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {ListChatType} from '../../models/chat.model';
-import {getMessage} from '../action/chat.action';
+import {getMessage, getMessageWith} from '../action/chat.action';
+import {saveChatToStorage} from '../../helper/chat.storage';
 
 interface InitialState {
   listChat: ListChatType[];
@@ -79,6 +80,17 @@ const chatSlice = createSlice({
         state.listChat = action.payload?.chat;
       })
       .addCase(getMessage.rejected, state => {
+        state.isLoadChat = false;
+      })
+
+      .addCase(getMessageWith.pending, state => {
+        state.isLoadChat = true;
+      })
+      .addCase(getMessageWith.fulfilled, (state, action) => {
+        saveChatToStorage(action.payload.uid, action.payload.chat);
+        state.isLoadChat = false;
+      })
+      .addCase(getMessageWith.rejected, state => {
         state.isLoadChat = false;
       });
   },

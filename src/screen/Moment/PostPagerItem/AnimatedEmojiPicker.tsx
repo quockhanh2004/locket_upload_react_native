@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useRef} from 'react';
-import {Animated, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet} from 'react-native';
 import EmojiPick from './EmojiPick'; // chỉnh lại path cho đúng
 import {Colors, View} from 'react-native-ui-lib';
 import {hapticFeedback} from '../../../util/haptic';
@@ -21,8 +20,7 @@ const AnimatedEmojiPicker: React.FC<AnimatedEmojiPickerProps> = ({
   onSendMessage,
   isMyMoment,
 }) => {
-  const translateY = useRef(new Animated.Value(0)).current;
-  const opacity = useRef(new Animated.Value(1)).current;
+  const [abs, setabs] = useState(false);
 
   const handleEmojiClick = (emoji: string) => {
     hapticFeedback();
@@ -30,34 +28,15 @@ const AnimatedEmojiPicker: React.FC<AnimatedEmojiPickerProps> = ({
   };
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(translateY, {
-        toValue: isFocusReaction ? 70 : 0, // dịch xuống 100px
-        duration: 180,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    if (isFocusReaction) {
+      setabs(true);
+    } else {
+      setabs(false);
+    }
   }, [isFocusReaction]);
 
-  // useEffect(() => {
-  //   Animated.parallel([
-  //     Animated.timing(opacity, {
-  //       toValue: isMyMoment ? 0 : 1,
-  //       duration: 180,
-  //       useNativeDriver: true,
-  //     }),
-  //   ]).start();
-  // }, [isMyMoment]);
-
   return (
-    <Animated.View
-      style={[
-        styles.container,
-        {
-          transform: [{translateY}],
-          opacity,
-        },
-      ]}>
+    <View style={styles.container} absB={abs}>
       {!isMyMoment && (
         <EmojiPick
           onFocusInput={setIsFocusReaction}
@@ -70,7 +49,7 @@ const AnimatedEmojiPicker: React.FC<AnimatedEmojiPickerProps> = ({
           <Reaction momentId={isMyMoment} />
         </View>
       )}
-    </Animated.View>
+    </View>
   );
 };
 
@@ -79,7 +58,6 @@ export default AnimatedEmojiPicker;
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    // marginBottom: 70,
     paddingHorizontal: 20,
     backgroundColor: Colors.transparent,
   },
