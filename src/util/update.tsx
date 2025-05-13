@@ -7,7 +7,7 @@ export const checkUpdateApk = async () => {
   );
   const latestVersion = response.data.tag_name;
   const latestVersionNumber = latestVersion.replace('v', '');
-  if (version !== latestVersionNumber) {
+  if (compareVersions(latestVersionNumber, version) > 0) {
     return {
       latestVersion: latestVersionNumber,
       downloadUrl: response.data.html_url,
@@ -18,3 +18,22 @@ export const checkUpdateApk = async () => {
     return null;
   }
 };
+
+function compareVersions(a: string, b: string): number {
+  const aParts = a.split('.').map(Number);
+  const bParts = b.split('.').map(Number);
+  const maxLength = Math.max(aParts.length, bParts.length);
+
+  for (let i = 0; i < maxLength; i++) {
+    const aVal = aParts[i] ?? 0;
+    const bVal = bParts[i] ?? 0;
+    if (aVal < bVal) {
+      return -1;
+    }
+    if (aVal > bVal) {
+      return 1;
+    }
+  }
+
+  return 0; // Bằng nhau
+}
