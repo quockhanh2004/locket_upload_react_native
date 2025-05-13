@@ -51,10 +51,8 @@ const chatSlice = createSlice({
         state.listChat.push(action.payload);
       }
 
-      // Sort giảm dần theo thời gian
       state.listChat.sort(
-        (a, b) =>
-          new Date(b.update_time).getTime() - new Date(a.update_time).getTime(),
+        (a, b) => parseInt(b.update_time, 10) - parseInt(a.update_time, 10),
       );
     },
 

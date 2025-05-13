@@ -10,10 +10,11 @@ import {
   Icon,
   Text,
   TextField,
+  TextFieldRef,
   TouchableOpacity,
   View,
 } from 'react-native-ui-lib';
-import {FlatList, StyleSheet} from 'react-native';
+import {FlatList, Pressable, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   RouteProp,
@@ -50,11 +51,18 @@ const ChatScreen = () => {
   const {user} = useSelector((state: RootState) => state.user);
 
   const socketRef = useRef(getSocket(user?.idToken || ''));
+  const inputRef = useRef<TextFieldRef>(null);
   const [message, setMessage] = useState('');
   const [isFocusTextField, setIsFocusTextField] = useState(false);
   const listRef = useRef<FlatList>(null);
 
   const {messages, lastReadMessageId} = useChatMessages(uid, socketRef.current);
+
+  const handlePressComponentInput = useCallback(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   const handleSendMessage = useCallback(() => {
     const trimmed = message.trim();
@@ -114,11 +122,15 @@ const ChatScreen = () => {
           ref={listRef}
         />
 
-        <View style={styles.inputContainer}>
+        <Pressable
+          style={styles.inputContainer}
+          onPress={handlePressComponentInput}>
           <TextField
             placeholder="Message..."
             padding-8
             value={message}
+            ref={inputRef}
+            placeholderTextColor={Colors.grey20}
             onChangeText={setMessage}
             onFocus={() => setIsFocusTextField(true)}
             onBlur={() => setIsFocusTextField(false)}
@@ -137,7 +149,7 @@ const ChatScreen = () => {
             onPress={handleSendMessage}>
             <Icon assetName="ic_send" size={24} />
           </TouchableOpacity>
-        </View>
+        </Pressable>
       </View>
     </>
   );
