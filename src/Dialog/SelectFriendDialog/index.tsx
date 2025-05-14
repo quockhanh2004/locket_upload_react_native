@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-// components/SelectFriendDialog/index.tsx
 import React, {useEffect} from 'react';
 import {View, Colors, Typography, Dialog} from 'react-native-ui-lib';
 import CustomDialog from '../CustomDialog';
@@ -42,7 +41,6 @@ const SelectFriendDialog: React.FC<SelectFriendDialogProps> = ({
     dispatch(
       getFriends({
         idToken: user?.idToken || '',
-        idUser: user?.localId || '',
       }),
     );
   };
@@ -121,7 +119,7 @@ const SelectFriendDialog: React.FC<SelectFriendDialogProps> = ({
       )}
       {optionSend !== 'all' && (
         <FriendAvatarList
-          friends={friends}
+          friends={Object.values(friends)}
           selected={selected}
           customListFriends={customListFriends}
           optionSend={optionSend}

@@ -61,6 +61,7 @@ const chatPersistConfig: PersistConfig<ReturnType<typeof chatReducer>> = {
   key: 'chat',
   storage: AsyncStorage,
   stateReconciler: autoMergeLevel2,
+  blacklist: ['isLoadChat', 'chat'],
 };
 
 // Kết hợp reducer với từng persistReducer

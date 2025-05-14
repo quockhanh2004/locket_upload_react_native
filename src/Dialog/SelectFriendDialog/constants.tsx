@@ -1,4 +1,3 @@
-// components/SelectFriendDialog/constants.ts
 import {Colors} from 'react-native-ui-lib';
 import {t} from '../../languages/i18n';
 

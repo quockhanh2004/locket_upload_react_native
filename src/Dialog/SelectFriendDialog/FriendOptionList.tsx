@@ -1,5 +1,4 @@
 /* eslint-disable react-native/no-inline-styles */
-// components/SelectFriendDialog/FriendOptionList.tsx
 import React from 'react';
 import {RadioButton, RadioGroup, View, Colors} from 'react-native-ui-lib';
 import {options} from './constants';

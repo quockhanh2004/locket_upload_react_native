@@ -9,18 +9,19 @@ import Header from '../../components/Header';
 import {t} from '../../languages/i18n';
 import {navigationTo} from '../Home';
 import {nav} from '../../navigation/navName';
+import {useListChat} from './hooks/useListChat';
 
 interface ListChatScreenProps {}
 
 const ListChatScreen: React.FC<ListChatScreenProps> = () => {
-  const {listChat} = useSelector((state: RootState) => state.chat);
+  const {listMessages} = useListChat();
   const {friends} = useSelector((state: RootState) => state.friends);
 
   const handlePressItem = useCallback(
     (item: ListChatType) => {
       navigationTo(nav.chat, {
         uid: item.uid,
-        friend: friends.find(f => f.uid === item.with_user),
+        friend: friends[item.with_user],
       });
     },
     [friends],
@@ -39,7 +40,7 @@ const ListChatScreen: React.FC<ListChatScreenProps> = () => {
       <Header title={t('chat')} />
       <View height={20} />
       <FlatList
-        data={listChat}
+        data={listMessages}
         keyExtractor={item => item.uid}
         renderItem={renderItem}
         removeClippedSubviews
@@ -48,8 +49,10 @@ const ListChatScreen: React.FC<ListChatScreenProps> = () => {
         windowSize={5}
         updateCellsBatchingPeriod={50}
         ListEmptyComponent={
-          <View>
-            <Text>{t('not_thing_here')}</Text>
+          <View flex center>
+            <Text white text70BL>
+              {t('not_thing_here')}
+            </Text>
           </View>
         }
       />

@@ -224,7 +224,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         windowSize={5}
         removeClippedSubviews={true}
         renderItem={({item, index}) => {
-          const find = friends.find(friend => friend.uid === item.user);
+          const find = friends[item.user];
           if (!find && item.user !== user?.localId) {
             dispatch(removePost(item.id));
             return null;

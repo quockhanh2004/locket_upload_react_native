@@ -75,23 +75,32 @@ export const getMessage = createAsyncThunk(
   },
 );
 
+interface GetMessageWithParam {
+  token: string;
+  conversation_uid: string;
+  timestamp?: string;
+}
+
 export const getMessageWith = createAsyncThunk(
   'getMessageWith',
-  async (data: {idToken: string; conversation_uid: string}, thunkApi) => {
+  async (data: GetMessageWithParam, thunkApi) => {
     try {
-      const {idToken, conversation_uid} = data;
       const body = {
-        token: idToken,
+        token: data.token,
+        timestamp: data?.timestamp,
       };
       const response = await axios.post(
-        `${MY_SERVER_URL}/message/${conversation_uid}`,
+        `${MY_SERVER_URL}/message/${data.conversation_uid}`,
         body,
       );
       return {
-        uid: conversation_uid,
+        uid: data.conversation_uid,
         chat: response.data?.message,
+        isLoadMore: data.timestamp ? true : false,
       };
     } catch (error: any) {
+      console.log(error.response.data);
+
       thunkApi.dispatch(
         setMessage({
           message: `${JSON.stringify(error?.response?.data) || error.message}`,

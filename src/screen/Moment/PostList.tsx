@@ -4,6 +4,7 @@ import {Post} from '../../models/post.model';
 import PostPagerItem from './PostPagerItem/PostPagerItem';
 import PostScreenHeader from './PostScreenHeader';
 import {t} from '../../languages/i18n';
+import {Friend} from '../../models/friend.model';
 
 interface PostListProps {
   isLoadPosts: boolean;
@@ -14,7 +15,9 @@ interface PostListProps {
   filterFriends: (item: Post) => any;
   filterFriendShow: any;
   setFilterFriendShow: (value: any) => void;
-  friends: any[];
+  friends: {
+    [key: string]: Friend;
+  };
   user: any;
   screenHeight: number;
   onViewableItemsChangedInModal: any;

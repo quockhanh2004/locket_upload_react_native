@@ -5,7 +5,18 @@ let socket: Socket | null = null;
 let localToken: string | null = null;
 
 export const getSocket = (token?: string): Socket => {
+  // Nếu token đổi hoặc socket chưa khởi tạo
   if ((localToken !== token && token) || !socket) {
+    // Ngắt socket cũ (nếu có)
+    if (socket) {
+      socket.disconnect();
+      socket = null;
+    }
+
+    // Cập nhật token
+    localToken = token ?? null;
+
+    // Tạo socket mới
     socket = io(MY_SERVER_URL, {
       transports: ['websocket'],
       secure: true,

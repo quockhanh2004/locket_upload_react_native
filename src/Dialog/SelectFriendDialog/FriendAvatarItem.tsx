@@ -1,5 +1,4 @@
 /* eslint-disable react-native/no-inline-styles */
-// components/SelectFriendDialog/FriendAvatarItem.tsx
 import React from 'react';
 import {TouchableOpacity} from 'react-native-ui-lib';
 import {Text, View, Avatar} from 'react-native-ui-lib';

@@ -335,7 +335,7 @@ const HomeScreen = () => {
         )}
         {currentPage === 'screen' && user && (
           <FriendPicker
-            friends={friends}
+            friends={Object.values(friends)}
             onSelect={(friend: Friend | null) => {
               dispatch(setFilterFriendShow(friend));
             }}

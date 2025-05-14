@@ -3,7 +3,9 @@ import {getFriends} from '../action/getFriend.action';
 import {Friend, OptionSend} from '../../models/friend.model';
 
 interface InitialState {
-  friends: Friend[];
+  friends: {
+    [key: string]: Friend;
+  };
   isLoadFriends: boolean;
   selected: string[];
   customListFriends: string[];
@@ -13,7 +15,7 @@ interface InitialState {
 const friendsSlice = createSlice({
   name: 'friends',
   initialState: {
-    friends: [],
+    friends: {},
     isLoadFriends: false,
     selected: [],
     customListFriends: [],
@@ -21,7 +23,12 @@ const friendsSlice = createSlice({
   } as InitialState,
   reducers: {
     setFriends(state, action: PayloadAction<Friend[]>) {
-      state.friends = action.payload;
+      //chuyển mảng thành object
+      const friendsObject = action.payload.reduce((acc, item) => {
+        acc[item.uid] = item;
+        return acc;
+      }, {} as {[key: string]: Friend});
+      state.friends = friendsObject;
       state.isLoadFriends = false;
       state.selected = [];
       state.customListFriends = [];

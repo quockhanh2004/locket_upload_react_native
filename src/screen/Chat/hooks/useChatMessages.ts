@@ -1,92 +1,25 @@
-import {useEffect, useState, useCallback, useRef} from 'react';
+import {useEffect, useMemo} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import {ChatMessageType, SocketEvents} from '../../../models/chat.model';
-import {
-  loadChatFromStorage,
-  saveChatToStorage,
-} from '../../../helper/chat.storage';
-import {InteractionManager} from 'react-native';
-
-let debounceTimer: NodeJS.Timeout | null = null;
-const DEBOUNCE_DELAY = 500;
+import {AppDispatch, RootState} from '../../../redux/store';
+import {addItemMessage} from '../../../redux/slice/chat.slice';
 
 export function useChatMessages(uid: string, socket: any) {
-  const [messages, setMessages] = useState<ChatMessageType[]>([]);
-  const [lastReadMessageId, setLastReadMessageId] = useState<string>();
-  const firstLoaded = useRef(false);
-  const bufferedMessages = useRef<ChatMessageType[]>([]);
-  const messageMap = useRef<Map<string, ChatMessageType>>(new Map());
-
-  // Dừng debounce khi chuyển đoạn chat
-  useEffect(() => {
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
-    }
-    // Reset các dữ liệu khi chuyển qua đoạn chat mới
-    bufferedMessages.current = [];
-    messageMap.current.clear();
-    setMessages([]);
-    firstLoaded.current = false;
-  }, [uid]); // Khi `uid` thay đổi, sẽ reset tất cả
-
-  // Load tin nhắn từ AsyncStorage khi lần đầu mở
-  const loadOldMessages = useCallback(async () => {
-    const stored = await loadChatFromStorage(uid);
-    // const sorted = stored.sort(
-    //   (a, b) => parseInt(a.create_time, 10) - parseInt(b.create_time, 10),
-    // );
-    stored.forEach(msg => messageMap.current.set(msg.id, msg));
-    setMessages(stored);
-    if (stored.length > 0) {
-      setLastReadMessageId(stored[stored.length - 1].id);
-    }
-    firstLoaded.current = true;
-  }, [uid]);
-
-  // Debounce xử lý mảng tin nhắn
-  const flushBufferedMessages = useCallback(() => {
-    if (bufferedMessages.current.length === 0) {
-      return;
-    }
-
-    let hasNew = false;
-
-    bufferedMessages.current.forEach(msg => {
-      if (!messageMap.current.has(msg.id)) {
-        messageMap.current.set(msg.id, msg);
-        hasNew = true;
-      }
-    });
-
-    if (hasNew) {
-      const merged = Array.from(messageMap.current.values()).sort(
-        (a, b) => parseInt(a.create_time, 10) - parseInt(b.create_time, 10),
-      );
-      setMessages(merged); // Cập nhật danh sách tin nhắn
-      saveChatToStorage(uid, merged); // Lưu vào storage
-    }
-
-    bufferedMessages.current = []; // Reset buffered messages sau khi flush
-  }, [uid]);
-
-  // Mỗi lần nhận message thì dồn vào buffer
-  const handleIncomingMessage = useCallback(
-    (data: ChatMessageType) => {
-      bufferedMessages.current.push(data);
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
-      }
-      debounceTimer = setTimeout(() => {
-        InteractionManager.runAfterInteractions(() => {
-          flushBufferedMessages();
-        });
-      }, DEBOUNCE_DELAY);
-    },
-    [flushBufferedMessages],
+  const dispatch = useDispatch<AppDispatch>();
+  const isLoadChat = useSelector((state: RootState) => state.chat.isLoadChat);
+  const messageMap = useSelector(
+    (state: RootState) => state.chat.chat[uid] || {},
   );
 
-  useEffect(() => {
-    loadOldMessages();
-  }, [loadOldMessages]);
+  // Convert object => mảng và sort theo update_time (tăng dần)
+  const messages = useMemo(() => {
+    return Object.values(messageMap).sort(
+      (a, b) => parseInt(b.create_time, 10) - parseInt(a.create_time, 10),
+    );
+  }, [messageMap]);
+
+  const lastReadMessageId =
+    messages.length > 0 ? messages[messages.length - 1].id : undefined;
 
   useEffect(() => {
     if (!socket) {
@@ -94,16 +27,17 @@ export function useChatMessages(uid: string, socket: any) {
     }
 
     socket.emit(SocketEvents.GET_MESSAGE, {with_user: uid});
+
+    const handleIncomingMessage = (data: ChatMessageType[]) => {
+      dispatch(addItemMessage({uid, message: data}));
+    };
+
     socket.on(SocketEvents.NEW_MESSAGE, handleIncomingMessage);
 
     return () => {
-      socket.disconnect();
-      socket.connect();
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
-      }
+      socket.off(SocketEvents.NEW_MESSAGE, handleIncomingMessage);
     };
-  }, [socket, handleIncomingMessage, uid]);
+  }, [socket, uid, dispatch]);
 
-  return {messages, lastReadMessageId};
+  return {messages, lastReadMessageId, isLoadChat};
 }

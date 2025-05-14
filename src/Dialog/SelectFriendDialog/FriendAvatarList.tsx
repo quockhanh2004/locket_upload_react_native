@@ -1,5 +1,4 @@
 /* eslint-disable react-native/no-inline-styles */
-// components/SelectFriendDialog/FriendAvatarList.tsx
 import React from 'react';
 import {FlatList} from 'react-native';
 import {Icon, Text, View, TouchableOpacity, Colors} from 'react-native-ui-lib';

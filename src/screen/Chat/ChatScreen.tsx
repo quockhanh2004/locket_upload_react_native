@@ -36,6 +36,7 @@ import MessageList from './MessageList';
 import Header from '../../components/Header';
 import CustomAvatar from '../../components/Avatar';
 import {Friend} from '../../models/friend.model';
+import {ChatMessageType} from '../../models/chat.model';
 
 interface RouteParams {
   uid: string;
@@ -54,9 +55,9 @@ const ChatScreen = () => {
   const inputRef = useRef<TextFieldRef>(null);
   const [message, setMessage] = useState('');
   const [isFocusTextField, setIsFocusTextField] = useState(false);
-  const listRef = useRef<FlatList>(null);
+  const listRef = useRef<FlatList<ChatMessageType>>(null);
 
-  const {messages, lastReadMessageId} = useChatMessages(uid, socketRef.current);
+  const {messages, isLoadChat} = useChatMessages(uid, socketRef.current);
 
   const handlePressComponentInput = useCallback(() => {
     if (inputRef.current) {
@@ -82,12 +83,27 @@ const ChatScreen = () => {
     setMessage('');
   }, [dispatch, friend.uid, message, user?.idToken]);
 
+  const handleLoadMoreMessages = () => {
+    if (isLoadChat) {
+      return;
+    }
+
+    dispatch(
+      getMessageWith({
+        conversation_uid: uid,
+        token: user?.idToken || '',
+        // timestamp: messages[0]?.create_time,
+        timestamp: messages[messages.length - 1]?.create_time,
+      }),
+    );
+  };
+
   useFocusEffect(
     useCallback(() => {
       dispatch(
         getMessageWith({
           conversation_uid: uid,
-          idToken: user?.idToken || '',
+          token: user?.idToken || '',
         }),
       );
       dispatch(
@@ -106,7 +122,7 @@ const ChatScreen = () => {
       }, 300);
       return () => clearTimeout(timeout);
     }
-  }, [isFocusTextField, messages]);
+  }, [isFocusTextField]);
 
   return (
     <>
@@ -115,11 +131,16 @@ const ChatScreen = () => {
         leftIconAction={() => navigation.goBack()}
       />
       <View flex padding-20 bg-black gap-12 spread>
+        {isLoadChat && (
+          <View center>
+            <Text>Loading messages...</Text>
+          </View>
+        )}
         <MessageList
           messages={messages}
           currentUserId={user?.localId}
-          scrollToMessageId={lastReadMessageId}
           ref={listRef}
+          onLoadMore={handleLoadMoreMessages}
         />
 
         <Pressable

@@ -1,59 +1,61 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {ListChatType} from '../../models/chat.model';
+import {ChatMessageType, ListChatType} from '../../models/chat.model';
 import {getMessage, getMessageWith} from '../action/chat.action';
-import {saveChatToStorage} from '../../helper/chat.storage';
 
 interface InitialState {
-  listChat: ListChatType[];
+  listChat: {
+    [key: string]: ListChatType;
+  };
   isLoadChat: boolean;
   isSending: boolean;
+  chat: {
+    [key: string]: {
+      [key: string]: ChatMessageType;
+    };
+  };
 }
 
 const chatSlice = createSlice({
   initialState: {
-    listChat: [],
+    listChat: {},
     isLoadChat: false,
     isSending: false,
-    chat: [],
+    chat: {},
   } as InitialState,
   name: 'chat',
   reducers: {
-    setListChat: (state, action: PayloadAction<ListChatType[]>) => {
-      for (const newItem of action.payload) {
-        const index = state.listChat.findIndex(i => i.uid === newItem.uid);
-        if (index !== -1) {
-          state.listChat[index] = {...state.listChat[index], ...newItem}; // merge
-        } else {
-          state.listChat.push(newItem);
-        }
-      }
-
-      // sort nếu cần
-      if (
-        state.listChat.length === 0 ||
-        state.listChat[0]?.update_time === action.payload[0]?.update_time
-      ) {
+    updateListChat: (state, action: PayloadAction<ListChatType[]>) => {
+      if (action.payload.length === 0) {
+        state.isLoadChat = false;
         return;
       }
-      state.listChat?.sort(
-        (a, b) => parseInt(b.update_time, 10) - parseInt(a.update_time, 10),
-      );
+      //chuyển mảng thành object
+      const chatObject = action.payload.reduce((acc, item) => {
+        acc[item.uid] = item;
+        return acc;
+      }, {} as {[key: string]: ListChatType});
+
+      //cập nhật state
+      state.listChat = {
+        ...state.listChat,
+        ...chatObject,
+      };
     },
 
-    setItemListChat(state, action: PayloadAction<ListChatType>) {
-      const index = state.listChat.findIndex(
-        item => item.uid === action.payload.uid,
-      );
-
-      if (index !== -1) {
-        state.listChat[index] = action.payload;
-      } else {
-        state.listChat.push(action.payload);
-      }
-
-      state.listChat.sort(
-        (a, b) => parseInt(b.update_time, 10) - parseInt(a.update_time, 10),
-      );
+    addItemMessage(
+      state,
+      action: PayloadAction<{uid: string; message: ChatMessageType[]}>,
+    ) {
+      const uid = action.payload.uid;
+      //chuyển messsage thành object
+      const messageObject = action.payload.message.reduce((acc, item) => {
+        acc[item.id] = item;
+        return acc;
+      }, {} as {[key: string]: ChatMessageType});
+      state.chat[uid] = {
+        ...state.chat[uid],
+        ...messageObject,
+      };
     },
 
     setIsLoadChat(state, action: PayloadAction<boolean>) {
@@ -65,7 +67,7 @@ const chatSlice = createSlice({
     },
 
     clearListChat(state) {
-      state.listChat = [];
+      state.listChat = {};
     },
   },
   extraReducers: builder => {
@@ -73,10 +75,22 @@ const chatSlice = createSlice({
       .addCase(getMessage.pending, state => {
         state.isLoadChat = true;
       })
-      .addCase(getMessage.fulfilled, (state, action) => {
-        state.isLoadChat = false;
-        state.listChat = action.payload?.chat;
-      })
+      .addCase(
+        getMessage.fulfilled,
+        (state, action: PayloadAction<{chat: ListChatType[]}>) => {
+          state.isLoadChat = false;
+          const objectListChat = action.payload?.chat?.reduce((acc, item) => {
+            acc[item.uid] = item;
+            return acc;
+          }, {} as {[key: string]: ListChatType});
+
+          //cập nhật state
+          state.listChat = {
+            ...state.listChat,
+            ...objectListChat,
+          };
+        },
+      )
       .addCase(getMessage.rejected, state => {
         state.isLoadChat = false;
       })
@@ -84,10 +98,34 @@ const chatSlice = createSlice({
       .addCase(getMessageWith.pending, state => {
         state.isLoadChat = true;
       })
-      .addCase(getMessageWith.fulfilled, (state, action) => {
-        saveChatToStorage(action.payload.uid, action.payload.chat);
-        state.isLoadChat = false;
-      })
+      .addCase(
+        getMessageWith.fulfilled,
+        (
+          state,
+          action: PayloadAction<{
+            chat: ChatMessageType[];
+            uid: string;
+            isLoadMore: boolean;
+          }>,
+        ) => {
+          if (action.payload.chat.length === 0) {
+            state.isLoadChat = false;
+            return;
+          }
+          const uid = action.payload.uid;
+          //chuyển messsage thành object
+          const messageObject = action.payload.chat.reduce((acc, item) => {
+            acc[item.id] = item;
+            return acc;
+          }, {} as {[key: string]: ChatMessageType});
+          //cập nhật state
+          state.chat[uid] = {
+            ...state.chat[uid],
+            ...messageObject,
+          };
+          state.isLoadChat = false;
+        },
+      )
       .addCase(getMessageWith.rejected, state => {
         state.isLoadChat = false;
       });
@@ -95,10 +133,10 @@ const chatSlice = createSlice({
 });
 
 export const {
-  setListChat,
-  setItemListChat,
+  updateListChat,
   setIsLoadChat,
   setIsSending,
+  addItemMessage,
   clearListChat,
 } = chatSlice.actions;
 export const chatReducer = chatSlice.reducer;

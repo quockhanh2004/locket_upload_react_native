@@ -18,7 +18,7 @@ import queryString from 'query-string';
 import {REDIRECT_URI} from '../util/constrain';
 import {getSocket} from './Chat';
 import {ListChatType, SocketEvents} from '../models/chat.model';
-import {setItemListChat} from '../redux/slice/chat.slice';
+import {updateListChat} from '../redux/slice/chat.slice';
 
 export const OnOpenAppService = () => {
   const messaging = getMessaging(getApp());
@@ -49,8 +49,8 @@ export const OnOpenAppService = () => {
         console.error('Socket error:', error);
       });
 
-      socket.on(SocketEvents.LIST_MESSAGE, (data: ListChatType) => {
-        dispatch(setItemListChat(data));
+      socket.on(SocketEvents.LIST_MESSAGE, (data: ListChatType[]) => {
+        dispatch(updateListChat(data));
       });
     }
   }, [user?.idToken]);
@@ -89,7 +89,7 @@ export const OnOpenAppService = () => {
             }
 
             if (user && isFocused) {
-              const now = Date.now();
+              const now = new Date().getTime() + 15 * 60 * 1000;
               const expires = Number(user.timeExpires) || 0;
               if (expires < now && user.refreshToken) {
                 dispatch(getToken({refreshToken: user.refreshToken}));
@@ -117,7 +117,7 @@ export const OnOpenAppService = () => {
   useFocusEffect(
     useCallback(() => {
       if (user?.localId) {
-        const now = new Date().getTime();
+        const now = new Date().getTime() + 15 * 60 * 1000;
         const expires = user.timeExpires ? +user.timeExpires : 0;
 
         if (expires >= now && user?.idToken && !isLoadFriends) {
@@ -135,6 +135,22 @@ export const OnOpenAppService = () => {
         } else {
           dispatch(getToken({refreshToken: user.refreshToken}));
         }
+
+        //settimeout refresh token trước khi token hết hạn
+        // bằng cách trừ thời gian hết hạn và thời gian hiện tại
+        const timeLeft = expires - now;
+        const refreshTime = timeLeft - 5 * 60 * 1000; // 5 phút trước khi hết hạn
+        //nếu tim left < 5 phút thì không cần set timeout
+        if (refreshTime < 0) {
+          dispatch(getToken({refreshToken: user.refreshToken}));
+          return;
+        }
+        const timeoutId = setTimeout(() => {
+          dispatch(getToken({refreshToken: user.refreshToken}));
+        }, refreshTime);
+        return () => {
+          clearTimeout(timeoutId);
+        };
       }
     }, [user, dispatch]),
   );
