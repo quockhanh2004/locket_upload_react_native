@@ -18,7 +18,9 @@ const screenHeight = Dimensions.get('window').height;
 
 interface FriendPickerProps {
   value?: Friend | null;
-  friends: Friend[];
+  friends: {
+    [key: string]: Friend;
+  };
   user: User;
   onSelect: (friend: Friend | null) => void;
 }
@@ -46,19 +48,18 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
     };
   }, [user]);
 
-  const data = useMemo(
-    () => [
-      {
+  const data = useMemo(() => {
+    return {
+      all: {
         uid: 'all',
         first_name: t('all'),
         last_name: '',
         profile_picture_url: '',
       },
       ...friends,
-      me,
-    ],
-    [friends, me],
-  );
+      [me.uid]: me,
+    };
+  }, [friends, me]);
 
   const renderItem = ({item}: {item: Friend}) => {
     const isSelected =
@@ -124,7 +125,7 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
           style={styles.modalBackdrop}>
           <View style={styles.modalContent}>
             <FlatList
-              data={data}
+              data={Object.values(data)}
               keyExtractor={item => item.uid}
               renderItem={renderItem}
             />

@@ -22,6 +22,7 @@ interface PostListProps {
   screenHeight: number;
   onViewableItemsChangedInModal: any;
   viewabilityConfig: any;
+  onNavigationToChatList: () => void;
 }
 
 const PostList = forwardRef<FlatList<Post>, PostListProps>(
@@ -40,6 +41,7 @@ const PostList = forwardRef<FlatList<Post>, PostListProps>(
       screenHeight,
       onViewableItemsChangedInModal,
       viewabilityConfig,
+      onNavigationToChatList,
     },
     ref,
   ) => (
@@ -86,6 +88,7 @@ const PostList = forwardRef<FlatList<Post>, PostListProps>(
             user={user}
             filterFriendShow={filterFriendShow}
             setFilterFriendShow={setFilterFriendShow}
+            rightIconAction={onNavigationToChatList}
           />
           <View style={styles.centeredView}>
             <Text style={styles.emptyText}>{t('not_have_moment')}</Text>

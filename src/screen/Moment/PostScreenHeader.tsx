@@ -3,8 +3,6 @@ import {Friend} from '../../models/friend.model';
 import Header from '../../components/Header';
 import FriendPicker from './FriendPicker';
 import {Colors} from 'react-native-ui-lib';
-import {navigationTo} from '../Home';
-import {nav} from '../../navigation/navName';
 
 interface PostScreenHeaderProps {
   friends: {
@@ -14,6 +12,7 @@ interface PostScreenHeaderProps {
   filterFriendShow: Friend | null;
   setFilterFriendShow: (friend: Friend | null) => void;
   leftIconAction?: () => void;
+  rightIconAction?: () => void;
 }
 
 const PostScreenHeader: React.FC<PostScreenHeaderProps> = ({
@@ -22,14 +21,14 @@ const PostScreenHeader: React.FC<PostScreenHeaderProps> = ({
   filterFriendShow,
   setFilterFriendShow,
   leftIconAction,
+  rightIconAction,
 }) => {
   //chuyển object friend thành mảng
-  const friendsArray = Object.values(friends);
   return (
     <Header
       customCenter={
         <FriendPicker
-          friends={friendsArray}
+          friends={friends}
           onSelect={setFilterFriendShow}
           user={user}
           value={filterFriendShow}
@@ -38,9 +37,7 @@ const PostScreenHeader: React.FC<PostScreenHeaderProps> = ({
       backgroundColor={Colors.transparent}
       leftIconAction={leftIconAction}
       rightIcon="ic_message"
-      rightIconAction={() => {
-        navigationTo(nav.chatList);
-      }}
+      rightIconAction={rightIconAction}
     />
   );
 };

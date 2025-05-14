@@ -31,6 +31,8 @@ import {momentReaction} from '../../redux/action/postMoment.action';
 import {hapticFeedback} from '../../util/haptic';
 import {sendMessage} from '../../redux/action/chat.action';
 import {filterFriends} from '../../util/friends';
+import {navigationTo} from '../Home';
+import {nav} from '../../navigation/navName';
 
 interface PostScreenProps {
   initialIndex?: number;
@@ -272,6 +274,10 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
               screenHeight={screenHeight}
               onViewableItemsChangedInModal={onViewableItemsChangedInModal}
               viewabilityConfig={viewabilityConfig}
+              onNavigationToChatList={() => {
+                setIsViewerVisible(false);
+                navigationTo(nav.chatList);
+              }}
             />
             <AnimatedEmojiPicker
               isMyMoment={
@@ -301,6 +307,10 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
                 }}
                 leftIconAction={() => {
                   setIsViewerVisible(false);
+                }}
+                rightIconAction={() => {
+                  setIsViewerVisible(false);
+                  navigationTo(nav.chatList);
                 }}
               />
             </View>

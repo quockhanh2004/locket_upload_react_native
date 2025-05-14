@@ -50,6 +50,7 @@ const ChatScreen = () => {
     params: {uid, friend},
   } = useRoute<RouteProp<{params: RouteParams}>>();
   const {user} = useSelector((state: RootState) => state.user);
+  const {response} = useSelector((state: RootState) => state.chat);
 
   const socketRef = useRef(getSocket(user?.idToken || ''));
   const inputRef = useRef<TextFieldRef>(null);
@@ -85,6 +86,9 @@ const ChatScreen = () => {
 
   const handleLoadMoreMessages = () => {
     if (isLoadChat) {
+      return;
+    }
+    if (response.chat?.length === 0 && response.uid === uid) {
       return;
     }
 
@@ -133,7 +137,7 @@ const ChatScreen = () => {
       <View flex padding-20 bg-black gap-12 spread>
         {isLoadChat && (
           <View center>
-            <Text>Loading messages...</Text>
+            <Text white>Loading messages...</Text>
           </View>
         )}
         <MessageList

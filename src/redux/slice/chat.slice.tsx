@@ -13,78 +13,111 @@ interface InitialState {
       [key: string]: ChatMessageType;
     };
   };
+  response: {
+    chat?: ChatMessageType[] | ListChatType[] | null;
+    uid: string;
+    isLoadMore: boolean;
+  };
 }
 
+const initialState: InitialState = {
+  listChat: {},
+  isLoadChat: false,
+  isSending: false,
+  chat: {},
+  response: {
+    chat: null,
+    uid: '',
+    isLoadMore: false,
+  },
+};
+
 const chatSlice = createSlice({
-  initialState: {
-    listChat: {},
-    isLoadChat: false,
-    isSending: false,
-    chat: {},
-  } as InitialState,
   name: 'chat',
+  initialState,
   reducers: {
     updateListChat: (state, action: PayloadAction<ListChatType[]>) => {
       if (action.payload.length === 0) {
         state.isLoadChat = false;
         return;
       }
-      //chuyển mảng thành object
+
       const chatObject = action.payload.reduce((acc, item) => {
         acc[item.uid] = item;
         return acc;
       }, {} as {[key: string]: ListChatType});
 
-      //cập nhật state
-      state.listChat = {
-        ...state.listChat,
-        ...chatObject,
-      };
+      // Kiểm tra xem dữ liệu có thực sự thay đổi không
+      const isDifferent = Object.entries(chatObject).some(([uid, newItem]) => {
+        const oldItem = state.listChat[uid];
+        return !oldItem || JSON.stringify(oldItem) !== JSON.stringify(newItem);
+      });
+
+      if (isDifferent) {
+        state.listChat = {
+          ...state.listChat,
+          ...chatObject,
+        };
+      }
     },
 
-    addItemMessage(
+    addItemMessage: (
       state,
       action: PayloadAction<{uid: string; message: ChatMessageType[]}>,
-    ) {
-      const uid = action.payload.uid;
-      //chuyển messsage thành object
-      const messageObject = action.payload.message.reduce((acc, item) => {
+    ) => {
+      const {uid, message} = action.payload;
+      if (message.length === 0) {
+        state.isLoadChat = false;
+        return;
+      }
+
+      const messageObject = message.reduce((acc, item) => {
         acc[item.id] = item;
         return acc;
       }, {} as {[key: string]: ChatMessageType});
+
       state.chat[uid] = {
         ...state.chat[uid],
         ...messageObject,
       };
     },
 
-    setIsLoadChat(state, action: PayloadAction<boolean>) {
+    setIsLoadChat: (state, action: PayloadAction<boolean>) => {
       state.isLoadChat = action.payload;
     },
 
-    setIsSending(state, action: PayloadAction<boolean>) {
+    setIsSending: (state, action: PayloadAction<boolean>) => {
       state.isSending = action.payload;
     },
 
-    clearListChat(state) {
+    clearListChat: state => {
       state.listChat = {};
     },
   },
+
   extraReducers: builder => {
     builder
+      // ===== getMessage =====
       .addCase(getMessage.pending, state => {
         state.isLoadChat = true;
       })
       .addCase(
         getMessage.fulfilled,
-        (state, action: PayloadAction<{chat: ListChatType[]}>) => {
+        (
+          state,
+          action: PayloadAction<{
+            chat: ListChatType[];
+            uid: string;
+            isLoadMore: boolean;
+          }>,
+        ) => {
           state.isLoadChat = false;
-          const objectListChat = action.payload?.chat?.reduce((acc, item) => {
+
+          const objectListChat = action.payload.chat.reduce((acc, item) => {
             acc[item.uid] = item;
             return acc;
           }, {} as {[key: string]: ListChatType});
 
-          //cập nhật state
           state.listChat = {
             ...state.listChat,
             ...objectListChat,
@@ -95,6 +128,7 @@ const chatSlice = createSlice({
         state.isLoadChat = false;
       })
 
+      // ===== getMessageWith =====
       .addCase(getMessageWith.pending, state => {
         state.isLoadChat = true;
       })
@@ -108,21 +142,24 @@ const chatSlice = createSlice({
             isLoadMore: boolean;
           }>,
         ) => {
-          if (action.payload.chat.length === 0) {
+          const {chat, uid} = action.payload;
+          state.response = action.payload;
+
+          if (chat.length === 0) {
             state.isLoadChat = false;
             return;
           }
-          const uid = action.payload.uid;
-          //chuyển messsage thành object
-          const messageObject = action.payload.chat.reduce((acc, item) => {
+
+          const messageObject = chat.reduce((acc, item) => {
             acc[item.id] = item;
             return acc;
           }, {} as {[key: string]: ChatMessageType});
-          //cập nhật state
+
           state.chat[uid] = {
             ...state.chat[uid],
             ...messageObject,
           };
+
           state.isLoadChat = false;
         },
       )
@@ -139,4 +176,5 @@ export const {
   addItemMessage,
   clearListChat,
 } = chatSlice.actions;
+
 export const chatReducer = chatSlice.reducer;

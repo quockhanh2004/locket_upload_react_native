@@ -334,18 +334,22 @@ const HomeScreen = () => {
           </TouchableOpacity>
         )}
         {currentPage === 'screen' && user && (
-          <FriendPicker
-            friends={Object.values(friends)}
-            onSelect={(friend: Friend | null) => {
-              dispatch(setFilterFriendShow(friend));
-            }}
-            user={user}
-            value={filterFriendShow}
-          />
+          <View height={36}>
+            <FriendPicker
+              friends={friends}
+              onSelect={(friend: Friend | null) => {
+                dispatch(setFilterFriendShow(friend));
+              }}
+              user={user}
+              value={filterFriendShow}
+            />
+          </View>
         )}
         <TouchableOpacity onPress={handleViewPost}>
           <View
-            padding-8
+            width={36}
+            height={36}
+            center
             style={{
               borderRadius: 8,
               borderWidth: 1,
@@ -369,7 +373,7 @@ const HomeScreen = () => {
         nestedScrollEnabled
         onMomentumScrollEnd={handleScrollEnd}
         showsVerticalScrollIndicator={false}>
-        <View height={screenHeight - 120}>
+        <View height={screenHeight - 200}>
           <PostForm
             selectedMedia={selectedMedia}
             isVideo={isVideo}
@@ -393,7 +397,16 @@ const HomeScreen = () => {
             }
           />
         </View>
-        <View height={screenHeight - 120}>
+        <View height={screenHeight - 100} center>
+          <View
+            height={4}
+            width={80}
+            style={{
+              borderRadius: 2,
+            }}
+            bg-grey20
+            marginB-12
+          />
           <PostScreen />
         </View>
       </ScrollView>

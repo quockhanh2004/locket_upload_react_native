@@ -6,10 +6,11 @@ import {addItemMessage} from '../../../redux/slice/chat.slice';
 
 export function useChatMessages(uid: string, socket: any) {
   const dispatch = useDispatch<AppDispatch>();
-  const isLoadChat = useSelector((state: RootState) => state.chat.isLoadChat);
-  const messageMap = useSelector(
-    (state: RootState) => state.chat.chat[uid] || {},
-  );
+  const {isLoadChat} = useSelector((state: RootState) => state.chat);
+  const {chat} = useSelector((state: RootState) => state.chat);
+  const messageMap = useMemo(() => {
+    return chat[uid] || {};
+  }, [chat, uid]);
 
   // Convert object => mảng và sort theo update_time (tăng dần)
   const messages = useMemo(() => {
