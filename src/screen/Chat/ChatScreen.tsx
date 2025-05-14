@@ -122,7 +122,10 @@ const ChatScreen = () => {
   useLayoutEffect(() => {
     if (listRef.current && isFocusTextField) {
       const timeout = setTimeout(() => {
-        listRef.current?.scrollToEnd({animated: true});
+        listRef.current?.scrollToOffset({
+          offset: 0,
+          animated: true,
+        });
       }, 300);
       return () => clearTimeout(timeout);
     }
