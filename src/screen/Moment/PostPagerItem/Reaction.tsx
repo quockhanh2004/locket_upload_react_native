@@ -52,22 +52,24 @@ const Reaction: React.FC<ReactionProps> = ({momentId}) => {
   const getFriendsWithReactions = (reactions: ReactionModel[]) => {
     const grouped: Record<string, string[]> = {};
 
-    reactions.forEach(({user: friend, value}) => {
-      if (!grouped[friend]) {
-        grouped[friend] = [];
+    reactions.forEach(({user: uid, value}) => {
+      if (!grouped[uid]) {
+        grouped[uid] = [];
       }
-      grouped[friend].push(value);
+      grouped[uid].push(value);
     });
 
-    const response = friends
-      .filter(friend => grouped[friend.uid]) // chỉ lấy bạn bè có reaction
-      .map(friend => ({
-        uid: friend.uid,
-        name: friend.first_name,
-        image: friend.profile_picture_url,
-        reaction: grouped[friend.uid].join(' '),
-      }));
-    return response;
+    return Object.entries(grouped)
+      .map(([uid, values]) => {
+        const friend = friends[uid];
+        return {
+          uid,
+          name: friend.first_name,
+          image: friend.profile_picture_url,
+          reaction: values.join(' '),
+        };
+      })
+      .filter(Boolean); // loại bỏ null nếu có
   };
 
   if (reaction?.momentId === momentId && reaction?.reactions.length > 0) {
@@ -85,6 +87,9 @@ const Reaction: React.FC<ReactionProps> = ({momentId}) => {
           </Text>
           <View row>
             {getFriendsWithReactions(reaction.reactions).map(item => {
+              if (!item?.uid) {
+                return null;
+              }
               return (
                 <View key={item.uid} style={{marginStart: -8}}>
                   <Avatar
