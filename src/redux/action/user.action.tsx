@@ -1,18 +1,17 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import {loginHeader} from '../../util/constraints';
+import {loginHeader} from '../../utils/constants.ts';
 import {setMessage} from '../slice/message.slice';
-import instanceFirebase from '../../util/axios_firebase';
-import instanceLocket from '../../util/axios_locketcamera';
 import axios, {AxiosResponse} from 'axios';
 import {clearStatus, logout} from '../slice/user.slice';
 import {
   getDownloadUrl,
   initiateUpload,
   uploadImage,
-} from '../../util/uploadImage';
-import {readFileAsBytes} from '../../util/getBufferFile';
+} from '../../utils/locket/uploadImage.ts';
 import {fetchUser} from '../../api/user.api';
-import {t} from '../../languages/i18n';
+import {t} from '../../languages/i18n.ts';
+import {instanceFirebase, instanceLocket} from '../../utils/axios.ts';
+import {readFileAsBytes} from '../../utils/common.ts';
 
 interface DataLogin {
   email: string;

@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {CameraSetting, SettingState} from '../../models/setting.model';
-import {ColorDefault} from '../../util/colors';
-import {AliasName} from '../../util/SwitchIconApp';
+import {ColorDefault} from '../../utils/colors.ts';
+import {AliasName} from '../../utils/switchAppIcon.ts';
 
 const initialState: SettingState = {
   useCamera: false,

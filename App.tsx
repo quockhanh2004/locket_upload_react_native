@@ -10,7 +10,7 @@ import RootNavigation from './src/navigation/RootNavigation';
 import {persistor, store} from './src/redux/store';
 import CodePush from 'react-native-code-push';
 import {NotificationService} from './src/services/Notification';
-import {CODEPUSH_DEPLOYMENTKEY} from './src/util/codepush';
+import {CODEPUSH_DEPLOYMENTKEY} from './src/utils/codepush.ts';
 import {LanguageService} from './src/services/Language';
 
 const App = () => {

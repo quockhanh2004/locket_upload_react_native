@@ -11,7 +11,8 @@ import {
   TouchableOpacity,
 } from 'react-native-ui-lib';
 import EmojiPicker, {EmojiType} from 'rn-emoji-keyboard';
-import {hapticFeedback} from '../../../util/haptic';
+
+import {hapticFeedback} from '../../../utils/device.ts';
 
 interface EmojiPickerProps {
   onFocusInput: (val: boolean) => void;

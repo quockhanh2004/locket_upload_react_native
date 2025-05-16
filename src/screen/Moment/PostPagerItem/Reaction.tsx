@@ -10,9 +10,9 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../../redux/store';
 import {getReaction} from '../../../redux/action/getOldPost.action';
-import {t} from '../../../languages/i18n';
+import {t} from '../../../languages/i18n.ts';
 import {Reaction as ReactionModel} from '../../../models/post.model';
-import ReactionDialog from '../../../Dialog/ReactionDialog';
+import ReactionDialog from '../../../components/Dialog/ReactionDialog';
 import {ActivityIndicator} from 'react-native';
 
 interface ReactionProps {

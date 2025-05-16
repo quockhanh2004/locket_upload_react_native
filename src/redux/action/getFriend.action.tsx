@@ -1,7 +1,7 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import {getListFriend, getListIdFriend} from '../../util/Friends';
+import {getListFriend, getListIdFriend} from '../../utils/friends.ts';
 import {setMessage} from '../slice/message.slice';
-import {t} from '../../languages/i18n';
+import {t} from '../../languages/i18n.ts';
 
 interface DataParam {
   idToken: string;

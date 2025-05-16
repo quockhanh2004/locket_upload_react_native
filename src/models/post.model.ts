@@ -1,4 +1,4 @@
-import {OverlayType} from '../util/bodyMoment';
+import {OverlayType} from '../utils/locket/createBodyVideo.ts';
 
 export interface Post {
   id: string;

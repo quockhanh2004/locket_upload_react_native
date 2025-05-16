@@ -6,8 +6,8 @@ import {
   initiateUpload,
   UPLOAD_PROGRESS_STAGE,
   uploadImage,
-} from '../../util/uploadImage';
-import {loginHeader} from '../../util/constraints';
+} from '../../utils/locket/uploadImage.ts';
+import {loginHeader} from '../../utils/constants.ts';
 import {
   compressVideo,
   getDownloadVideoUrl,
@@ -15,15 +15,14 @@ import {
   initiateUploadVideo,
   UPLOAD_VIDEO_PROGRESS_STAGE,
   uploadVideo,
-} from '../../util/uploadVideo';
-import {readFileAsBytes} from '../../util/getBufferFile';
-import {wrapCancelable} from '../../helper/wrapCancelable';
+} from '../../utils/locket/uploadVideo.ts';
 import {
   createBodyVideo,
   createOverlay,
   OverLayCreate,
-} from '../../util/bodyMoment';
+} from '../../utils/locket/createBodyVideo.ts';
 import {t} from 'i18next';
+import {readFileAsBytes, wrapCancelable} from '../../utils/common.ts';
 
 export interface DataPostMoment {
   idUser: string;
