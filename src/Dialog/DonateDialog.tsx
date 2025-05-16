@@ -20,8 +20,8 @@ import {hapticFeedback} from '../util/haptic';
 
 const DonateDialog: React.FC = () => {
   const {showDonate} = useSelector((state: RootState) => state.setting);
-  const [disableButton, setDisableButton] = useState(true);
-  const [countdown, setCountdown] = useState(5);
+  const [disableButton, setDisableButton] = useState(false);
+  const [countdown, setCountdown] = useState(0);
   const [visible, setVisible] = useState(showDonate);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -32,41 +32,42 @@ const DonateDialog: React.FC = () => {
   };
 
   const handleClose = () => {
-    if (disableButton) {
-      console.log('disableButton');
+    // if (disableButton) {
+    //   console.log('disableButton');
 
-      setVisible(false);
-      setTimeout(() => {
-        setVisible(true);
-        setCountdown(5);
-      }, 0);
-    } else {
-      setVisible(false);
-    }
+    //   setVisible(false);
+    //   setTimeout(() => {
+    //     setVisible(true);
+    //     setCountdown(5);
+    //   }, 0);
+    // } else {
+    //   setVisible(false);
+    // }
+    setVisible(false);
   };
 
-  useEffect(() => {
-    if (countdown === 0) {
-      setDisableButton(false);
-      return;
-    }
+  // useEffect(() => {
+  //   if (countdown === 0) {
+  //     setDisableButton(false);
+  //     return;
+  //   }
 
-    intervalRef.current = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(intervalRef.current!);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+  //   intervalRef.current = setInterval(() => {
+  //     setCountdown(prev => {
+  //       if (prev <= 1) {
+  //         clearInterval(intervalRef.current!);
+  //         return 0;
+  //       }
+  //       return prev - 1;
+  //     });
+  //   }, 1000);
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [countdown]);
+  //   return () => {
+  //     if (intervalRef.current) {
+  //       clearInterval(intervalRef.current);
+  //     }
+  //   };
+  // }, [countdown]);
 
   return (
     <CustomDialog
