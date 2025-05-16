@@ -12,7 +12,6 @@ import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 
 import {setCameraSettings} from '../../redux/slice/setting.slice';
 import {useDispatch, useSelector} from 'react-redux';
-import {navigationTo} from '../Home';
 import {nav} from '../../navigation/navName';
 import Header from '../../components/Header';
 import {setMessage} from '../../redux/slice/message.slice';
@@ -23,6 +22,7 @@ import CameraControls from './CameraControls';
 import MediaPreviewControls from './MediaPreviewControls';
 import {RootState} from '../../redux/store';
 import {resizeImage} from '../../util/uploadImage';
+import {navigationTo} from '../../navigation/HomeNavigation';
 
 function CameraScreen() {
   const dispatch = useDispatch();

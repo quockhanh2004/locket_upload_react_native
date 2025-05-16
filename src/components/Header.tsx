@@ -7,9 +7,9 @@ import {
   Text,
   Typography,
 } from 'react-native-ui-lib';
-import {navigationTo} from '../screen/Home';
 import {nav} from '../navigation/navName';
 import {hapticFeedback} from '../util/haptic';
+import {navigationTo} from '../navigation/HomeNavigation';
 
 interface HeaderProps {
   title?: string;

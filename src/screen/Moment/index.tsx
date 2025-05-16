@@ -31,17 +31,21 @@ import {momentReaction} from '../../redux/action/postMoment.action';
 import {hapticFeedback} from '../../util/haptic';
 import {sendMessage} from '../../redux/action/chat.action';
 import {filterFriends} from '../../util/friends';
-import {navigationTo} from '../Home';
 import {nav} from '../../navigation/navName';
+import {navigationTo} from '../../navigation/HomeNavigation';
 
 interface PostScreenProps {
   initialIndex?: number;
+  disableScroll?: boolean;
 }
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
+const PostScreen: React.FC<PostScreenProps> = ({
+  initialIndex = 0,
+  disableScroll = false,
+}) => {
   const dispatch = useDispatch<AppDispatch>();
   const {posts, isLoadPosts, friends, user, response} = useOldPostsData();
   const {filterFriendShow} = useSelector((state: RootState) => state.oldPosts);
@@ -220,6 +224,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
         nestedScrollEnabled
         keyExtractor={item => item.id}
         itemSpacing={4}
+        scrollEnabled={!disableScroll}
         onEndReachedThreshold={0.5}
         onEndReached={handleLoadMore}
         initialNumToRender={20}
@@ -276,6 +281,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
               viewabilityConfig={viewabilityConfig}
               onNavigationToChatList={() => {
                 setIsViewerVisible(false);
+                hapticFeedback();
                 navigationTo(nav.chatList);
               }}
             />
@@ -310,6 +316,7 @@ const PostScreen: React.FC<PostScreenProps> = ({initialIndex = 0}) => {
                 }}
                 rightIconAction={() => {
                   setIsViewerVisible(false);
+                  hapticFeedback();
                   navigationTo(nav.chatList);
                 }}
               />

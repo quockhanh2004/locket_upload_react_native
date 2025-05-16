@@ -4,7 +4,6 @@ import {useEffect} from 'react';
 import {Platform, PermissionsAndroid, Linking} from 'react-native';
 import notifee, {AndroidImportance, EventType} from '@notifee/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {navigationTo} from '../screen/Home';
 import {nav} from '../navigation/navName';
 import {
   FirebaseMessagingTypes,
@@ -19,6 +18,7 @@ import {version} from '../../package.json';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../redux/store';
 import {setCurrentVersion} from '../redux/slice/setting.slice';
+import {navigationTo} from '../navigation/HomeNavigation';
 
 const CHANNEL_ID = 'locket_upload_channel';
 const messaging = getMessaging(getApp());

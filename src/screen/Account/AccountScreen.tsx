@@ -23,13 +23,13 @@ import MainButton from '../../components/MainButton';
 import {setMessage} from '../../redux/slice/message.slice';
 import UserInfo from '../../components/UserInfo';
 import {useRoute} from '@react-navigation/native';
-import {navigationTo} from '../Home';
 import {nav} from '../../navigation/navName';
 import {AppDispatch, RootState} from '../../redux/store';
 import ModalImageViewBlur from './ModalImageViewBlur';
 import {t} from '../../languages/i18n';
 import {UpdateInfoType} from '../../models/update.model';
 import {hapticFeedback} from '../../util/haptic';
+import {navigationTo} from '../../navigation/HomeNavigation';
 
 const AccountScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -119,6 +119,7 @@ const AccountScreen = () => {
   }, []);
 
   const handleSetting = () => {
+    hapticFeedback();
     navigationTo(nav.setting);
   };
 

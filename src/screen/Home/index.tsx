@@ -14,14 +14,7 @@ import {
 } from '@react-navigation/native';
 
 // UI Library Imports
-import {
-  View,
-  Avatar,
-  TouchableOpacity,
-  Icon,
-  Colors,
-  Text,
-} from 'react-native-ui-lib';
+import {View} from 'react-native-ui-lib';
 
 // Redux Imports
 import {useDispatch, useSelector} from 'react-redux';
@@ -40,9 +33,6 @@ import RNFS from 'react-native-fs';
 
 // Local Component/Util Imports
 import PostForm from './PostForm';
-import SelectFriendDialog from '../../Dialog/SelectFriendDialog';
-import SelectMediaDialog from '../../Dialog/SelectMediaDialog';
-import SelectColorDialog from '../../Dialog/SelectColorSwatchDialog';
 import {nav} from '../../navigation/navName';
 import {selectMedia} from '../../util/selectImage';
 import {clearAppCache} from '../../util/uploadImage';
@@ -50,12 +40,17 @@ import {deleteAllMp4Files} from '../../util/uploadVideo';
 import useTrimVideo from '../../hooks/useTrimVideo';
 import {DefaultOverlayCreate, OverLayCreate} from '../../util/bodyMoment';
 import {t} from 'i18next';
+import {
+  navigationTo,
+  clearNavigation,
+  setNavigation,
+} from '../../navigation/HomeNavigation';
 import {hapticFeedback} from '../../util/haptic';
 import {onPostMoment} from './functions/PostMoment';
 import PostScreen from '../Moment';
-import FriendPicker from '../Moment/FriendPicker';
 import {setFilterFriendShow} from '../../redux/slice/oldPosts.slice';
-import {Friend} from '../../models/friend.model';
+import HomeScreenHeader from './HomeScreenHeader';
+import HomeScreenDialogs from './dialog/HomeScreenDialogs';
 
 // --- Type Definitions ---
 
@@ -70,15 +65,14 @@ interface MediaType {
   type?: 'video' | 'image' | string; // Thêm gợi ý type
 }
 const screenHeight = Dimensions.get('window').height;
-let navigation: NavigationProp<any>;
 
 const HomeScreen = () => {
   const componentNavigation = useNavigation<NavigationProp<any>>(); // Lấy navigation từ hook
+  setNavigation(componentNavigation);
+
   const route = useRoute<RouteProp<{params: RouteParams}>>();
   const dispatch = useDispatch<AppDispatch>();
   const trimmedVideoUri = useTrimVideo();
-
-  navigation = componentNavigation;
 
   const {user, userInfo} = useSelector((state: RootState) => state.user);
   const {postMoment, isLoading} = useSelector(
@@ -87,7 +81,7 @@ const HomeScreen = () => {
   const {useCamera, unlimitedTrimVideo, postStyle} = useSelector(
     (state: RootState) => state.setting,
   );
-  const {selected, optionSend, customListFriends, friends} = useSelector(
+  const {selected, optionSend, customListFriends} = useSelector(
     (state: RootState) => state.friends,
   );
 
@@ -116,7 +110,7 @@ const HomeScreen = () => {
   // --- Effects ---
   // Effect xử lý kết quả trả về từ màn hình Crop hoặc Camera
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    const unsubscribe = componentNavigation.addListener('focus', () => {
       const {params} = route;
       let processed = false;
 
@@ -238,10 +232,6 @@ const HomeScreen = () => {
     });
   };
 
-  const handleCancelSelectMedia = () => {
-    setVisibleSelectMedia(false);
-  };
-
   const handleConfirmSelectMedia = async (value: 'gallery' | 'camera') => {
     setVisibleSelectMedia(false);
     setLocalLoading(true);
@@ -259,6 +249,7 @@ const HomeScreen = () => {
           console.log('No media selected from gallery or selection cancelled.');
         }
       } else if (from === 'camera') {
+        hapticFeedback();
         navigationTo(nav.camera);
       }
     } catch (error) {
@@ -280,6 +271,7 @@ const HomeScreen = () => {
 
     if (media.type?.startsWith('image')) {
       setIsVideo(false);
+      hapticFeedback();
       navigationTo(nav.crop, {imageUri: media.uri});
     } else if (media.type?.startsWith('video')) {
       setIsVideo(true);
@@ -308,62 +300,15 @@ const HomeScreen = () => {
   // --- Render ---
   return (
     <View flex bg-black>
-      {/* Header */}
-      <View row spread centerV padding-12>
-        {userInfo?.photoUrl ? (
-          <Avatar
-            source={{uri: userInfo?.photoUrl || undefined}}
-            size={36}
-            onPress={handleViewProfile}
-          />
-        ) : (
-          <TouchableOpacity
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 18,
-              backgroundColor: Colors.grey40,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            onPress={handleViewProfile}>
-            <Text white text80BL>
-              {userInfo?.firstName?.at(0)}
-              {userInfo?.lastName?.at(0)}
-            </Text>
-          </TouchableOpacity>
-        )}
-        {currentPage === 'screen' && user && (
-          <View height={36}>
-            <FriendPicker
-              friends={friends}
-              onSelect={(friend: Friend | null) => {
-                dispatch(setFilterFriendShow(friend));
-              }}
-              user={user}
-              value={filterFriendShow}
-            />
-          </View>
-        )}
-        <TouchableOpacity onPress={handleViewPost}>
-          <View
-            width={36}
-            height={36}
-            center
-            style={{
-              borderRadius: 8,
-              borderWidth: 1,
-              borderColor: Colors.grey40,
-            }}>
-            <Icon
-              assetGroup="icons"
-              assetName="ic_message"
-              size={24}
-              tintColor={Colors.grey40}
-            />
-          </View>
-        </TouchableOpacity>
-      </View>
+      <HomeScreenHeader
+        user={user}
+        userInfo={userInfo}
+        currentPage={currentPage}
+        filterFriendShow={filterFriendShow}
+        onViewProfile={handleViewProfile}
+        onViewPost={handleViewPost}
+        onSelectFriend={friend => dispatch(setFilterFriendShow(friend))}
+      />
 
       {/* Body */}
       <ScrollView
@@ -407,53 +352,26 @@ const HomeScreen = () => {
             bg-grey20
             marginB-12
           />
-          <PostScreen />
+          <PostScreen disableScroll={currentPage === 'form'} />
         </View>
       </ScrollView>
 
       {/* Dialogs */}
-      <SelectFriendDialog
-        visible={visibleSelectFriend}
-        onDismiss={() => setVisibleSelectFriend(false)}
-      />
-      <SelectMediaDialog
-        visible={visibleSelectMedia}
-        onDismiss={handleCancelSelectMedia}
-        onConfirm={handleConfirmSelectMedia}
-      />
-      <SelectColorDialog
-        visible={visibleSelectColor}
-        value={postStyle}
-        onDismiss={() => setVisibleSelectColor(false)}
+      <HomeScreenDialogs
+        visibleSelectMedia={visibleSelectMedia}
+        visibleSelectFriend={visibleSelectFriend}
+        visibleSelectColor={visibleSelectColor}
+        valueColors={overlay.postStyle}
+        setVisibleSelectMedia={setVisibleSelectMedia}
+        setVisibleSelectFriend={setVisibleSelectFriend}
+        setVisibleSelectColor={setVisibleSelectColor}
         onSelectColor={val => {
           dispatch(setPostStyle(val));
         }}
+        onSelectMedia={handleConfirmSelectMedia}
       />
     </View>
   );
-};
-
-// --- Exported Navigation Functions (Giữ lại theo yêu cầu) ---
-export const navigationTo = (to: string, data?: any) => {
-  // Kiểm tra xem navigation đã được gán chưa trước khi sử dụng
-  if (navigation) {
-    navigation.navigate(to, data);
-  } else {
-    console.warn(
-      'Navigation object is not yet available. Navigation action ignored.',
-    );
-  }
-};
-
-export const clearNavigation = () => {
-  // Kiểm tra xem navigation đã được gán chưa trước khi sử dụng
-  if (navigation) {
-    navigation.setParams({from: undefined, uri: undefined, camera: undefined});
-  } else {
-    console.warn(
-      'Navigation object is not yet available. Clear params action ignored.',
-    );
-  }
 };
 
 export default HomeScreen;

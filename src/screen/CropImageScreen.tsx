@@ -9,8 +9,9 @@ import {resizeImage} from '../util/uploadImage';
 import MainButton from '../components/MainButton';
 import Header from '../components/Header';
 import {BackHandler} from 'react-native';
-import {navigationTo} from './Home';
 import {t} from '../languages/i18n';
+import {navigationTo} from '../navigation/HomeNavigation';
+import {hapticFeedback} from '../util/haptic';
 
 const CropImageScreen = () => {
   const cropViewRef = useRef<any>();
@@ -47,6 +48,7 @@ const CropImageScreen = () => {
     <View flex bg-black>
       <Header
         leftIconAction={() => {
+          hapticFeedback();
           navigationTo(nav.home, {uri: null, from: nav.crop});
         }}
       />
