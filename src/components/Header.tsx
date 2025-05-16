@@ -9,7 +9,8 @@ import {
 } from 'react-native-ui-lib';
 import {navigationTo} from '../screen/Home';
 import {nav} from '../navigation/navName';
-import {hapticFeedback} from '../util/haptic';
+
+import {hapticFeedback} from '../utils/device.ts';
 
 interface HeaderProps {
   title?: string;

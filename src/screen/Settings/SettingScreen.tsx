@@ -6,7 +6,7 @@ import RNFS from 'react-native-fs';
 
 import Header from '../../components/Header';
 import MainButton from '../../components/MainButton';
-import {deleteAllMp4Files} from '../../util/uploadVideo';
+import {deleteAllMp4Files} from '../../utils/locket/uploadVideo.ts';
 import {
   setUseCameraSetting,
   setOptionFriend,
@@ -20,7 +20,7 @@ import {setOldPosts} from '../../redux/slice/oldPosts.slice';
 import {setFriends} from '../../redux/slice/friends.slice';
 import {useNavigation} from '@react-navigation/native';
 import {clearTokenData} from '../../redux/slice/spotify.slice';
-import {t} from '../../languages/i18n';
+import {t} from '../../languages/i18n.ts';
 import {setLanguage} from '../../redux/slice/language.slice';
 import {TextSwitch} from '../../components/TextSwitch';
 import {Language} from '../../models/language.model';

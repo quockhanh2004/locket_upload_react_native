@@ -3,7 +3,7 @@ import React, {useEffect, useRef} from 'react';
 import {Animated, StyleSheet} from 'react-native';
 import {View} from 'react-native-ui-lib';
 import MainButton from '../../components/MainButton';
-import {t} from '../../languages/i18n';
+import {t} from '../../languages/i18n.ts';
 
 interface AnimatedButtonsProps {
   isFocusReaction: boolean;

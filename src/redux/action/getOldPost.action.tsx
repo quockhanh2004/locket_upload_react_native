@@ -1,14 +1,11 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {setMessage} from '../slice/message.slice';
 import axios from 'axios';
-import {
-  loadPostsFromStorage,
-  savePostsToStorage,
-} from '../../helper/post.storage';
 import {setOldPosts} from '../slice/oldPosts.slice';
-import {t} from '../../languages/i18n';
+import {t} from '../../languages/i18n.ts';
 import {Post} from '../../models/post.model';
-import {cleanObject} from '../../util/cleanObject';
+import {loadPostsFromStorage, savePostsToStorage} from '../../utils/storage.ts';
+import {cleanObject} from '../../utils/common.ts';
 
 interface DataParam {
   token: string;

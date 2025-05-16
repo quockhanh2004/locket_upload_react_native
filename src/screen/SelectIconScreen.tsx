@@ -10,13 +10,13 @@ import {
   TouchableOpacity,
   Colors,
 } from 'react-native-ui-lib';
-import {iconAliases, AliasName, switchAppIcon} from '../util/SwitchIconApp';
+import {iconAliases, AliasName, switchAppIcon} from '../utils/switchAppIcon.ts';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../redux/store';
 import Header from '../components/Header';
 import {useNavigation} from '@react-navigation/native';
 import {setCustomIcon} from '../redux/slice/setting.slice';
-import {t} from '../languages/i18n';
+import {t} from '../languages/i18n.ts';
 
 interface SelectIconScreenProps {}
 

@@ -5,7 +5,8 @@ import {
   getOldPosts,
   getReaction,
 } from '../action/getOldPost.action';
-import {savePostsToStorage} from '../../helper/post.storage';
+
+import { savePostsToStorage } from "../../utils/storage.ts";
 
 interface InitialState {
   posts: Post[];

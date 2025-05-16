@@ -1,9 +1,9 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {setMessage} from '../slice/message.slice';
 import axios from 'axios';
-import {t} from '../../languages/i18n';
-import {generateUUIDv4} from '../../util/chat';
-import {loginHeader} from '../../util/constraints';
+import {t} from '../../languages/i18n.ts';
+import {loginHeader} from '../../utils/constants.ts';
+import {v4} from 'uuid';
 
 interface DataParam {
   idToken: string;
@@ -24,7 +24,7 @@ export const sendMessage = createAsyncThunk(
           receiver_uid,
           moment_uid,
           msg,
-          client_token: generateUUIDv4(),
+          client_token: v4(),
           from_memory: true,
         },
       };

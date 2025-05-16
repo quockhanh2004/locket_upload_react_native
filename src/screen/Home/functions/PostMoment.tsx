@@ -6,7 +6,7 @@ import {
 } from '../../../redux/action/postMoment.action';
 import {setTask} from '../../../redux/slice/message.slice';
 import {AppDispatch} from '../../../redux/store';
-import {OverLayCreate, OverlayType} from '../../../util/bodyMoment';
+import {OverLayCreate, OverlayType} from '../../../utils/locket/createBodyVideo.ts';
 
 interface PostMoment {
   user?: User | null;

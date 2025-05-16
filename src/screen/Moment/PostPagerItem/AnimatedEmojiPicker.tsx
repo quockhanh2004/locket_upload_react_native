@@ -3,8 +3,8 @@ import React, {useEffect, useRef} from 'react';
 import {Animated, StyleSheet} from 'react-native';
 import EmojiPick from './EmojiPick'; // chỉnh lại path cho đúng
 import {Colors, View} from 'react-native-ui-lib';
-import {hapticFeedback} from '../../../util/haptic';
 import Reaction from './Reaction';
+import {hapticFeedback} from '../../../utils/device.ts';
 
 interface AnimatedEmojiPickerProps {
   isFocusReaction: boolean;

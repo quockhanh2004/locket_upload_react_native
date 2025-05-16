@@ -1,18 +1,21 @@
 /* eslint-disable react/react-in-jsx-scope */
-import {useEffect, useState, useCallback} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {Linking} from 'react-native';
 import codePush from 'react-native-code-push';
 import {useDispatch} from 'react-redux';
 
-import AutoCheckUpdateDialog from '../Dialog/AutoCheckUpdateDialog';
-import {checkUpdateApk} from '../util/update';
-import {CODEPUSH_DEPLOYMENTKEY, getStatusFromCodePush} from '../util/codepush';
+import AutoCheckUpdateDialog from '../components/Dialog/AutoCheckUpdateDialog';
+import {checkUpdateApk} from '../utils/update.ts';
+import {
+  CODEPUSH_DEPLOYMENTKEY,
+  getStatusFromCodePush,
+} from '../utils/codepush.ts';
 import {setMessage} from '../redux/slice/message.slice';
 import {AppDispatch} from '../redux/store';
-import {t} from '../languages/i18n';
+import {t} from '../languages/i18n.ts';
 import {UpdateInfoType} from '../models/update.model';
 
-const AutoCheckUpdate: React.FC = () => {
+const AutoCheckUpdate = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [updateInfo, setUpdateInfo] = useState<UpdateInfoType | null>(null);

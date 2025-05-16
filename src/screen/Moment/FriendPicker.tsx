@@ -5,8 +5,9 @@ import {Modal, FlatList, Dimensions} from 'react-native';
 import {TouchableOpacity, Text, View, Image, Colors} from 'react-native-ui-lib';
 import {Friend} from '../../models/friend.model';
 import {User} from '../../models/user.model';
-import {t} from '../../languages/i18n';
-import {hapticFeedback} from '../../util/haptic';
+import {t} from '../../languages/i18n.ts';
+
+import {hapticFeedback} from '../../utils/device.ts';
 
 const screenHeight = Dimensions.get('window').height;
 

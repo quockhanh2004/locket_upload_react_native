@@ -39,18 +39,18 @@ import RNFS from 'react-native-fs';
 
 // Local Component/Util Imports
 import PostForm from './PostForm';
-import SelectFriendDialog from '../../Dialog/SelectFriendDialog';
-import SelectMediaDialog from '../../Dialog/SelectMediaDialog';
-import SelectColorDialog from '../../Dialog/SelectColorSwatchDialog';
+import SelectFriendDialog from '../../components/Dialog/SelectFriendDialog';
+import SelectMediaDialog from '../../components/Dialog/SelectMediaDialog';
+import SelectColorDialog from '../../components/Dialog/SelectColorSwatchDialog';
 import {nav} from '../../navigation/navName';
-import {selectMedia} from '../../util/selectImage';
-import {clearAppCache} from '../../util/uploadImage';
-import {deleteAllMp4Files} from '../../util/uploadVideo';
+import {selectMedia} from '../../utils/selectImage.ts';
+import {clearAppCache} from '../../utils/locket/uploadImage.ts';
+import {deleteAllMp4Files} from '../../utils/locket/uploadVideo.ts';
 import useTrimVideo from '../../hooks/useTrimVideo';
-import {DefaultOverlayCreate, OverLayCreate} from '../../util/bodyMoment';
+import {DefaultOverlayCreate, OverLayCreate} from '../../utils/locket/createBodyVideo.ts';
 import {t} from 'i18next';
-import {hapticFeedback} from '../../util/haptic';
 import {onPostMoment} from './functions/PostMoment';
+import {hapticFeedback} from '../../utils/device.ts';
 
 // --- Type Definitions ---
 

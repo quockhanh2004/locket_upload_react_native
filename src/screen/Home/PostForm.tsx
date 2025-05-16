@@ -5,12 +5,12 @@ import {View, Button, Colors, Text, LoaderScreen} from 'react-native-ui-lib';
 import ViewMedia from '../../components/ViewMedia';
 import MainButton from '../../components/MainButton';
 import PostPager from './PostPager';
-import {OverLayCreate, OverlayType} from '../../util/bodyMoment';
-import GuideDialog from '../../Dialog/GuideDialog';
+import {OverLayCreate, OverlayType} from '../../utils/locket/createBodyVideo.ts';
+import GuideDialog from '../../components/Dialog/GuideDialog';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../redux/store';
 import {setShowSelectColor} from '../../redux/slice/guide.slice';
-import {t} from '../../languages/i18n';
+import {t} from '../../languages/i18n.ts';
 
 interface Props {
   selectedMedia: any;

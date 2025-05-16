@@ -28,9 +28,9 @@
     "@types/base-64": "^1.0.2",
     "add": "^2.0.6",
     "axios": "1.7.9",
-    "crypto-js": "^4.2.0",
     "ffmpeg-kit-react-native": "https://gitpkg.vercel.app/lovegaoshi/ffmpeg-kit/react-native?4a0122d6dc3fb13237870dfea2533992f19c324a",
     "i18next": "^25.0.1",
+    "md5": "^2.3.0",
     "path": "^0.12.7",
     "query-string": "^9.1.1",
     "react": "18.2.0",
@@ -60,6 +60,7 @@
     "react-redux": "^9.2.0",
     "redux-persist": "^6.0.0",
     "rn-emoji-keyboard": "^1.7.0",
+    "uuid": "^11.1.0",
     "yarn": "^1.22.22"
   },
   "devDependencies": {
@@ -70,6 +71,7 @@
     "@react-native/eslint-config": "0.73.2",
     "@react-native/metro-config": "0.73.5",
     "@react-native/typescript-config": "0.73.1",
+    "@types/md5": "^2",
     "@types/react": "^18.2.6",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.6.3",

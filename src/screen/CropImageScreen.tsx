@@ -5,12 +5,12 @@ import {CropView} from 'react-native-image-crop-tools';
 import {useRoute} from '@react-navigation/native';
 
 import {nav} from '../navigation/navName';
-import {resizeImage} from '../util/uploadImage';
+import {resizeImage} from '../utils/locket/uploadImage.ts';
 import MainButton from '../components/MainButton';
 import Header from '../components/Header';
 import {BackHandler} from 'react-native';
 import {navigationTo} from './Home';
-import {t} from '../languages/i18n';
+import {t} from '../languages/i18n.ts';
 
 const CropImageScreen = () => {
   const cropViewRef = useRef<any>();

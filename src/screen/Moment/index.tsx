@@ -20,7 +20,7 @@ import {Friend} from '../../models/friend.model';
 import {Post} from '../../models/post.model';
 import PostScreenHeader from './PostScreenHeader';
 import {removePost} from '../../redux/slice/oldPosts.slice';
-import {t} from '../../languages/i18n';
+import {t} from '../../languages/i18n.ts';
 import {useGlobalMusicPlayer} from '../../hooks/useGlobalMusicPlayer';
 import {useOldPostsData} from '../../hooks/useOldPostData';
 import AnimatedButtons from './AnimatedButton';
@@ -28,8 +28,8 @@ import AnimatedEmojiPicker from './PostPagerItem/AnimatedEmojiPicker';
 import GridItem from './GridItem';
 import PostList from './PostList';
 import {momentReaction} from '../../redux/action/postMoment.action';
-import {hapticFeedback} from '../../util/haptic';
 import {sendMessage} from '../../redux/action/chat.action';
+import {hapticFeedback} from '../../utils/device.ts';
 
 interface PostScreenProps {
   initialIndex?: number;
