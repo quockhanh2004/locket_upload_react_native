@@ -16,11 +16,11 @@ import SettingScreen from '../screen/Settings/SettingScreen';
 import CameraScreen from '../screen/Camera/CameraScreen';
 import PostScreen from '../screen/Moment';
 import MessageDialog from '../Dialog/MessageDialog';
-import DonateDialog from '../Dialog/DonateDiloag';
 import AutoCheckUpdate from '../services/AutoCheckUpdate';
 import ChatScreen from '../screen/Chat/ChatScreen';
 import ListChat from '../screen/Chat/ListChatScreen';
 import {OnOpenAppService} from '../services/OnOpenApp';
+import DonateDialog from '../Dialog/DonateDialog';
 
 const Stack = createNativeStackNavigator();
 

@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -18,22 +18,60 @@ import {useSelector} from 'react-redux';
 import {RootState} from '../redux/store';
 import {hapticFeedback} from '../util/haptic';
 
-interface DonateDialogProps {}
-
-const DonateDialog: React.FC<DonateDialogProps> = () => {
+const DonateDialog: React.FC = () => {
   const {showDonate} = useSelector((state: RootState) => state.setting);
+  const [disableButton, setDisableButton] = useState(true);
+  const [countdown, setCountdown] = useState(5);
   const [visible, setVisible] = useState(showDonate);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   const handleCopyBank = () => {
     hapticFeedback();
     Clipboard.setString('0382914192');
     ToastAndroid.show(t('copyed'), ToastAndroid.SHORT);
   };
+
+  const handleClose = () => {
+    if (disableButton) {
+      console.log('disableButton');
+
+      setVisible(false);
+      setTimeout(() => {
+        setVisible(true);
+        setCountdown(5);
+      }, 0);
+    } else {
+      setVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    if (countdown === 0) {
+      setDisableButton(false);
+      return;
+    }
+
+    intervalRef.current = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(intervalRef.current!);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [countdown]);
+
   return (
     <CustomDialog
       visible={visible}
-      onDismiss={() => {
-        setVisible(false);
-      }}
+      onDismiss={handleClose}
       title={t('thank_for_use_my_app')}
       panDirection={Dialog.directions.DOWN}
       bottom
@@ -84,10 +122,11 @@ const DonateDialog: React.FC<DonateDialogProps> = () => {
           </View>
         </View>
         <MainButton
-          label={t('close')}
-          onPress={() => {
-            setVisible(false);
-          }}
+          label={
+            disableButton ? `${t('can_close_after')} ${countdown}` : t('close')
+          }
+          disabled={disableButton}
+          onPress={() => setVisible(false)}
         />
       </View>
     </CustomDialog>
