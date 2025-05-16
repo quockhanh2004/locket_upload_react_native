@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {
   useCallback,
   useLayoutEffect,
@@ -96,7 +97,6 @@ const ChatScreen = () => {
       getMessageWith({
         conversation_uid: uid,
         token: user?.idToken || '',
-        // timestamp: messages[0]?.create_time,
         timestamp: messages[messages.length - 1]?.create_time,
       }),
     );
@@ -155,11 +155,13 @@ const ChatScreen = () => {
           onPress={handlePressComponentInput}>
           <TextField
             placeholder="Message..."
-            padding-8
             value={message}
             ref={inputRef}
+            paddingL-12
             placeholderTextColor={Colors.grey20}
             onChangeText={setMessage}
+            containerStyle={{width: '85%'}}
+            multiline
             onFocus={() => setIsFocusTextField(true)}
             onBlur={() => setIsFocusTextField(false)}
           />
