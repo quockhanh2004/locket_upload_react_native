@@ -10,7 +10,7 @@ export const getListIdFriend = async (token: string) => {
       token,
     },
   );
-  return response.data.users;
+  return response.data?.users;
 };
 
 export const getListFriend = (
@@ -21,6 +21,7 @@ export const getListFriend = (
     return new Promise<Friend>(async (resolve, reject) => {
       try {
         const response = await fetchUser(friendId, token);
+        console.log(JSON.stringify(response.data));
 
         const data = response.data.result.data as Friend;
 

@@ -20,18 +20,13 @@ target 'locket_upload' do
   pod 'ffmpeg-kit-ios-full-gpl', :podspec => './ffmpeg-kit-ios-full-gpl.podspec'
 
   config = use_native_modules!
-
-  pod 'FirebaseCore', :modular_headers => true
-  pod 'GoogleUtilities', :modular_headers => true
+  use_frameworks! :linkage => :static
+  
   use_react_native!(
     :path => config[:reactNativePath],
     :flipper_configuration => FlipperConfiguration.disabled,
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-
-  target 'locket_uploadTests' do
-    inherit! :complete
-  end
 
   post_install do |installer|
     require_relative '../node_modules/react-native/scripts/react_native_pods'
@@ -43,16 +38,14 @@ target 'locket_upload' do
 
     # Exclude problematic dependencies
     installer.pods_project.targets.each do |target|
-      if target.name == 'ffmpeg-kit-react-native'
-        target.build_configurations.each do |config|
-          config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
-        end
-      end
+      # target.build_configurations.each do |config|
+      #   config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+      # end
 
-      target.build_configurations.each do |config|
-        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
-        config.build_settings['CLANG_CXX_LIBRARY'] = 'libc++'
-      end
+      # target.build_configurations.each do |config|
+      #   config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+      #   config.build_settings['CLANG_CXX_LIBRARY'] = 'libc++'
+      # end
     end
   end
 end
