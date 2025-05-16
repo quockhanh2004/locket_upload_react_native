@@ -64,7 +64,7 @@ const settingSlice = createSlice({
     },
 
     setShowDonate(state, action: PayloadAction<boolean>) {
-      state.showDonate = action.payload;
+      state.showDonate = !action.payload;
     },
 
     setSetting(state, action) {
