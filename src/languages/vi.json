@@ -108,5 +108,12 @@
   "activity": "Hoạt động",
   "loading": "Đang tải...",
   "skip_this_version": "Bỏ qua phiên bản này",
-  "can_close_after": "Bạn có thể đóng sau"
+  "can_close_after": "Bạn có thể đóng sau",
+  "chat": "Trò chuyện",
+  "new_message": "⬇ Tin nhắn mới",
+  "not_thing_here": "Không có gì ở đây cả",
+  "loading_message": "Đang tải tin nhắn...",
+  "type_message": "Nhập tin nhắn...",
+  "copy": "Sao chép",
+  "delete": "Xóa"
 }

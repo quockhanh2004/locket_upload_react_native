@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   View,
   Text,
@@ -11,13 +11,89 @@ import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../../redux/store';
 import {getReaction} from '../../../redux/action/getOldPost.action';
 import {t} from '../../../languages/i18n';
-import {Reaction as ReactionModel} from '../../../models/post.model';
 import ReactionDialog from '../../../Dialog/ReactionDialog';
-import {ActivityIndicator} from 'react-native';
+import {ActivityIndicator, StyleSheet} from 'react-native';
 
 interface ReactionProps {
   momentId: string;
 }
+
+interface FriendReaction {
+  uid: string;
+  name: string;
+  image: string;
+  reaction: string;
+}
+
+const mapFriendsWithReactions = (
+  reactionData: RootState['oldPosts']['reaction'],
+  momentId: string,
+  friends: RootState['friends']['friends'],
+): FriendReaction[] => {
+  const grouped: Record<string, string[]> = {};
+  if (!reactionData || !reactionData[momentId]) {
+    return [];
+  }
+
+  for (const {user: uid, value} of reactionData[momentId]) {
+    if (!grouped[uid]) {
+      grouped[uid] = [];
+    }
+    grouped[uid].push(value);
+  }
+
+  return Object.entries(grouped)
+    .map(([uid, values]) => {
+      const friend = friends[uid];
+      if (!friend) {
+        return null;
+      }
+      return {
+        uid,
+        name: friend.first_name,
+        image: friend.profile_picture_url,
+        reaction: values.join(' '),
+      };
+    })
+    .filter(Boolean) as FriendReaction[];
+};
+
+const ReactionAvatars = ({data}: {data: FriendReaction[]}) => (
+  <View row>
+    {data.map((item, index) => (
+      <View
+        key={item.uid}
+        style={[{marginLeft: -8}, index === 0 && {marginLeft: 0}]}>
+        <Avatar
+          source={{uri: item.image}}
+          size={30}
+          imageStyle={styles.avatarImage}
+        />
+      </View>
+    ))}
+  </View>
+);
+
+const LoadingReaction = () => (
+  <View style={styles.container} row center bg-grey10 padding-12>
+    <View center row gap-8>
+      <Text white text70BL center>
+        ✨ {t('loading')}
+      </Text>
+      <ActivityIndicator size={30} color={Colors.grey50} />
+    </View>
+  </View>
+);
+
+const EmptyReaction = () => (
+  <View style={styles.container} row center bg-grey10 padding-12>
+    <View height={30} center>
+      <Text white text70BL center>
+        ✨ {t('no_activity_yet')}
+      </Text>
+    </View>
+  </View>
+);
 
 const Reaction: React.FC<ReactionProps> = ({momentId}) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -27,115 +103,64 @@ const Reaction: React.FC<ReactionProps> = ({momentId}) => {
   );
   const {friends} = useSelector((state: RootState) => state.friends);
 
-  const [visibleReaction, setvisibleReaction] = useState(false);
-
-  const handleReactionPress = () => {
-    setvisibleReaction(true);
-  };
+  const [isReactionDialogVisible, setIsReactionDialogVisible] = useState(false);
 
   useEffect(() => {
-    const fetchReactions = async () => {
-      if (!user?.idToken || !momentId) {
-        return;
-      }
-      dispatch(
-        getReaction({
-          momentId,
-          token: user.idToken,
-        }),
-      );
-    };
-
-    fetchReactions();
+    if (!user?.idToken || !momentId) {
+      return;
+    }
+    dispatch(
+      getReaction({
+        momentId,
+        token: user.idToken,
+      }),
+    );
   }, [dispatch, momentId, user?.idToken]);
 
-  const getFriendsWithReactions = (reactions: ReactionModel[]) => {
-    const grouped: Record<string, string[]> = {};
+  const reactionList = useMemo(
+    () => mapFriendsWithReactions(reaction, momentId, friends),
+    [reaction, momentId, friends],
+  );
+  if (isLoadingReaction) {
+    return <LoadingReaction />;
+  }
 
-    reactions.forEach(({user: uid, value}) => {
-      if (!grouped[uid]) {
-        grouped[uid] = [];
-      }
-      grouped[uid].push(value);
-    });
-
-    return Object.entries(grouped)
-      .map(([uid, values]) => {
-        const friend = friends[uid];
-        return {
-          uid,
-          name: friend.first_name,
-          image: friend.profile_picture_url,
-          reaction: values.join(' '),
-        };
-      })
-      .filter(Boolean); // loại bỏ null nếu có
-  };
-
-  if (reaction?.momentId === momentId && reaction?.reactions.length > 0) {
+  if (reactionList.length > 0) {
     return (
       <>
         <TouchableOpacity
-          onPress={handleReactionPress}
-          style={{borderRadius: 999, gap: 12}}
+          onPress={() => setIsReactionDialogVisible(true)}
+          style={styles.container}
           row
           center
           bg-grey10
+          gap-12
           padding-12>
           <Text white text70BL>
             ✨ {t('activity')}{' '}
           </Text>
-          <View row>
-            {getFriendsWithReactions(reaction.reactions).map(item => {
-              if (!item?.uid) {
-                return null;
-              }
-              return (
-                <View key={item.uid} style={{marginStart: -8}}>
-                  <Avatar
-                    source={{uri: item?.image}}
-                    size={30}
-                    imageStyle={{
-                      borderWidth: 0.5,
-                      borderColor: Colors.grey40,
-                    }}
-                  />
-                </View>
-              );
-            })}
-          </View>
+          <ReactionAvatars data={reactionList} />
         </TouchableOpacity>
         <ReactionDialog
-          visible={visibleReaction}
-          onDismiss={() => setvisibleReaction(false)}
-          reaction={getFriendsWithReactions(reaction.reactions)}
+          visible={isReactionDialogVisible}
+          onDismiss={() => setIsReactionDialogVisible(false)}
+          reaction={reactionList}
         />
       </>
     );
   }
 
-  if (isLoadingReaction) {
-    return (
-      <View style={{borderRadius: 999}} row center bg-grey10 padding-12>
-        <View center row gap-8>
-          <Text white text70BL center>
-            ✨ {t('loading')}
-          </Text>
-          <ActivityIndicator size={30} color={Colors.grey50} />
-        </View>
-      </View>
-    );
-  }
-
-  return (
-    <View style={{borderRadius: 999}} row center bg-grey10 padding-12>
-      <View height={30} center>
-        <Text white text70BL center>
-          ✨ {t('no_activity_yet')}
-        </Text>
-      </View>
-    </View>
-  );
+  return <EmptyReaction />;
 };
+
+const styles = StyleSheet.create({
+  container: {
+    borderRadius: 999,
+  },
+  avatarImage: {
+    borderWidth: 0.5,
+    borderColor: Colors.grey40,
+  },
+});
 
 export default React.memo(Reaction);

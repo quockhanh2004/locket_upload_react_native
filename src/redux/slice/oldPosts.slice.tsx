@@ -14,9 +14,8 @@ interface InitialState {
   deleted: string[];
   isLoadingReaction: boolean;
   reaction?: {
-    momentId: string;
-    reactions: Reaction[];
-  } | null;
+    [key: string]: Reaction[];
+  };
   response: {
     post: Post[];
     currentUserId?: string;
@@ -33,7 +32,7 @@ const oldPostsSlice = createSlice({
     posts: [],
     isLoadPosts: false,
     deleted: [],
-    reaction: null,
+    reaction: {},
     isLoadingReaction: false,
     response: null,
     filterFriendShow: null,
@@ -123,7 +122,10 @@ const oldPostsSlice = createSlice({
       .addCase(getReaction.fulfilled, (state, action) => {
         const {momentId, reactions} = action.payload;
         state.isLoadingReaction = false;
-        state.reaction = {momentId, reactions};
+        state.reaction = {
+          ...state.reaction,
+          [momentId]: reactions,
+        };
       })
       .addCase(getReaction.rejected, state => {
         state.isLoadingReaction = false;

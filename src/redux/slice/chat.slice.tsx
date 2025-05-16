@@ -4,12 +4,15 @@ import {getMessage, getMessageWith} from '../action/chat.action';
 
 interface InitialState {
   listChat: {
+    //uid cuộc trò chuyện
     [key: string]: ListChatType;
   };
   isLoadChat: boolean;
   isSending: boolean;
   chat: {
+    //uid cuộc trò chuyện
     [key: string]: {
+      //id tin nhắn
       [key: string]: ChatMessageType;
     };
   };
@@ -66,19 +69,29 @@ const chatSlice = createSlice({
       action: PayloadAction<{uid: string; message: ChatMessageType[]}>,
     ) => {
       const {uid, message} = action.payload;
-      if (message.length === 0) {
+
+      // Không có message mới, chỉ tắt flag load
+      if (!message.length) {
         state.isLoadChat = false;
         return;
       }
 
-      const messageObject = message.reduce((acc, item) => {
-        acc[item.id] = item;
-        return acc;
-      }, {} as {[key: string]: ChatMessageType});
+      // Lấy danh sách tin nhắn cũ (nếu có)
+      const previousMessages = state.chat[uid] || {};
 
+      // Chuyển mảng tin nhắn thành object dạng { id: message }
+      const newMessagesMap = message.reduce<{[key: string]: ChatMessageType}>(
+        (acc, msg) => {
+          acc[msg.id] = msg;
+          return acc;
+        },
+        {},
+      );
+
+      // Gộp tin nhắn cũ và mới
       state.chat[uid] = {
-        ...state.chat[uid],
-        ...messageObject,
+        ...previousMessages,
+        ...newMessagesMap,
       };
     },
 

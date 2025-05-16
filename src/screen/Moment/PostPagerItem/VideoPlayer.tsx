@@ -26,6 +26,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({uri, isActive}) => {
       paused={!isActive || !isVideoReady}
       onLoad={onVideoLoad}
       repeat
+      bufferConfig={{
+        minBufferMs: 15000,
+        maxBufferMs: 20000,
+        bufferForPlaybackMs: 2500,
+        bufferForPlaybackAfterRebufferMs: 5000,
+      }}
     />
   );
 };

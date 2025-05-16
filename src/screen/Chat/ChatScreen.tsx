@@ -38,6 +38,7 @@ import Header from '../../components/Header';
 import CustomAvatar from '../../components/Avatar';
 import {Friend} from '../../models/friend.model';
 import {ChatMessageType} from '../../models/chat.model';
+import {t} from '../../languages/i18n';
 
 interface RouteParams {
   uid: string;
@@ -140,7 +141,7 @@ const ChatScreen = () => {
       <View flex padding-20 bg-black gap-12 spread>
         {isLoadChat && (
           <View center>
-            <Text white>Loading messages...</Text>
+            <Text white>{t('loading_message')}</Text>
           </View>
         )}
         <MessageList
@@ -155,7 +156,7 @@ const ChatScreen = () => {
             style={styles.inputContainer}
             onPress={handlePressComponentInput}>
             <TextField
-              placeholder="Message..."
+              placeholder={t('type_message')}
               value={message}
               ref={inputRef}
               paddingH-12
