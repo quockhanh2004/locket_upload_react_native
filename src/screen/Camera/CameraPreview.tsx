@@ -175,6 +175,12 @@ const CameraPreview = forwardRef<Camera, CameraPreviewProps>(
               resizeMode="cover"
               repeat={true}
               muted={false}
+              bufferConfig={{
+                minBufferMs: 15000,
+                maxBufferMs: 20000,
+                bufferForPlaybackMs: 2500,
+                bufferForPlaybackAfterRebufferMs: 5000,
+              }}
             />
           );
         }

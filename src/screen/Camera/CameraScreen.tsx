@@ -1,12 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useRef, useEffect, useCallback} from 'react';
+import React, {useState, useRef, useEffect, useCallback, useMemo} from 'react';
 import {View, Text} from 'react-native-ui-lib';
-import {
-  Camera,
-  useCameraDevices,
-  useCameraFormat,
-} from 'react-native-vision-camera';
+import {Camera, useCameraDevices} from 'react-native-vision-camera';
 import {BackHandler, AppState} from 'react-native';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 
@@ -45,20 +41,18 @@ function CameraScreen() {
     devices.find(cam => cam.position === cameraSettings?.cameraId) ||
     devices[0];
 
-  const format = useCameraFormat(device, [
-    {
-      fps: 60,
-    },
-    {
-      photoHdr: true,
-    },
-    {
-      videoHdr: true,
-    },
-    {
-      videoStabilizationMode: 'auto',
-    },
-  ]);
+  const format = useMemo(() => {
+    if (!device) {
+      return undefined;
+    }
+    return (
+      device.formats.find(
+        f =>
+          (f.videoWidth === 720 && f.videoHeight === 1280) ||
+          (f.videoWidth === 1280 && f.videoHeight === 720), // phòng trường hợp máy ngang
+      ) || device.formats[0]
+    );
+  }, [device]);
 
   // Refs cho việc quay video
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
