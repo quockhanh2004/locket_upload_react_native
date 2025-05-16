@@ -3,7 +3,7 @@ import {setMessage} from '../slice/message.slice';
 import axios from 'axios';
 import {parseSpotifyTrack} from '../../services/Spotify';
 import {clearTokenData} from '../slice/spotify.slice';
-import {t} from '../../languages/i18n';
+import {t} from '../../languages/i18n.ts';
 
 interface DataParam {
   code?: string | null;

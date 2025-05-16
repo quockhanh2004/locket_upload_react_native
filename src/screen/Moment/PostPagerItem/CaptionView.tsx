@@ -1,14 +1,24 @@
 import React, {useCallback} from 'react';
-import {View, Text, Colors, Icon, TouchableOpacity} from 'react-native-ui-lib';
+import {Colors, Icon, Text, TouchableOpacity, View} from 'react-native-ui-lib';
 import {OverlayID, Post} from '../../../models/post.model';
-import {parseAltText} from '../../../util/regex';
 import {Linking} from 'react-native';
-import {getIconFill} from '../../../util/getIconFill';
-import {hapticFeedback} from '../../../util/haptic';
+
+import {hapticFeedback} from '../../../utils/device.ts';
+import {parseAltText} from '../../../utils/common.ts';
 
 interface CaptionViewProps {
   post: Post;
 }
+
+const getIconFill = (icon: string) => {
+  if (icon === 'clock.fill') {
+    return '🕒';
+  }
+  if (icon === 'location.fill') {
+    return '📍';
+  }
+  return icon;
+};
 
 const CaptionView: React.FC<CaptionViewProps> = ({post}) => {
   const overlay = post?.overlays[0];

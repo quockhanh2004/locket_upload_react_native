@@ -16,13 +16,13 @@ import {navigationTo} from '../Home';
 import {nav} from '../../navigation/navName';
 import Header from '../../components/Header';
 import {setMessage} from '../../redux/slice/message.slice';
-import {hapticFeedback} from '../../util/haptic';
 
 import CameraPreview from './CameraPreview';
 import CameraControls from './CameraControls';
 import MediaPreviewControls from './MediaPreviewControls';
 import {RootState} from '../../redux/store';
-import {resizeImage} from '../../util/uploadImage';
+import {resizeImage} from '../../utils/locket/uploadImage.ts';
+import {hapticFeedback} from '../../utils/device.ts';
 
 function CameraScreen() {
   const dispatch = useDispatch();

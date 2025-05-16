@@ -5,20 +5,20 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Linking, RefreshControl, ScrollView} from 'react-native';
 import codePush from 'react-native-code-push';
-import {checkUpdateApk} from '../../util/update';
+import {checkUpdateApk} from '../../utils/update.ts';
 
 import {
   // enableLocketGold,
   getAccountInfo,
   updateDisplayName,
 } from '../../redux/action/user.action';
-import EditTextDialog from '../../Dialog/EditTextDialog';
+import EditTextDialog from '../../components/Dialog/EditTextDialog';
 import Header from '../../components/Header';
-import UpdatePopup from '../../Dialog/UpdatePopup';
+import UpdatePopup from '../../components/Dialog/UpdatePopup';
 import {
   CODEPUSH_DEPLOYMENTKEY,
   getStatusFromCodePush,
-} from '../../util/codepush';
+} from '../../utils/codepush.ts';
 import MainButton from '../../components/MainButton';
 import {setMessage} from '../../redux/slice/message.slice';
 import UserInfo from '../../components/UserInfo';
@@ -27,9 +27,10 @@ import {navigationTo} from '../Home';
 import {nav} from '../../navigation/navName';
 import {AppDispatch, RootState} from '../../redux/store';
 import ModalImageViewBlur from './ModalImageViewBlur';
-import {t} from '../../languages/i18n';
+import {t} from '../../languages/i18n.ts';
 import {UpdateInfoType} from '../../models/update.model';
-import {hapticFeedback} from '../../util/haptic';
+
+import {hapticFeedback} from '../../utils/device.ts';
 
 const AccountScreen = () => {
   const dispatch = useDispatch<AppDispatch>();

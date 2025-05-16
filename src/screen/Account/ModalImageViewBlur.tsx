@@ -1,7 +1,7 @@
 import {Avatar, View} from 'react-native-ui-lib';
 import React from 'react';
 import {Dimensions} from 'react-native';
-import BlurModal from '../../Dialog/BlurModal';
+import BlurModal from '../../components/Dialog/BlurModal';
 
 interface ModalImageViewBlurProps {
   image: string;

@@ -2,14 +2,14 @@
 import React, {useRef, useState, useCallback, useEffect} from 'react';
 import {FlatList, ViewToken} from 'react-native';
 import {Colors, View} from 'react-native-ui-lib';
-import {getCurrentTime} from '../../util/convertTime';
-import {OverlayType} from '../../util/bodyMoment';
+import {OverlayType} from '../../utils/locket/createBodyVideo.ts';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../redux/store';
 import ItemStandard from './itemCaption/Standard';
 import ItemTime from './itemCaption/Time';
 import ItemMusic from './itemCaption/Music';
 import {refreshAccessToken} from '../../redux/action/spotify.action';
+import {getCurrentTime} from '../../utils/common.ts';
 
 const DATA = [
   {type: OverlayType.standard},

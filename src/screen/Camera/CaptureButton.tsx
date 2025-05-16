@@ -10,7 +10,8 @@ import {
   State as GestureState,
 } from 'react-native-gesture-handler';
 import {runOnJS} from 'react-native-reanimated';
-import {hapticFeedback} from '../../util/haptic'; // Điều chỉnh đường dẫn
+
+import {hapticFeedback} from '../../utils/device.ts'; // Điều chỉnh đường dẫn
 
 interface CaptureButtonProps {
   isRecording: boolean;

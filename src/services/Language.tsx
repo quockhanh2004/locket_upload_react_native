@@ -1,7 +1,7 @@
 import {useEffect} from 'react';
 import {useSelector} from 'react-redux';
 import {RootState} from '../redux/store';
-import i18n from '../languages/i18n';
+import i18n from '../languages/i18n.ts';
 
 export const LanguageService = () => {
   const currentLanguage = useSelector(
