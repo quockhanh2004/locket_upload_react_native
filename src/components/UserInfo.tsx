@@ -9,9 +9,9 @@ import {
   Icon,
   LoaderScreen,
 } from 'react-native-ui-lib';
-import {converTime} from '../util/convertTime';
-import {t} from '../languages/i18n';
+import {t} from '../languages/i18n.ts';
 import {User} from '../models/user.model';
+import {convertTime} from '../utils/common.ts';
 
 interface UserInfoProps {
   dataUser: User | null | undefined;
@@ -83,7 +83,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
         {dataUser?.email}
       </Text>
       <Text text70BL color={Colors.white} marginT-10>
-        {t('invate_to_locket')} {converTime(dataUser?.createdAt || '0')}
+        {t('invate_to_locket')} {convertTime(dataUser?.createdAt || '0')}
       </Text>
     </View>
   );

@@ -3,7 +3,7 @@ import {
   uploadImageToFirebaseStorage,
   uploadVideoToFirebase,
 } from '../action/postMoment.action';
-import {t} from '../../languages/i18n';
+import {t} from '../../languages/i18n.ts';
 
 interface ProgressUpload {
   state: string;

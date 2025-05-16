@@ -1,4 +1,4 @@
-import { AliasName } from "../util/SwitchIconApp";
+import { AliasName } from "../utils/switchAppIcon.ts";
 
 export interface CameraSetting {
   cameraId?: string;

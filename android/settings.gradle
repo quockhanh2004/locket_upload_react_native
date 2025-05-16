@@ -1,5 +1,6 @@
 rootProject.name = 'locket_upload'
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+include ':ffmpeg-kit-binaries'
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')
 include ':app', ':react-native-code-push'

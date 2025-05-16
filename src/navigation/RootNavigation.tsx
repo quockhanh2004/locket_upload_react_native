@@ -5,7 +5,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 
 import {AppDispatch, RootState} from '../redux/store';
-import {restoreOldData} from '../util/migrateOldPersist';
+import {restoreOldData} from '../utils/migrateOldPersist.ts';
 import {nav} from './navName';
 
 import LoginScreen from '../screen/LoginScreen';
@@ -15,8 +15,8 @@ import CropImageScreen from '../screen/CropImageScreen';
 import SettingScreen from '../screen/Settings/SettingScreen';
 import CameraScreen from '../screen/Camera/CameraScreen';
 import PostScreen from '../screen/Moment';
-import MessageDialog from '../Dialog/MessageDialog';
-import DonateDialog from '../Dialog/DonateDialog';
+import MessageDialog from '../components/Dialog/MessageDialog';
+import DonateDialog from '../components/Dialog/DonateDialog';
 import SelectIconScreen from '../screen/SelectIconScreen';
 import AutoCheckUpdate from '../services/AutoCheckUpdate';
 import {OnOpenAppService} from '../services/OnOpenApp';

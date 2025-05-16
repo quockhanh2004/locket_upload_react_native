@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {NativeEventEmitter, NativeModules} from 'react-native';
-import {clearAppCache} from '../util/uploadImage';
+import {clearAppCache} from '../utils/locket/uploadImage.ts';
 import {clearNavigation} from '../screen/Home';
 
 const useTrimVideo = () => {

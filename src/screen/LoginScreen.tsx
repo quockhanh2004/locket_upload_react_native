@@ -18,12 +18,13 @@ import {RootState, AppDispatch} from '../redux/store';
 
 import {login, loginPhone, resetPassword} from '../redux/action/user.action';
 import {setMessage} from '../redux/slice/message.slice';
-import {checkEmail, checkPhoneNumber} from '../util/regex';
 import {clearStatus} from '../redux/slice/user.slice';
 import {t} from 'i18next';
 import {Linking} from 'react-native';
 import {TextSwitch} from '../components/TextSwitch';
-import {hapticFeedback} from '../util/haptic';
+
+import {hapticFeedback} from '../utils/device.ts';
+import {checkEmail, checkPhoneNumber} from '../utils/common.ts';
 
 const LoginScreen = () => {
   const dispatch = useDispatch<AppDispatch>();

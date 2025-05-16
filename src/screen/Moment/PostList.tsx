@@ -3,7 +3,7 @@ import {FlatList, RefreshControl, View, Text, StyleSheet} from 'react-native';
 import {Post} from '../../models/post.model';
 import PostPagerItem from './PostPagerItem/PostPagerItem';
 import PostScreenHeader from './PostScreenHeader';
-import {t} from '../../languages/i18n';
+import {t} from '../../languages/i18n.ts';
 
 interface PostListProps {
   isLoadPosts: boolean;

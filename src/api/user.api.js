@@ -1,6 +1,6 @@
 import axios from 'axios';
-import {loginHeader} from '../util/constraints';
-import instance from '../util/axios_locketcamera';
+import {loginHeader} from '../utils/constants';
+import {instanceLocket as instance} from '../utils/axios';
 
 export const login = async data => {
   try {
@@ -67,18 +67,23 @@ export const getAccessToken = async data => {
 };
 
 export const fetchUser = async (user_uid, token) => {
-  return await axios.post(
-    'https://api.locketcamera.com/fetchUserV2',
-    {
-      data: {
-        user_uid,
+  try {
+    const response = await axios.post(
+      'https://api.locketcamera.com/fetchUserV2',
+      {
+        data: {
+          user_uid: user_uid,
+        },
       },
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       },
-    },
-  );
+    );
+    return response;
+  } catch (error) {
+    console.log(JSON.stringify(error.request));
+  }
 };

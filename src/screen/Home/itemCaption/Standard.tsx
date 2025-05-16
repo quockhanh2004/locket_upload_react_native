@@ -4,7 +4,7 @@ import {Dimensions} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {View, Colors, TextField, Typography} from 'react-native-ui-lib';
 import {PostStyle} from '../../../models/setting.model';
-import {t} from '../../../languages/i18n';
+import {t} from '../../../languages/i18n.ts';
 
 const width = Dimensions.get('window').width;
 interface ItemStandardProps {

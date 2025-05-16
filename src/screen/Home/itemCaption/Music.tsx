@@ -14,8 +14,9 @@ import {AppDispatch, RootState} from '../../../redux/store';
 import TextTicker from 'react-native-text-ticker';
 import {getCurrentPlay} from '../../../redux/action/spotify.action';
 import {useIsFocused} from '@react-navigation/native';
-import {t} from '../../../languages/i18n';
-import {hapticFeedback} from '../../../util/haptic';
+import {t} from '../../../languages/i18n.ts';
+
+import {hapticFeedback} from '../../../utils/device.ts';
 
 interface ItemMusicProps {
   isFocus: boolean;
