@@ -1,11 +1,11 @@
-import java.net.URL 
+import java.net.URL
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 apply plugin: 'com.google.gms.google-services'
 
 react {
-   
+
 }
 
 def enableProguardInReleaseBuilds = true
@@ -27,7 +27,6 @@ android {
         manifestPlaceholders = [appAuthRedirectScheme: "com.locket_upload"]
     }
 
-    // ✅ Đặt splits ở đây, đúng vị trí
     splits {
         abi {
             enable true
@@ -73,51 +72,19 @@ android {
     }
 }
 
-// ✅ Đặt ngoài block android
 project.ext.react = [
     enableHermes: true
 ]
 
 
 dependencies {
-    // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-    implementation("com.facebook.react:flipper-integration")
-
-    implementation(name: 'ffmpeg-kit-full-gpl', ext: 'aar')
-    implementation 'com.arthenica:smart-exception-java:0.2.1'
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
     }
-}
-
-afterEvaluate {
-    def aarUrl = 'https://github.com/NooruddinLakhani/ffmpeg-kit-full-gpl/releases/download/v1.0.0/ffmpeg-kit-full-gpl.aar'
-    def aarFile = file("${rootDir}/libs/ffmpeg-kit-full-gpl.aar")
-
-    tasks.register("downloadAar") {
-        doLast {
-             if (!aarFile.parentFile.exists()) {
-                println "📁 Creating directory: ${aarFile.parentFile.absolutePath}"
-                aarFile.parentFile.mkdirs()
-            }
-            if (!aarFile.exists()) {
-                println "⏬ Downloading AAR from $aarUrl..."
-                new URL(aarUrl).withInputStream { i ->
-                    aarFile.withOutputStream { it << i }
-                }
-                println "✅ AAR downloaded to ${aarFile.absolutePath}"
-            } else {
-                println "ℹ️ AAR already exists at ${aarFile.absolutePath}"
-            }
-        }
-    }
-
-    // Make sure the AAR is downloaded before compilation begins
-    preBuild.dependsOn("downloadAar")
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
