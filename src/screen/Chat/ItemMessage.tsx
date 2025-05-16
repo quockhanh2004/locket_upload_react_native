@@ -77,7 +77,7 @@ const ItemMessage: React.FC<ItemMessageProps> = ({
         )}
         <Text
           style={{
-            backgroundColor: sendByMe ? Colors.primary : Colors.grey40,
+            backgroundColor: sendByMe ? Colors.primary : Colors.grey20,
             padding: 8,
             maxWidth: '80%',
             minWidth: '5%',

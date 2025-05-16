@@ -1,10 +1,11 @@
+import {t} from '../../../languages/i18n';
 import {User} from '../../../models/user.model';
 import {
   DataPostMoment,
   uploadImageToFirebaseStorage,
   uploadVideoToFirebase,
 } from '../../../redux/action/postMoment.action';
-import {setTask} from '../../../redux/slice/message.slice';
+import {setMessage, setTask} from '../../../redux/slice/message.slice';
 import {AppDispatch} from '../../../redux/store';
 import {OverLayCreate, OverlayType} from '../../../util/bodyMoment';
 
@@ -29,7 +30,12 @@ export const onPostMoment = async ({
   selected,
 }: PostMoment) => {
   if (!user || !user.localId || !user.idToken || !selectedMedia) {
-    console.warn('User data or media is missing for posting.');
+    dispatch(
+      setMessage({
+        message: t('please_select_media'),
+        type: t('error'),
+      }),
+    );
     return;
   }
   const targetFriends =

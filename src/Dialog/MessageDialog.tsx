@@ -35,6 +35,7 @@ const MessageDialog = () => {
         ...Typography.text60BL,
         textAlign: 'left',
         width: '100%',
+        lineHeight: 36,
       }}
       bottom
       width={'98%'}

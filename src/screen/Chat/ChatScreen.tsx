@@ -150,21 +150,23 @@ const ChatScreen = () => {
           onLoadMore={handleLoadMoreMessages}
         />
 
-        <Pressable
-          style={styles.inputContainer}
-          onPress={handlePressComponentInput}>
-          <TextField
-            placeholder="Message..."
-            value={message}
-            ref={inputRef}
-            paddingL-12
-            placeholderTextColor={Colors.grey20}
-            onChangeText={setMessage}
-            containerStyle={{width: '85%'}}
-            multiline
-            onFocus={() => setIsFocusTextField(true)}
-            onBlur={() => setIsFocusTextField(false)}
-          />
+        <View row spread centerV gap-12>
+          <Pressable
+            style={styles.inputContainer}
+            onPress={handlePressComponentInput}>
+            <TextField
+              placeholder="Message..."
+              value={message}
+              ref={inputRef}
+              paddingH-12
+              placeholderTextColor={Colors.grey20}
+              onChangeText={setMessage}
+              style={{minHeight: 40, maxHeight: 120}}
+              multiline
+              onFocus={() => setIsFocusTextField(true)}
+              onBlur={() => setIsFocusTextField(false)}
+            />
+          </Pressable>
           <TouchableOpacity
             center
             disabled={!message.trim()}
@@ -179,7 +181,7 @@ const ChatScreen = () => {
             onPress={handleSendMessage}>
             <Icon assetName="ic_send" size={24} />
           </TouchableOpacity>
-        </Pressable>
+        </View>
       </View>
     </>
   );
@@ -205,16 +207,15 @@ const CustomCenterHeader = memo(({friend}: {friend: Friend}) => {
 
 const styles = StyleSheet.create({
   inputContainer: {
-    borderRadius: 99,
+    borderRadius: 20,
     backgroundColor: Colors.grey60,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 4,
-    alignItems: 'center',
+    flex: 1,
   },
   sendButton: {
     borderRadius: 99,
     padding: 8,
+    width: 40,
+    height: 40,
   },
 });
 

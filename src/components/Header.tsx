@@ -48,7 +48,7 @@ const Header = ({
       paddingT-20
       centerV
       backgroundColor={backgroundColor}>
-      <TouchableOpacity onPress={handleBack}>
+      <TouchableOpacity onPress={handleBack} padding-6>
         <Icon
           assetGroup="icons"
           assetName="ic_back"
@@ -68,7 +68,7 @@ const Header = ({
         </Text>
       )}
       {rightIcon ? (
-        <TouchableOpacity onPress={rightIconAction}>
+        <TouchableOpacity onPress={rightIconAction} padding-6>
           <Icon
             assetGroup="icons"
             assetName={rightIcon}

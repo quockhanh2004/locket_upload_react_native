@@ -108,6 +108,7 @@ const FriendPicker: React.FC<FriendPickerProps> = ({
     <>
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
+        center
         style={styles.pickerButton}>
         <Text white>
           {value ? `${value.first_name} ${value.last_name}` : t('all')}
@@ -140,7 +141,8 @@ export default FriendPicker;
 
 const styles = StyleSheet.create({
   pickerButton: {
-    padding: 10,
+    paddingHorizontal: 10,
+    minHeight: 36,
     borderWidth: 1,
     borderColor: Colors.grey50,
     borderRadius: BorderRadiuses.br20,
