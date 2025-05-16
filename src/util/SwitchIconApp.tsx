@@ -1,5 +1,4 @@
 import {BackHandler} from 'react-native';
-import {resetIcon, setIcon} from 'react-native-app-icon-changer';
 
 export type AliasName =
   | 'Default'
@@ -76,14 +75,6 @@ export const iconAliases: {name: string; value: AliasName}[] = [
 
 export const switchAppIcon = (aliasName: AliasName) => {
   console.log(`Switching app icon to: ${aliasName}`);
-  if (aliasName === 'Default') {
-    resetIcon();
-    setTimeout(() => {
-      BackHandler.exitApp();
-    }, 1000);
-    return;
-  }
-  setIcon(aliasName);
 
   setTimeout(() => {
     BackHandler.exitApp();

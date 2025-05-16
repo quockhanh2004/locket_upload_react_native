@@ -107,5 +107,6 @@
   "no_activity_yet": "No activity yet!",
   "activity": "Activity",
   "loading": "Loading...",
-  "skip_this_version": "Skip this version"
+  "skip_this_version": "Skip this version",
+  "can_close_after": "You can close after"
 }

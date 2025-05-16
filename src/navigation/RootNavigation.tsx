@@ -16,7 +16,7 @@ import SettingScreen from '../screen/Settings/SettingScreen';
 import CameraScreen from '../screen/Camera/CameraScreen';
 import PostScreen from '../screen/Moment';
 import MessageDialog from '../Dialog/MessageDialog';
-import DonateDialog from '../Dialog/DonateDiloag';
+import DonateDialog from '../Dialog/DonateDialog';
 import SelectIconScreen from '../screen/SelectIconScreen';
 import AutoCheckUpdate from '../services/AutoCheckUpdate';
 import {OnOpenAppService} from '../services/OnOpenApp';
