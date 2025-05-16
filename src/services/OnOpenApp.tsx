@@ -111,6 +111,12 @@ export const OnOpenAppService = () => {
               idToken: user?.idToken || '',
             }),
           );
+          dispatch(
+            getAccountInfo({
+              idToken: user?.idToken || '',
+              refreshToken: user.refreshToken || '',
+            }),
+          );
         } else {
           dispatch(getToken({refreshToken: user.refreshToken}));
         }

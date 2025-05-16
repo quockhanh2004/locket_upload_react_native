@@ -63,6 +63,10 @@ const settingSlice = createSlice({
       state.customIcon = action.payload;
     },
 
+    setShowDonate(state, action: PayloadAction<boolean>) {
+      state.showDonate = action.payload;
+    },
+
     setSetting(state, action) {
       const data = JSON.parse(action.payload);
       state.useCamera = data.useCamera;
@@ -81,6 +85,7 @@ export const {
   setTrySoftwareEncode,
   setPostStyle,
   setSetting,
+  setShowDonate,
   setUsingSpotifyMod,
   setCustomIcon,
 } = settingSlice.actions;
