@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>locket_upload</string>
+	<string>Locket Upload</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -49,5 +49,21 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<!-- Camera -->
+<key>NSCameraUsageDescription</key>
+<string>Ứng dụng cần truy cập camera để chụp ảnh hoặc quay video</string>
+
+<!-- Microphone -->
+<key>NSMicrophoneUsageDescription</key>
+<string>Ứng dụng cần truy cập micro để ghi âm hoặc thu âm thanh</string>
+
+<!-- Photo Library -->
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Ứng dụng cần truy cập thư viện ảnh để chọn hoặc tải ảnh lên</string>
+
+<!-- Notifications (iOS 10+) -->
+<key>NSUserNotificationUsageDescription</key>
+<string>Ứng dụng cần gửi thông báo để cập nhật thông tin</string>
+
 </dict>
 </plist>
