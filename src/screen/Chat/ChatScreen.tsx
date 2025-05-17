@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
   memo,
+  useEffect,
 } from 'react';
 import {
   Colors,
@@ -15,11 +16,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native-ui-lib';
-import {FlatList, Pressable, StyleSheet} from 'react-native';
+import {AppState, FlatList, Pressable, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   RouteProp,
-  useFocusEffect,
+  useIsFocused,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
@@ -103,22 +104,39 @@ const ChatScreen = () => {
     );
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(
-        getMessageWith({
-          conversation_uid: uid,
-          token: user?.idToken || '',
-        }),
-      );
-      dispatch(
-        markReadMessage({
-          conversation_uid: uid,
-          idToken: user?.idToken || '',
-        }),
-      );
-    }, [dispatch, uid, user?.idToken]),
-  );
+  //lấy tin nhắn mới sau khi out app rồi mở app lại
+  const isFocused = useIsFocused();
+  const appState = useRef(AppState.currentState);
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/background|inactive/) &&
+        nextAppState === 'active'
+      ) {
+        if (isFocused) {
+          dispatch(
+            getMessageWith({
+              conversation_uid: uid,
+              token: user?.idToken || '',
+            }),
+          );
+
+          dispatch(
+            markReadMessage({
+              conversation_uid: uid,
+              idToken: user?.idToken || '',
+            }),
+          );
+        }
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [isFocused, dispatch, uid, user?.idToken]);
 
   useLayoutEffect(() => {
     if (listRef.current && isFocusTextField) {

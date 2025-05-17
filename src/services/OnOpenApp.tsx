@@ -69,6 +69,7 @@ export const OnOpenAppService = () => {
 
   const isFocused = useIsFocused();
   const appState = useRef(AppState.currentState);
+
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (
@@ -83,12 +84,10 @@ export const OnOpenAppService = () => {
                 ...remoteMessage.data,
                 timestamp: remoteMessage.sentTime,
               };
-              if (isFocused) {
-                handleNotificationClick(notiData);
-              }
+              handleNotificationClick(notiData); // isFocused đã được kiểm tra ở ngoài
             }
 
-            if (user && isFocused) {
+            if (user) {
               const now = new Date().getTime() + 15 * 60 * 1000;
               const expires = Number(user.timeExpires) || 0;
               if (expires < now && user.refreshToken) {
@@ -103,16 +102,18 @@ export const OnOpenAppService = () => {
               }
             }
           };
+
           fetchData();
         }
       }
+
       appState.current = nextAppState;
     });
 
     return () => {
       subscription.remove();
     };
-  }, [dispatch, isFocused]);
+  }, [dispatch, isFocused, user]);
 
   useFocusEffect(
     useCallback(() => {
