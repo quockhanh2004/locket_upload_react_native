@@ -116,7 +116,7 @@ export const sfSymbolsToUnicode: Record<string, string> = {
   link: '🔗',
   lion: '🦁',
   lobster: '🦞',
-  location: '📍',
+  'location.fill': '📍',
   lock: '🔒',
   'lock.fill': '🔒',
   'lock.open': '🔓',

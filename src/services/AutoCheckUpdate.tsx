@@ -11,6 +11,7 @@ import {setMessage} from '../redux/slice/message.slice';
 import {AppDispatch} from '../redux/store';
 import {t} from '../languages/i18n';
 import {UpdateInfoType} from '../models/update.model';
+import {VERSION_SKIP_CODEPUSH} from '../util/constrain';
 
 const AutoCheckUpdate: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -33,6 +34,9 @@ const AutoCheckUpdate: React.FC = () => {
         }
 
         const update = await codePush.checkForUpdate(CODEPUSH_DEPLOYMENTKEY());
+        if (update && update.label === VERSION_SKIP_CODEPUSH) {
+          return;
+        }
         if (update) {
           setUpdateInfo('UPDATE_AVAILABLE');
           setDescription(update.description || '');

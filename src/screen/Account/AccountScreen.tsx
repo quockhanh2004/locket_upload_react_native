@@ -30,6 +30,7 @@ import {t} from '../../languages/i18n';
 import {UpdateInfoType} from '../../models/update.model';
 import {hapticFeedback} from '../../util/haptic';
 import {navigationTo} from '../../navigation/HomeNavigation';
+import {VERSION_SKIP_CODEPUSH} from '../../util/constrain';
 
 const AccountScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -97,6 +98,10 @@ const AccountScreen = () => {
         return;
       }
       const update = await codePush.checkForUpdate(CODEPUSH_DEPLOYMENTKEY());
+
+      if (update && update.label === VERSION_SKIP_CODEPUSH) {
+        return;
+      }
 
       if (!update) {
         setUpdateInfo('UP_TO_DATE');
