@@ -97,13 +97,9 @@ const AccountScreen = () => {
         setDecriptionUpdate(apkUpdate?.decriptionUpdate);
         return;
       }
+
       const update = await codePush.checkForUpdate(CODEPUSH_DEPLOYMENTKEY());
-
-      if (update && update.label === VERSION_SKIP_CODEPUSH) {
-        return;
-      }
-
-      if (!update) {
+      if (!update || (update && update.label === VERSION_SKIP_CODEPUSH)) {
         setUpdateInfo('UP_TO_DATE');
         setDecriptionUpdate('');
       } else {
