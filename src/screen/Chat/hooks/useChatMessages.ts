@@ -29,22 +29,22 @@ export function useChatMessages(uid: string, socket: any) {
   const lastReadMessageId =
     messages.length > 0 ? messages[messages.length - 1].id : undefined;
 
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(
-        getMessageWith({
-          conversation_uid: uid,
-          token: user?.idToken || '',
-        }),
-      );
-      dispatch(
-        markReadMessage({
-          conversation_uid: uid,
-          idToken: user?.idToken || '',
-        }),
-      );
-    }, [dispatch, uid, user?.idToken]),
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     dispatch(
+  //       getMessageWith({
+  //         conversation_uid: uid,
+  //         token: user?.idToken || '',
+  //       }),
+  //     );
+  //     dispatch(
+  //       markReadMessage({
+  //         conversation_uid: uid,
+  //         idToken: user?.idToken || '',
+  //       }),
+  //     );
+  //   }, [dispatch, uid, user?.idToken]),
+  // );
 
   useEffect(() => {
     if (!socket) {

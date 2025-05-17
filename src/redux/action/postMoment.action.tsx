@@ -24,6 +24,7 @@ import {
   OverLayCreate,
 } from '../../util/bodyMoment';
 import {t} from 'i18next';
+import {getYYYYMMDD} from '../../util/convertTime';
 
 export interface DataPostMoment {
   idUser: string;
@@ -86,6 +87,7 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
 
       const bodyPostMoment = {
         data: {
+          update_streak_for_yyyymmdd: getYYYYMMDD(),
           thumbnail_url: downloadUrl,
           recipients: friend || [],
           overlays: overlay?.text?.length === 0 ? [] : [createOverlay(overlay)],
@@ -105,6 +107,7 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
         ),
         thunkApi.signal,
       );
+      console.log(JSON.stringify(response.data));
 
       // Kiểm tra phản hồi từ server
       if (!response.data.result || response.data.result.status >= 400) {

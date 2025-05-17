@@ -12,19 +12,22 @@ import {getFriends} from '../redux/action/getFriend.action';
 import {getApp} from '@react-native-firebase/app';
 import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import {cleanOldPostAsync} from '../redux/action/getOldPost.action';
-import {AppState, Linking} from 'react-native';
+import {AppState, Linking, unstable_batchedUpdates} from 'react-native';
 import {getAccessToken} from '../redux/action/spotify.action';
 import queryString from 'query-string';
 import {REDIRECT_URI} from '../util/constrain';
 import {getSocket} from './Chat';
-import {ListChatType, SocketEvents} from '../models/chat.model';
-import {updateListChat} from '../redux/slice/chat.slice';
+import {SocketEvents} from '../models/chat.model';
+import {getMessage} from '../redux/action/chat.action';
 
 export const OnOpenAppService = () => {
   const messaging = getMessaging(getApp());
   const dispatch = useDispatch<AppDispatch>();
   const {user} = useSelector((state: RootState) => state.user);
   const {isLoadFriends} = useSelector((state: RootState) => state.friends);
+
+  // dọn dẹp các bài viết cũ
+  // lấy data deeplink
   useEffect(() => {
     if (user?.localId) {
       dispatch(cleanOldPostAsync(user.localId));
@@ -42,19 +45,19 @@ export const OnOpenAppService = () => {
     };
   }, []);
 
+  //kết nối socket
   useEffect(() => {
     const socket = getSocket(user?.idToken);
+    console.log('socket start');
+
     if (socket) {
       socket.on(SocketEvents.ERROR, error => {
         console.error('Socket error:', error);
       });
-
-      socket.on(SocketEvents.LIST_MESSAGE, (data: ListChatType[]) => {
-        dispatch(updateListChat(data));
-      });
     }
   }, [user?.idToken]);
 
+  // Sự kiện deeplink
   const handleOpenURL = (event: any) => {
     const url = event.url || event;
 
@@ -67,9 +70,10 @@ export const OnOpenAppService = () => {
     }
   };
 
+  // Lắng nghe sự kiện khi app quay về foreground
+  // Thông báo, refresh token và lấy thông tin tài khoản
   const isFocused = useIsFocused();
   const appState = useRef(AppState.currentState);
-
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (
@@ -114,7 +118,15 @@ export const OnOpenAppService = () => {
       subscription.remove();
     };
   }, [dispatch, isFocused, user]);
+  //format yyyymmdd dính liền
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}${month}${day}`;
+  };
 
+  // lấy danh sách bạn bè, thông tin tài khoản khi app mở lần đầu
   useFocusEffect(
     useCallback(() => {
       if (user?.localId) {
@@ -122,6 +134,7 @@ export const OnOpenAppService = () => {
         const expires = user.timeExpires ? +user.timeExpires : 0;
 
         if (expires >= now && user?.idToken && !isLoadFriends) {
+          // unstable_batchedUpdates(() => {
           dispatch(
             getFriends({
               idToken: user?.idToken || '',
@@ -133,6 +146,8 @@ export const OnOpenAppService = () => {
               refreshToken: user.refreshToken || '',
             }),
           );
+          dispatch(getMessage(user.idToken));
+          // });
         } else {
           dispatch(getToken({refreshToken: user.refreshToken}));
         }

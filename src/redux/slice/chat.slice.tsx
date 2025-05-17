@@ -21,6 +21,11 @@ interface InitialState {
     uid: string;
     isLoadMore: boolean;
   };
+  notification?: {
+    title: string;
+    body: string;
+    uid: string;
+  } | null;
 }
 
 const initialState: InitialState = {
@@ -33,6 +38,7 @@ const initialState: InitialState = {
     uid: '',
     isLoadMore: false,
   },
+  notification: null,
 };
 
 const chatSlice = createSlice({
@@ -105,6 +111,17 @@ const chatSlice = createSlice({
 
     clearListChat: state => {
       state.listChat = {};
+    },
+
+    setNotification: (
+      state,
+      action: PayloadAction<{
+        title: string;
+        body: string;
+        uid: string;
+      }>,
+    ) => {
+      state.notification = action.payload;
     },
   },
 
@@ -188,6 +205,7 @@ export const {
   setIsSending,
   addItemMessage,
   clearListChat,
+  setNotification,
 } = chatSlice.actions;
 
 export const chatReducer = chatSlice.reducer;

@@ -23,7 +23,7 @@ export const getOldPosts = createAsyncThunk(
   'getListOldPost',
   async (data: DataParam, thunkApi) => {
     try {
-      console.log('running getOldPosts');
+      console.log('running getOldPosts', data.userId);
       const oldPosts = await loadPostsFromStorage('posts_' + data.userId);
       thunkApi.dispatch(setOldPosts(oldPosts));
       const response = await axios.post(

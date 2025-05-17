@@ -42,7 +42,6 @@ const AuthNavigator = () => {
 const HomeNavigator = () => {
   return (
     <>
-      <OnOpenAppService />
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name={nav.home} component={HomeScreen} />
         <Stack.Screen name={nav.accountInfo} component={AccountScreen} />
@@ -53,6 +52,7 @@ const HomeNavigator = () => {
         <Stack.Screen name={nav.chat} component={ChatScreen} />
         <Stack.Screen name={nav.chatList} component={ListChat} />
       </Stack.Navigator>
+      <OnOpenAppService />
     </>
   );
 };

@@ -26,6 +26,9 @@ const parseMessage = (text: string) => {
   const parts: {type: 'text' | 'link'; value: string}[] = [];
 
   let lastIndex = 0;
+  if (!text) {
+    return parts;
+  }
   const matches = [...text.matchAll(REGEX_LINK)];
 
   for (const match of matches) {
@@ -98,6 +101,11 @@ const ItemMessage: React.FC<ItemMessageProps> = ({
   };
 
   const renderParsedText = () => {
+    if (!item.text) {
+      console.log(item);
+
+      return null;
+    }
     const parsedParts = parseMessage(item.text);
 
     return (

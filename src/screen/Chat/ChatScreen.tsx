@@ -107,13 +107,14 @@ const ChatScreen = () => {
   //lấy tin nhắn mới sau khi out app rồi mở app lại
   const isFocused = useIsFocused();
   const appState = useRef(AppState.currentState);
+  const didMarkRead = useRef(false);
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (
         appState.current.match(/background|inactive/) &&
         nextAppState === 'active'
       ) {
-        if (isFocused) {
+        if (isFocused && !didMarkRead.current) {
           dispatch(
             getMessageWith({
               conversation_uid: uid,
@@ -127,6 +128,8 @@ const ChatScreen = () => {
               idToken: user?.idToken || '',
             }),
           );
+
+          didMarkRead.current = true;
         }
       }
 
@@ -137,6 +140,13 @@ const ChatScreen = () => {
       subscription.remove();
     };
   }, [isFocused, dispatch, uid, user?.idToken]);
+
+  useEffect(() => {
+    if (isFocused) {
+      // reset flag mỗi khi vào lại màn hình
+      didMarkRead.current = false;
+    }
+  }, [isFocused]);
 
   useLayoutEffect(() => {
     if (listRef.current && isFocusTextField) {
