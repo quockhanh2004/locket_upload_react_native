@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {version} from '../../package.json';
+import {VERSION_SKIP_CODEPUSH} from './constrain';
 
 export const checkUpdateApk = async () => {
   const response = await axios.get(
@@ -37,3 +38,12 @@ function compareVersions(a: string, b: string): number {
 
   return 0; // Bằng nhau
 }
+
+export const checkVersionCodePush = (newVersion: string) => {
+  const newVersionNumber = newVersion.replace('v', '');
+  if (parseInt(newVersionNumber, 10) > VERSION_SKIP_CODEPUSH) {
+    return false;
+  }
+
+  return true;
+};

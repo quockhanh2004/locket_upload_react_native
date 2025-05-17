@@ -5,7 +5,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Linking, RefreshControl, ScrollView} from 'react-native';
 import codePush from 'react-native-code-push';
-import {checkUpdateApk} from '../../util/update';
+import {checkUpdateApk, checkVersionCodePush} from '../../util/update';
 
 import {
   // enableLocketGold,
@@ -30,7 +30,6 @@ import {t} from '../../languages/i18n';
 import {UpdateInfoType} from '../../models/update.model';
 import {hapticFeedback} from '../../util/haptic';
 import {navigationTo} from '../../navigation/HomeNavigation';
-import {VERSION_SKIP_CODEPUSH} from '../../util/constrain';
 
 const AccountScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -99,7 +98,7 @@ const AccountScreen = () => {
       }
 
       const update = await codePush.checkForUpdate(CODEPUSH_DEPLOYMENTKEY());
-      if (!update || (update && update.label === VERSION_SKIP_CODEPUSH)) {
+      if (!update || (update && checkVersionCodePush(update.label))) {
         setUpdateInfo('UP_TO_DATE');
         setDecriptionUpdate('');
       } else {

@@ -60,6 +60,9 @@ const DonateDialog: React.FC = () => {
         <Text white text70BL>
           {t('donate')}
         </Text>
+        <Text white text80L>
+          {t('how_to_hide_popup_donate')}
+        </Text>
 
         <View
           style={{

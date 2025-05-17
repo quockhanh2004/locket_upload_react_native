@@ -12,6 +12,7 @@ import {
   setOptionFriend,
   setUnlimitedTrimVideo,
   setTrySoftwareEncode,
+  setShowDonate,
 } from '../../redux/slice/setting.slice';
 import {clearPostMoment} from '../../redux/slice/postMoment.slice';
 import {AppDispatch, RootState} from '../../redux/store';
@@ -36,8 +37,13 @@ const SettingScreen = () => {
 
   const {language} = useSelector((state: RootState) => state.language);
   const {tokenData} = useSelector((state: RootState) => state.spotify);
-  const {useCamera, optionFriend, unlimitedTrimVideo, trySoftwareEncode} =
-    useSelector((state: RootState) => state.setting);
+  const {
+    useCamera,
+    optionFriend,
+    unlimitedTrimVideo,
+    trySoftwareEncode,
+    showDonate,
+  } = useSelector((state: RootState) => state.setting);
 
   const settingOptions: ItemSettingModel[] = [
     {
@@ -60,13 +66,11 @@ const SettingScreen = () => {
       value: trySoftwareEncode,
       action: setTrySoftwareEncode,
     },
-    // {
-    //   title: t('change_app_icon'),
-    //   type: 'button',
-    //   action: () => {
-    //     navigationTo(nav.selectIcon);
-    //   },
-    // },
+    {
+      title: t('hide_donate'),
+      value: !showDonate,
+      action: setShowDonate,
+    },
   ];
 
   const handleToggle = useCallback(

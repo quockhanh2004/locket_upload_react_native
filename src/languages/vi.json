@@ -115,5 +115,7 @@
   "loading_message": "Đang tải tin nhắn...",
   "type_message": "Nhập tin nhắn...",
   "copy": "Sao chép",
-  "delete": "Xóa"
+  "delete": "Xóa",
+  "hide_donate": "Ẩn thông báo quyên góp",
+  "how_to_hide_popup_donate": "Bạn có thể vào cài đặt app ẩn thông báo này"
 }
