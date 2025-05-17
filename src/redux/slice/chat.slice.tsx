@@ -119,7 +119,7 @@ const chatSlice = createSlice({
         title: string;
         body: string;
         uid: string;
-      }>,
+      } | null>,
     ) => {
       state.notification = action.payload;
     },

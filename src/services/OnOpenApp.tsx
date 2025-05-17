@@ -17,14 +17,18 @@ import {getAccessToken} from '../redux/action/spotify.action';
 import queryString from 'query-string';
 import {REDIRECT_URI} from '../util/constrain';
 import {getSocket} from './Chat';
-import {SocketEvents} from '../models/chat.model';
+import {ListChatType, SocketEvents} from '../models/chat.model';
 import {getMessage} from '../redux/action/chat.action';
+import {setNotification, updateListChat} from '../redux/slice/chat.slice';
 
 export const OnOpenAppService = () => {
   const messaging = getMessaging(getApp());
   const dispatch = useDispatch<AppDispatch>();
   const {user} = useSelector((state: RootState) => state.user);
-  const {isLoadFriends} = useSelector((state: RootState) => state.friends);
+  const {isLoadFriends, friends} = useSelector(
+    (state: RootState) => state.friends,
+  );
+  const socket = getSocket(user?.idToken);
 
   // dọn dẹp các bài viết cũ
   // lấy data deeplink
@@ -47,7 +51,6 @@ export const OnOpenAppService = () => {
 
   //kết nối socket
   useEffect(() => {
-    const socket = getSocket(user?.idToken);
     console.log('socket start');
 
     if (socket) {
@@ -56,6 +59,50 @@ export const OnOpenAppService = () => {
       });
     }
   }, [user?.idToken]);
+
+  //lắng nghe tin nhắn mới
+  useEffect(() => {
+    if (!socket) {
+      return;
+    }
+
+    let timeInterval: NodeJS.Timeout | null = null;
+    let uid: string = '';
+    const handleIncomingMessage = (data: ListChatType[]) => {
+      if (data.length === 1) {
+        const message = data[0];
+        const with_user = friends[message.with_user];
+        const is_read = message.is_read;
+        const latest_message = message.latest_message;
+        uid = message.uid;
+
+        //nếu trong 100ms mà is_read cùng uid chưa thay đổi thành true thì gửi noti
+        if (!is_read) {
+          timeInterval = setTimeout(() => {
+            dispatch(
+              setNotification({
+                uid: uid,
+                body: latest_message,
+                title: `${with_user?.first_name}`,
+              }),
+            );
+          }, 100);
+        } else {
+          if (timeInterval) {
+            clearTimeout(timeInterval);
+          }
+        }
+      }
+
+      dispatch(updateListChat(data));
+    };
+
+    socket.on(SocketEvents.LIST_MESSAGE, handleIncomingMessage);
+
+    return () => {
+      socket.off(SocketEvents.LIST_MESSAGE, handleIncomingMessage);
+    };
+  }, [socket, dispatch, friends]);
 
   // Sự kiện deeplink
   const handleOpenURL = (event: any) => {
@@ -118,13 +165,6 @@ export const OnOpenAppService = () => {
       subscription.remove();
     };
   }, [dispatch, isFocused, user]);
-  //format yyyymmdd dính liền
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}${month}${day}`;
-  };
 
   // lấy danh sách bạn bè, thông tin tài khoản khi app mở lần đầu
   useFocusEffect(
@@ -134,20 +174,20 @@ export const OnOpenAppService = () => {
         const expires = user.timeExpires ? +user.timeExpires : 0;
 
         if (expires >= now && user?.idToken && !isLoadFriends) {
-          // unstable_batchedUpdates(() => {
-          dispatch(
-            getFriends({
-              idToken: user?.idToken || '',
-            }),
-          );
-          dispatch(
-            getAccountInfo({
-              idToken: user.idToken,
-              refreshToken: user.refreshToken || '',
-            }),
-          );
-          dispatch(getMessage(user.idToken));
-          // });
+          unstable_batchedUpdates(() => {
+            dispatch(
+              getFriends({
+                idToken: user?.idToken || '',
+              }),
+            );
+            dispatch(
+              getAccountInfo({
+                idToken: user.idToken,
+                refreshToken: user.refreshToken || '',
+              }),
+            );
+            dispatch(getMessage(user.idToken));
+          });
         } else {
           dispatch(getToken({refreshToken: user.refreshToken}));
         }

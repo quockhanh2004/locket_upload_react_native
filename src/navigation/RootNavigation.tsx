@@ -21,6 +21,7 @@ import ChatScreen from '../screen/Chat/ChatScreen';
 import ListChat from '../screen/Chat/ListChatScreen';
 import {OnOpenAppService} from '../services/OnOpenApp';
 import DonateDialog from '../Dialog/DonateDialog';
+import LocalNoti from '../services/LocalNoti';
 
 const Stack = createNativeStackNavigator();
 
@@ -53,6 +54,7 @@ const HomeNavigator = () => {
         <Stack.Screen name={nav.chatList} component={ListChat} />
       </Stack.Navigator>
       <OnOpenAppService />
+      <LocalNoti />
     </>
   );
 };

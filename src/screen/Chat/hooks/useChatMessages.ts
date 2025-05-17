@@ -29,22 +29,16 @@ export function useChatMessages(uid: string, socket: any) {
   const lastReadMessageId =
     messages.length > 0 ? messages[messages.length - 1].id : undefined;
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     dispatch(
-  //       getMessageWith({
-  //         conversation_uid: uid,
-  //         token: user?.idToken || '',
-  //       }),
-  //     );
-  //     dispatch(
-  //       markReadMessage({
-  //         conversation_uid: uid,
-  //         idToken: user?.idToken || '',
-  //       }),
-  //     );
-  //   }, [dispatch, uid, user?.idToken]),
-  // );
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(
+        getMessageWith({
+          conversation_uid: uid,
+          token: user?.idToken || '',
+        }),
+      );
+    }, [dispatch, uid, user?.idToken]),
+  );
 
   useEffect(() => {
     if (!socket) {
@@ -56,6 +50,12 @@ export function useChatMessages(uid: string, socket: any) {
     const handleIncomingMessage = (data: ChatMessageType[]) => {
       unstable_batchedUpdates(() => {
         dispatch(addItemMessage({uid, message: data}));
+        dispatch(
+          markReadMessage({
+            conversation_uid: uid,
+            idToken: user?.idToken || '',
+          }),
+        );
       });
     };
 
@@ -66,7 +66,7 @@ export function useChatMessages(uid: string, socket: any) {
       socket.disconnect();
       socket.connect();
     };
-  }, [socket, uid, dispatch]);
+  }, [socket, uid, dispatch, user?.idToken]);
 
   return {messages, lastReadMessageId, isLoadChat};
 }
