@@ -6,12 +6,27 @@ trap "echo 'Quá trình build bị hủy. Dừng tất cả.'; exit 1" SIGINT
 version=$(node -p "require('./package.json').version")
 current_time=$(date +%Y%m%d_%H%M)
 
-previous_version_commit=$(git log --grep "Build and release APK version" --pretty=format:"%H" -1)
-previous_version=$(git log -1 --format=%s "$previous_version_commit" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")
+# Tìm commit gần nhất có message build APK
+previous_commit=$(git log --grep="Build and release APK version" --pretty=format:"%H" -1)
+previous_message=$(git log -1 --format=%s "$previous_commit")
 
+# Lấy version từ message commit trước
+previous_version=$(echo "$previous_message" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")
+
+# Nếu version đó trùng với version hiện tại => bỏ qua commit đó, lấy commit cũ hơn
+if [[ "$previous_version" == "$version" ]]; then
+  previous_commit=$(git log --grep="Build and release APK version" --pretty=format:"%H" --skip=1 -1)
+fi
+
+# Lấy changelog nếu có commit trước để so sánh
 changelog=""
-if [[ -n "$previous_version_commit" ]]; then
-  changelog=$(git log --pretty=format:"- %s" "${previous_version_commit}^..HEAD" --no-merges | grep -v "Build and release APK version" | grep -v "script deploy" | grep -v "update readme" | grep -v "update script" )
+if [[ -n "$previous_commit" ]]; then
+  changelog=$(git log --pretty=format:"- %s" "${previous_commit}..HEAD" --no-merges \
+    | grep -v "Build and release APK version" \
+    | grep -v -i "script deploy" \
+    | grep -v -i "update readme" \
+    | grep -v -i "update script"
+  )
 fi
 
 # Build APKs cho tất cả kiến trúc
@@ -40,10 +55,14 @@ for abi in "${abis[@]}"; do
   fi
 done
 
-# Git commit & push
-git add .
-git commit -m "Build and release APK version ${version} on ${current_time}" || { echo "Lỗi: Commit Git thất bại!"; exit 1; }
-git push origin main || { echo "Lỗi: Push Git thất bại!"; exit 1; }
+# Git commit & push nếu có thay đổi
+if ! git diff --cached --quiet || ! git diff --quiet; then
+  git add .
+  git commit -m "Build and release APK version ${version} on ${current_time}" || { echo "Lỗi: Commit Git thất bại!"; exit 1; }
+  git push origin main || { echo "Lỗi: Push Git thất bại!"; exit 1; }
+else
+  echo "Không có thay đổi nào để commit. Bỏ qua bước Git."
+fi
 
 # Release GitHub
 release_notes="Release version ${version}
