@@ -64,18 +64,27 @@ else
   echo "Không có thay đổi nào để commit. Bỏ qua bước Git."
 fi
 
-# Release GitHub
+# Chuẩn bị ghi chú
 release_notes="Release version ${version}
 Changelog:
 ${changelog}"
 
+# Kiểm tra release đã tồn tại chưa
 release_id=$(gh release view "v${version}" --json id -q .id 2>/dev/null || true)
 
 if [ -z "$release_id" ]; then
-  gh release create "v${version}" "${apk_paths[@]}" --notes "$release_notes" || { echo "Lỗi: Tạo release GitHub thất bại!"; exit 1; }
+  echo "==> Tạo release GitHub mới..."
+  gh release create "v${version}" "${apk_paths[@]}" --notes "$release_notes" || {
+    echo "Lỗi: Tạo release GitHub thất bại!"
+    exit 1
+  }
 else
-  gh release update "v${version}" --notes "$release_notes" || { echo "Lỗi: Cập nhật release thất bại!"; exit 1; }
-  gh release upload "v${version}" "${apk_paths[@]}" --clobber || { echo "Lỗi: Upload file APK thất bại!"; exit 1; }
+  echo "==> Release đã tồn tại. Chỉ upload lại APK nếu cần."
+  # Upload APK với --clobber để ghi đè nếu trùng tên file
+  gh release upload "v${version}" "${apk_paths[@]}" --clobber || {
+    echo "Lỗi: Upload file APK thất bại!"
+    exit 1
+  }
 fi
 
 # Gửi FCM nếu người dùng đồng ý
