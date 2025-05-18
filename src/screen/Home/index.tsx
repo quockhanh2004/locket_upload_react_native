@@ -65,6 +65,7 @@ interface MediaType {
   type?: 'video' | 'image' | string; // Thêm gợi ý type
 }
 const screenHeight = Dimensions.get('window').height;
+const cropHeight = screenHeight * 0.8;
 
 const HomeScreen = () => {
   const componentNavigation = useNavigation<NavigationProp<any>>(); // Lấy navigation từ hook
@@ -318,7 +319,7 @@ const HomeScreen = () => {
         nestedScrollEnabled
         onMomentumScrollEnd={handleScrollEnd}
         showsVerticalScrollIndicator={false}>
-        <View height={screenHeight - 200}>
+        <View height={cropHeight}>
           <PostForm
             selectedMedia={selectedMedia}
             isVideo={isVideo}
@@ -342,7 +343,7 @@ const HomeScreen = () => {
             }
           />
         </View>
-        <View height={screenHeight - 100} center>
+        <View height={cropHeight} center>
           <View
             height={4}
             width={80}

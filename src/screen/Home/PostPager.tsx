@@ -143,6 +143,9 @@ const PostPager: React.FC<PostPagerProps> = ({
         renderItem={renderItem}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
+        style={{
+          minHeight: 50,
+        }}
       />
       <View center row>
         {DATA.map((_, index) => (

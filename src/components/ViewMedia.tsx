@@ -1,8 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {ActivityIndicator} from 'react-native';
+import {ActivityIndicator, Dimensions} from 'react-native';
 import {View, TouchableOpacity, Colors, Image, Icon} from 'react-native-ui-lib';
 import Video from 'react-native-video';
+
+const screenWidth = Dimensions.get('window').width;
+const cropWidth = 0.7;
 
 interface ViewMediaProps {
   selectedMedia: {uri: string} | null;
@@ -33,8 +36,8 @@ const ViewMedia: React.FC<ViewMediaProps> = ({
           !isVideo ? (
             <View>
               <Image
-                width={264}
-                height={264}
+                width={screenWidth * cropWidth}
+                height={screenWidth * cropWidth}
                 source={{uri: selectedMedia.uri}}
                 style={{borderRadius: 6, overflow: 'hidden'}}
               />
@@ -56,8 +59,8 @@ const ViewMedia: React.FC<ViewMediaProps> = ({
                 resizeMode="cover"
                 style={{
                   borderRadius: 6,
-                  width: 264,
-                  height: 264,
+                  width: screenWidth * cropWidth,
+                  height: screenWidth * cropWidth,
                   overflow: 'hidden',
                 }}
               />

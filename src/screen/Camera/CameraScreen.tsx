@@ -47,7 +47,7 @@ function CameraScreen() {
     devices[0];
 
   const formatPhoto = useCameraFormat(device, [
-    // {photoHdr: true},
+    {photoHdr: true},
     {photoResolution: 'max'},
   ]);
 
@@ -67,7 +67,6 @@ function CameraScreen() {
   ]);
 
   // Refs cho việc quay video
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const timeIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // State quản lý media và trạng thái quay
@@ -147,16 +146,6 @@ function CameraScreen() {
       setTimeRecording(prev => prev + 1);
     }, 1000);
 
-    // Xóa timeout cũ nếu có
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    // Đặt timeout dừng quay (ví dụ 10 giây)
-    timeoutRef.current = setTimeout(async () => {
-      console.log('Recording timeout');
-      await handleStopRecord();
-    }, 10000);
-
     try {
       await cameraRef.current.startRecording({
         videoCodec: 'h265', // Hoặc 'h265' nếu thiết bị hỗ trợ tốt
@@ -175,9 +164,6 @@ function CameraScreen() {
           if (timeIntervalRef.current) {
             clearInterval(timeIntervalRef.current);
           }
-          if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-          }
         },
         onRecordingError: error => {
           console.error('onRecordingError:', error);
@@ -185,9 +171,6 @@ function CameraScreen() {
           setTimeRecording(0);
           if (timeIntervalRef.current) {
             clearInterval(timeIntervalRef.current);
-          }
-          if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
           }
           dispatch(
             setMessage({
@@ -204,9 +187,6 @@ function CameraScreen() {
       if (timeIntervalRef.current) {
         clearInterval(timeIntervalRef.current);
       }
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
       dispatch(
         setMessage({message: `Failed to start recording: ${e}`, type: 'error'}),
       );
@@ -222,11 +202,7 @@ function CameraScreen() {
     if (timeIntervalRef.current) {
       clearInterval(timeIntervalRef.current);
     }
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
     timeIntervalRef.current = null;
-    timeoutRef.current = null;
 
     try {
       await cameraRef.current.stopRecording();
