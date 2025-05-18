@@ -1,8 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useRef, useEffect, useCallback, useMemo} from 'react';
+import React, {useState, useRef, useEffect, useCallback} from 'react';
 import {View, Text} from 'react-native-ui-lib';
-import {Camera, useCameraDevices} from 'react-native-vision-camera';
+import {
+  Camera,
+  useCameraDevices,
+  useCameraFormat,
+} from 'react-native-vision-camera';
 import {BackHandler, AppState} from 'react-native';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 
@@ -25,9 +29,10 @@ function CameraScreen() {
   const cameraRef = useRef<Camera>(null);
 
   const [isCameraActive, setIsCameraActive] = useState(true);
+  const [isPhoto, setisPhoto] = useState(true);
+
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
-      console.log('App State:', nextAppState);
       setIsCameraActive(nextAppState === 'active');
     });
     return () => {
@@ -41,18 +46,17 @@ function CameraScreen() {
     devices.find(cam => cam.position === cameraSettings?.cameraId) ||
     devices[0];
 
-  const format = useMemo(() => {
-    if (!device) {
-      return undefined;
-    }
-    return (
-      device.formats.find(
-        f =>
-          (f.videoWidth === 720 && f.videoHeight === 1280) ||
-          (f.videoWidth === 1280 && f.videoHeight === 720), // phòng trường hợp máy ngang
-      ) || device.formats[0]
-    );
-  }, [device]);
+  const format = useCameraFormat(device, [
+    {photoHdr: true},
+    {videoHdr: true},
+    // {
+    //   videoResolution: {
+    //     width: 720,
+    //     height: 1280,
+    //   },
+    // },
+    {photoResolution: 'max'},
+  ]);
 
   // Refs cho việc quay video
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -330,6 +334,8 @@ function CameraScreen() {
             photoUri={photo}
             mediaType={mediaType}
             setZoom={setZoom}
+            isPhoto={isPhoto}
+            setisPhoto={setisPhoto}
           />
         </View>
         {/* Phần điều khiển */}
@@ -358,6 +364,7 @@ function CameraScreen() {
               onStartRecord={handleStartRecord}
               onStopRecord={handleStopRecord}
               onZoomChange={handleZoomChange}
+              isPhoto={isPhoto}
             />
           ) : (
             <MediaPreviewControls

@@ -24,6 +24,7 @@ const MediaPreviewControls: React.FC<MediaPreviewControlsProps> = ({
       {/* Nút Hủy */}
       <TouchableOpacity
         onPress={onClearMedia}
+        padding-s2
         hitSlop={{top: 20, bottom: 20, left: 20, right: 20}}>
         <Icon
           assetGroup="icons"

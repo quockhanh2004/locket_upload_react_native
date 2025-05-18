@@ -1,7 +1,14 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, {forwardRef, useRef, useState} from 'react';
-import {View, Image as RNUIImage, Colors} from 'react-native-ui-lib'; // Đổi tên Image của ui-lib
-import {StyleSheet, Dimensions, Animated, Platform} from 'react-native';
+import {View, Image as RNUIImage, Colors, Text} from 'react-native-ui-lib'; // Đổi tên Image của ui-lib
+import {
+  StyleSheet,
+  Dimensions,
+  Animated,
+  Platform,
+  Pressable,
+} from 'react-native';
 import {Camera, CameraProps} from 'react-native-vision-camera';
 import Video from 'react-native-video';
 import {
@@ -25,13 +32,26 @@ interface CameraPreviewProps {
   photoUri: string | null;
   mediaType: 'image' | 'video' | null;
   enablePinchZoom?: boolean;
+  isPhoto: boolean;
+  setisPhoto: (isPhoto: boolean) => void;
   onPinchZoomEvent?: (event: PinchGestureHandlerGestureEvent) => void;
   onPinchZoomStateChange?: (event: PinchGestureHandlerGestureEvent) => void;
 }
 
 const CameraPreview = forwardRef<Camera, CameraPreviewProps>(
   (
-    {cameraRef, device, format, isActive, zoom, setZoom, photoUri, mediaType},
+    {
+      cameraRef,
+      device,
+      format,
+      isActive,
+      zoom,
+      setZoom,
+      photoUri,
+      mediaType,
+      isPhoto,
+      setisPhoto,
+    },
     ref,
   ) => {
     const [focusCoords, setFocusCoords] = useState<{
@@ -70,20 +90,25 @@ const CameraPreview = forwardRef<Camera, CameraPreviewProps>(
       layoutWidth: number,
       layoutHeight: number,
       format: CameraProps['format'],
-    ) {
+    ): {x: number; y: number} | null {
       if (!format) {
         return null;
       }
+
       const camW = format.videoWidth;
       const camH = format.videoHeight;
       const camRatio = camW / camH;
       const viewRatio = layoutWidth / layoutHeight;
 
-      let x = tapX;
-      let y = tapY;
+      let x: number, y: number;
 
-      if (camRatio > viewRatio) {
-        // Camera quá rộng → crop chiều ngang
+      if (Math.abs(viewRatio - 1) < 0.01) {
+        // 👈 Preview là 1:1, không cần offset crop
+        const layoutSize = layoutWidth; // vì layoutWidth ≈ layoutHeight
+        x = tapX / layoutSize;
+        y = tapY / layoutSize;
+      } else if (camRatio > viewRatio) {
+        // 👈 Camera quá rộng → crop chiều ngang
         const scale = layoutHeight / camH;
         const scaledW = camW * scale;
         const offsetX = (scaledW - layoutWidth) / 2;
@@ -91,7 +116,6 @@ const CameraPreview = forwardRef<Camera, CameraPreviewProps>(
         x = (tapX + offsetX) / scaledW;
         y = tapY / layoutHeight;
       } else {
-        // Camera quá cao → crop chiều dọc
         const scale = layoutWidth / camW;
         const scaledH = camH * scale;
         const offsetY = (scaledH - layoutHeight) / 2;
@@ -186,25 +210,54 @@ const CameraPreview = forwardRef<Camera, CameraPreviewProps>(
         }
       } else {
         return (
-          <TapGestureHandler onHandlerStateChange={handleTapToFocus}>
-            <PinchGestureHandler
-              onGestureEvent={onPinchGestureEvent}
-              onHandlerStateChange={onPinchStateChange}>
-              <Camera
-                ref={ref || cameraRef}
-                style={styles.cameraStyle}
-                device={device}
-                format={format}
-                isActive={isActive}
-                photo={true}
-                video={true}
-                audio={true}
-                zoom={zoom}
-                resizeMode="cover"
-                enableZoomGesture={false}
-              />
-            </PinchGestureHandler>
-          </TapGestureHandler>
+          <>
+            <TapGestureHandler onHandlerStateChange={handleTapToFocus}>
+              <PinchGestureHandler
+                onGestureEvent={onPinchGestureEvent}
+                onHandlerStateChange={onPinchStateChange}>
+                <Camera
+                  ref={ref || cameraRef}
+                  style={styles.cameraStyle}
+                  device={device}
+                  format={format}
+                  isActive={isActive}
+                  photo={isPhoto}
+                  video={!isPhoto}
+                  audio={!isPhoto}
+                  zoom={zoom}
+                  resizeMode="cover"
+                  photoQualityBalance="speed"
+                  enableZoomGesture={true}
+                  videoHdr={format?.supportsVideoHdr}
+                  photoHdr={format?.supportsPhotoHdr}
+                />
+              </PinchGestureHandler>
+            </TapGestureHandler>
+            <View row absB marginB-12 gap-12>
+              <Pressable
+                style={{
+                  backgroundColor: isPhoto ? Colors.primary : Colors.grey20,
+                  padding: 8,
+                  borderRadius: 8,
+                }}
+                onPress={() => {
+                  setisPhoto(true);
+                }}>
+                <Text white>Photo</Text>
+              </Pressable>
+              <Pressable
+                style={{
+                  backgroundColor: !isPhoto ? Colors.primary : Colors.grey20,
+                  padding: 8,
+                  borderRadius: 8,
+                }}
+                onPress={() => {
+                  setisPhoto(false);
+                }}>
+                <Text white>Video</Text>
+              </Pressable>
+            </View>
+          </>
         );
       }
     };

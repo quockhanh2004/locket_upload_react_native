@@ -10,6 +10,7 @@ interface CameraControlsProps {
   zoom: number;
   minZoom: number;
   maxZoom: number;
+  isPhoto: boolean;
   onFlashToggle: () => void;
   onSwitchCamera: () => void;
   onTakePicture: () => void;
@@ -24,6 +25,7 @@ const CameraControls: React.FC<CameraControlsProps> = ({
   zoom,
   minZoom,
   maxZoom,
+  isPhoto,
   onFlashToggle,
   onSwitchCamera,
   onTakePicture,
@@ -76,6 +78,7 @@ const CameraControls: React.FC<CameraControlsProps> = ({
       {/* Nút Chụp/Quay/Zoom */}
       <CaptureButton
         isRecording={isRecording}
+        isPhoto={isPhoto}
         zoom={zoom}
         minZoom={minZoom}
         maxZoom={maxZoom}

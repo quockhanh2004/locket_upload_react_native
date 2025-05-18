@@ -17,6 +17,7 @@ interface CaptureButtonProps {
   zoom: number;
   minZoom: number;
   maxZoom: number;
+  isPhoto: boolean;
   onTakePicture: () => void;
   onStartRecord: () => void;
   onStopRecord: () => void;
@@ -30,6 +31,7 @@ const CaptureButton: React.FC<CaptureButtonProps> = ({
   zoom,
   minZoom,
   maxZoom,
+  isPhoto,
   onTakePicture,
   onStartRecord,
   onStopRecord,
@@ -54,36 +56,54 @@ const CaptureButton: React.FC<CaptureButtonProps> = ({
 
     if (nativeEvent.state === GestureState.BEGAN) {
       isGestureActive.current = true;
-      // Bắt đầu timer khi nhấn xuống
+
       if (pressTimer.current) {
         clearTimeout(pressTimer.current);
       }
-      pressTimer.current = setTimeout(() => {
-        if (isGestureActive.current) {
-          // Kiểm tra xem còn nhấn không
-          hapticFeedback();
-          startZoomPan.current = zoom; // Lưu zoom hiện tại trước khi quay
-          runOnJS(onStartRecord)();
-          pressTimer.current = null;
-        }
-      }, longPressDurationMs);
+
+      if (isPhoto) {
+        // Chụp ảnh ngay khi tap, không hỗ trợ giữ
+        hapticFeedback();
+        runOnJS(onTakePicture)();
+      } else {
+        // Chế độ quay: bắt đầu hẹn giờ long-press
+        pressTimer.current = setTimeout(() => {
+          if (isGestureActive.current) {
+            hapticFeedback();
+            startZoomPan.current = zoom;
+            runOnJS(onStartRecord)();
+            pressTimer.current = null;
+          }
+        }, longPressDurationMs);
+      }
     } else if (
       nativeEvent.state === GestureState.END ||
       nativeEvent.state === GestureState.CANCELLED ||
       nativeEvent.state === GestureState.FAILED
     ) {
-      // Ưu tiên: Nếu timer còn -> Tap -> Chụp ảnh
       if (pressTimer.current) {
         clearTimeout(pressTimer.current);
         pressTimer.current = null;
-        hapticFeedback();
-        runOnJS(onTakePicture)();
+
+        if (!isPhoto) {
+          // Tap nhẹ trong chế độ quay: toggle quay / dừng
+          if (isRecording) {
+            runOnJS(onStopRecord)();
+          } else {
+            hapticFeedback();
+            startZoomPan.current = zoom;
+            runOnJS(onStartRecord)();
+          }
+        }
+        // nếu là isPhoto thì không làm gì nữa vì BEGAN đã chụp
+      } else {
+        // Long press đã xảy ra → khi thả ra: dừng quay
+        if (!isPhoto && isRecording) {
+          runOnJS(onStopRecord)();
+        }
       }
-      // Nếu không còn timer và đang quay -> Dừng quay
-      else if (isRecording) {
-        runOnJS(onStopRecord)();
-      }
-      isGestureActive.current = false; // Reset cờ khi gesture kết thúc
+
+      isGestureActive.current = false;
     }
   };
 
