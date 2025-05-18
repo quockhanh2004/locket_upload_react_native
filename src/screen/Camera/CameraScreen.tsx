@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useRef, useEffect, useCallback} from 'react';
-import {View, Text} from 'react-native-ui-lib';
+import {View, Text, Colors, Icon} from 'react-native-ui-lib';
 import {
   Camera,
   useCameraDevices,
   useCameraFormat,
 } from 'react-native-vision-camera';
-import {BackHandler, AppState} from 'react-native';
+import {BackHandler, AppState, Pressable} from 'react-native';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 
 import {setCameraSettings} from '../../redux/slice/setting.slice';
@@ -46,16 +46,24 @@ function CameraScreen() {
     devices.find(cam => cam.position === cameraSettings?.cameraId) ||
     devices[0];
 
-  const format = useCameraFormat(device, [
-    {photoHdr: true},
-    {videoHdr: true},
-    // {
-    //   videoResolution: {
-    //     width: 720,
-    //     height: 1280,
-    //   },
-    // },
+  const formatPhoto = useCameraFormat(device, [
+    // {photoHdr: true},
     {photoResolution: 'max'},
+  ]);
+
+  const formatVideo = useCameraFormat(device, [
+    {
+      videoStabilizationMode: 'auto',
+    },
+    {
+      videoAspectRatio: 16 / 9,
+    },
+    {
+      videoResolution: {
+        width: 720,
+        height: 1280,
+      },
+    },
   ]);
 
   // Refs cho việc quay video
@@ -94,33 +102,34 @@ function CameraScreen() {
     );
   }, [dispatch, cameraSettings]);
 
-  const handleTakePicture = useCallback(() => {
+  const handleTakePicture = useCallback(async () => {
     if (!cameraRef.current || !isCameraActive) {
       return;
     }
-    console.log('Taking Picture...');
-    cameraRef.current
-      .takePhoto({
-        flash:
-          cameraSettings.flash && cameraSettings.cameraId === 'back'
-            ? 'on'
-            : 'off',
-      })
-      .then(async data => {
-        console.log('Photo taken:', data.path);
-        const newImage = await resizeImage(data.path);
-        setPhoto(newImage?.uri || '');
-        setMediaType('image');
-      })
-      .catch(error => {
-        console.error('Take photo error:', error);
-        dispatch(
-          setMessage({
-            message: `Error taking photo: ${error.message}`,
-            type: 'error',
-          }),
-        );
-      });
+    try {
+      console.log('Taking Picture...');
+      let data = null;
+      if (cameraSettings.flash && cameraSettings.cameraId === 'back') {
+        data = await cameraRef.current.takePhoto({
+          flash: 'on',
+        });
+      } else {
+        data = await cameraRef.current.takeSnapshot({
+          quality: 85,
+        });
+      }
+
+      console.log('Photo taken:', data?.path);
+      setPhoto(`file://${data?.path}` || '');
+      setMediaType('image');
+    } catch (error: any) {
+      dispatch(
+        setMessage({
+          message: `Error taking photo: ${error.message}`,
+          type: 'error',
+        }),
+      );
+    }
   }, [cameraRef, cameraSettings, isCameraActive, dispatch]);
 
   const handleStartRecord = useCallback(async () => {
@@ -250,8 +259,11 @@ function CameraScreen() {
     hapticFeedback();
     try {
       const typeToSave = mediaType === 'image' ? 'photo' : 'video';
-      // Đảm bảo URI có tiền tố file:// nếu cần (CameraRoll thường tự xử lý)
-      const saveUri = photo;
+      let saveUri = photo;
+      if (mediaType === 'image') {
+        // Resize ảnh nếu cần
+        saveUri = (await resizeImage(photo))?.uri || photo;
+      }
       await CameraRoll.save(saveUri, {type: typeToSave});
       dispatch(
         setMessage({
@@ -274,9 +286,11 @@ function CameraScreen() {
     if (!photo || !mediaType) {
       return;
     }
+    const resizedMedia =
+      mediaType === 'image' ? (await resizeImage(photo))?.uri : photo;
     hapticFeedback();
     navigationTo(nav.home, {
-      camera: {uri: photo, type: mediaType},
+      camera: {uri: resizedMedia, type: mediaType},
       from: nav.camera,
     });
   }, [photo, mediaType]);
@@ -328,15 +342,38 @@ function CameraScreen() {
             ref={cameraRef}
             cameraRef={cameraRef}
             device={device}
-            format={format}
+            format={isPhoto ? formatPhoto : formatVideo}
             isActive={isCameraActive}
             zoom={zoom}
             photoUri={photo}
             mediaType={mediaType}
             setZoom={setZoom}
             isPhoto={isPhoto}
-            setisPhoto={setisPhoto}
           />
+          <View row absB marginB-12 gap-12>
+            <Pressable
+              style={{
+                backgroundColor: isPhoto ? Colors.primary : Colors.grey20,
+                padding: 8,
+                borderRadius: 8,
+              }}
+              onPress={() => {
+                setisPhoto(true);
+              }}>
+              <Icon assetName="ic_camera" size={16} />
+            </Pressable>
+            <Pressable
+              style={{
+                backgroundColor: !isPhoto ? Colors.primary : Colors.grey20,
+                padding: 8,
+                borderRadius: 8,
+              }}
+              onPress={() => {
+                setisPhoto(false);
+              }}>
+              <Icon assetName="ic_camera_video" size={16} />
+            </Pressable>
+          </View>
         </View>
         {/* Phần điều khiển */}
         <View width={'100%'} flex-2 centerV>

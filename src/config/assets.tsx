@@ -25,4 +25,5 @@ Assets.loadAssetsGroup('icons', {
   ic_send: require('../assets/icons/ic_send.png'),
   ic_next: require('../assets/icons/ic_next.png'),
   ic_message: require('../assets/icons/ic_message.png'),
+  ic_camera_video: require('../assets/icons/ic_camera_video.png'),
 });

@@ -1,14 +1,8 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, {forwardRef, useRef, useState} from 'react';
-import {View, Image as RNUIImage, Colors, Text} from 'react-native-ui-lib'; // Đổi tên Image của ui-lib
-import {
-  StyleSheet,
-  Dimensions,
-  Animated,
-  Platform,
-  Pressable,
-} from 'react-native';
+import {View, Image as RNUIImage, Colors} from 'react-native-ui-lib'; // Đổi tên Image của ui-lib
+import {StyleSheet, Dimensions, Animated, Platform} from 'react-native';
 import {Camera, CameraProps} from 'react-native-vision-camera';
 import Video from 'react-native-video';
 import {
@@ -33,7 +27,6 @@ interface CameraPreviewProps {
   mediaType: 'image' | 'video' | null;
   enablePinchZoom?: boolean;
   isPhoto: boolean;
-  setisPhoto: (isPhoto: boolean) => void;
   onPinchZoomEvent?: (event: PinchGestureHandlerGestureEvent) => void;
   onPinchZoomStateChange?: (event: PinchGestureHandlerGestureEvent) => void;
 }
@@ -50,7 +43,6 @@ const CameraPreview = forwardRef<Camera, CameraPreviewProps>(
       photoUri,
       mediaType,
       isPhoto,
-      setisPhoto,
     },
     ref,
   ) => {
@@ -220,7 +212,7 @@ const CameraPreview = forwardRef<Camera, CameraPreviewProps>(
                   style={styles.cameraStyle}
                   device={device}
                   format={format}
-                  isActive={isActive}
+                  isActive={photoUri ? false : isActive}
                   photo={isPhoto}
                   video={!isPhoto}
                   audio={!isPhoto}
@@ -233,30 +225,6 @@ const CameraPreview = forwardRef<Camera, CameraPreviewProps>(
                 />
               </PinchGestureHandler>
             </TapGestureHandler>
-            <View row absB marginB-12 gap-12>
-              <Pressable
-                style={{
-                  backgroundColor: isPhoto ? Colors.primary : Colors.grey20,
-                  padding: 8,
-                  borderRadius: 8,
-                }}
-                onPress={() => {
-                  setisPhoto(true);
-                }}>
-                <Text white>Photo</Text>
-              </Pressable>
-              <Pressable
-                style={{
-                  backgroundColor: !isPhoto ? Colors.primary : Colors.grey20,
-                  padding: 8,
-                  borderRadius: 8,
-                }}
-                onPress={() => {
-                  setisPhoto(false);
-                }}>
-                <Text white>Video</Text>
-              </Pressable>
-            </View>
           </>
         );
       }
