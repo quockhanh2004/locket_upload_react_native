@@ -96,29 +96,34 @@ const CameraPreview = forwardRef<Camera, CameraPreviewProps>(
 
       if (Math.abs(viewRatio - 1) < 0.01) {
         // 👈 Preview là 1:1, không cần offset crop
-        const layoutSize = layoutWidth; // vì layoutWidth ≈ layoutHeight
-        x = tapX / layoutSize;
-        y = tapY / layoutSize;
+        x = tapX;
+        y = tapY;
       } else if (camRatio > viewRatio) {
         // 👈 Camera quá rộng → crop chiều ngang
         const scale = layoutHeight / camH;
         const scaledW = camW * scale;
         const offsetX = (scaledW - layoutWidth) / 2;
 
-        x = (tapX + offsetX) / scaledW;
-        y = tapY / layoutHeight;
+        x = tapX + offsetX;
+        y = tapY;
       } else {
+        // 👈 Camera quá cao → crop chiều dọc
         const scale = layoutWidth / camW;
         const scaledH = camH * scale;
         const offsetY = (scaledH - layoutHeight) / 2;
 
-        x = tapX / layoutWidth;
-        y = (tapY + offsetY) / scaledH;
+        x = tapX;
+        y = tapY + offsetY;
       }
 
+      console.log({
+        x: x,
+        y: y,
+      });
+
       return {
-        x: Math.max(0, Math.min(1, x)),
-        y: Math.max(0, Math.min(1, y)),
+        x: x,
+        y: y,
       };
     }
 
@@ -212,7 +217,7 @@ const CameraPreview = forwardRef<Camera, CameraPreviewProps>(
                   style={styles.cameraStyle}
                   device={device}
                   format={format}
-                  isActive={photoUri ? false : isActive}
+                  isActive={isActive}
                   photo={isPhoto}
                   video={!isPhoto}
                   audio={!isPhoto}
