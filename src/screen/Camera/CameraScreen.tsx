@@ -45,8 +45,12 @@ function CameraScreen() {
     devices.find(cam => cam.position === cameraSettings?.cameraId) ||
     devices[0];
 
+  const supportsPhotoHdr = !!device?.formats?.some(
+    format => format.supportsPhotoHdr === true,
+  );
+
   const formatPhoto = useCameraFormat(device, [
-    {photoHdr: true},
+    ...(supportsPhotoHdr ? [{photoHdr: true}] : []),
     {photoResolution: 'max'},
   ]);
 
