@@ -22,6 +22,8 @@ import {setShowSelectColor} from '../../redux/slice/guide.slice';
 import {t} from '../../languages/i18n';
 import {navigationTo} from '../../navigation/HomeNavigation';
 import {nav} from '../../navigation/navName';
+import {requestCameraPermission} from '../../util/permission';
+import {hapticFeedback} from '../../util/haptic';
 
 interface Props {
   selectedMedia: any;
@@ -70,7 +72,9 @@ const PostForm: React.FC<Props> = ({
     dispatch(setShowSelectColor(false));
   };
 
-  const handlePressCamera = () => {
+  const handlePressCamera = async () => {
+    hapticFeedback();
+    await requestCameraPermission();
     navigationTo(nav.camera);
   };
 

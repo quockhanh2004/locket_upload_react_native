@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, {forwardRef, useRef, useState} from 'react';
 import {View, Image as RNUIImage, Colors} from 'react-native-ui-lib'; // Đổi tên Image của ui-lib
