@@ -85,7 +85,7 @@ const ViewMedia: React.FC<ViewMediaProps> = ({
         ) : (
           <Icon
             assetGroup="icons"
-            assetName="ic_add"
+            assetName="ic_gallery"
             tintColor={Colors.grey40}
             size={64}
             margin-100

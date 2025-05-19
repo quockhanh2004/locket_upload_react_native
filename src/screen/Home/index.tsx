@@ -79,14 +79,16 @@ const HomeScreen = () => {
   const {postMoment, isLoading} = useSelector(
     (state: RootState) => state.postMoment,
   );
-  const {useCamera, unlimitedTrimVideo, postStyle} = useSelector(
+  const {unlimitedTrimVideo, postStyle} = useSelector(
     (state: RootState) => state.setting,
   );
   const {selected, optionSend, customListFriends} = useSelector(
     (state: RootState) => state.friends,
   );
 
-  const {filterFriendShow} = useSelector((state: RootState) => state.oldPosts);
+  const {filterFriendShow, isLoadPosts} = useSelector(
+    (state: RootState) => state.oldPosts,
+  );
 
   // --- Component State ---
   const [selectedMedia, setSelectedMedia] = useState<MediaType | null>(null);
@@ -96,7 +98,7 @@ const HomeScreen = () => {
     postStyle: postStyle,
   });
   const [isVideo, setIsVideo] = useState(false);
-  const [visibleSelectMedia, setVisibleSelectMedia] = useState(false);
+  // const [visibleSelectMedia, setVisibleSelectMedia] = useState(false);
   const [visibleSelectFriend, setVisibleSelectFriend] = useState(false);
   const [visibleSelectColor, setVisibleSelectColor] = useState(false);
   const [localLoading, setLocalLoading] = useState(false);
@@ -144,7 +146,8 @@ const HomeScreen = () => {
         user?.localId &&
         user.idToken &&
         user.timeExpires &&
-        +user.timeExpires > new Date().getTime()
+        +user.timeExpires > new Date().getTime() &&
+        !isLoadPosts
       ) {
         dispatch(
           getOldPosts({
@@ -159,7 +162,7 @@ const HomeScreen = () => {
 
   // Effect xử lý sau khi đăng bài thành công
   useEffect(() => {
-    if (postMoment && user) {
+    if (postMoment && user?.localId) {
       dispatch(setMessage({message: postMoment, type: t('success')}));
       dispatch(clearPostMoment());
       setSelectedMedia(null);
@@ -203,11 +206,12 @@ const HomeScreen = () => {
   };
 
   const handleSelectMedia = async () => {
-    if (useCamera) {
-      setVisibleSelectMedia(true);
-    } else {
-      await handleConfirmSelectMedia('gallery');
-    }
+    await handleConfirmSelectMedia('gallery');
+    // if (useCamera) {
+    //   setVisibleSelectMedia(true);
+    // } else {
+    // await handleConfirmSelectMedia('gallery');
+    // }
   };
 
   const handleRemoveMedia = () => {
@@ -234,7 +238,7 @@ const HomeScreen = () => {
   };
 
   const handleConfirmSelectMedia = async (value: 'gallery' | 'camera') => {
-    setVisibleSelectMedia(false);
+    // setVisibleSelectMedia(false);
     setLocalLoading(true);
     await onSelectMedia(value);
     setLocalLoading(false);
@@ -359,17 +363,17 @@ const HomeScreen = () => {
 
       {/* Dialogs */}
       <HomeScreenDialogs
-        visibleSelectMedia={visibleSelectMedia}
+        // visibleSelectMedia={visibleSelectMedia}
         visibleSelectFriend={visibleSelectFriend}
         visibleSelectColor={visibleSelectColor}
         valueColors={overlay.postStyle}
-        setVisibleSelectMedia={setVisibleSelectMedia}
+        // setVisibleSelectMedia={setVisibleSelectMedia}
         setVisibleSelectFriend={setVisibleSelectFriend}
         setVisibleSelectColor={setVisibleSelectColor}
         onSelectColor={val => {
           dispatch(setPostStyle(val));
         }}
-        onSelectMedia={handleConfirmSelectMedia}
+        // onSelectMedia={handleConfirmSelectMedia}
       />
     </View>
   );

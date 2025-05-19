@@ -57,13 +57,6 @@ const languagePersistConfig: PersistConfig<ReturnType<typeof languageReducer>> =
     stateReconciler: autoMergeLevel2,
   };
 
-const chatPersistConfig: PersistConfig<ReturnType<typeof chatReducer>> = {
-  key: 'chat',
-  storage: AsyncStorage,
-  stateReconciler: autoMergeLevel2,
-  blacklist: ['isLoadChat', 'chat', 'listChat'],
-};
-
 // Kết hợp reducer với từng persistReducer
 const rootReducer = combineReducers({
   user: persistReducer(userPersistConfig, userReducer),
@@ -75,7 +68,7 @@ const rootReducer = combineReducers({
   guide: persistReducer(guidePersistConfig, guideReducer),
   spotify: persistReducer(spotifyPersistConfig, spotifyReducer),
   language: persistReducer(languagePersistConfig, languageReducer),
-  chat: persistReducer(chatPersistConfig, chatReducer),
+  chat: chatReducer,
 });
 
 // Tạo store

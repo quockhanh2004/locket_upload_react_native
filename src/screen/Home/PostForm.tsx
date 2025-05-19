@@ -1,7 +1,16 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 // components/PostForm.tsx
 import React, {useEffect, useState} from 'react';
-import {View, Button, Colors, Text, LoaderScreen} from 'react-native-ui-lib';
+import {
+  View,
+  Button,
+  Colors,
+  Text,
+  LoaderScreen,
+  TouchableOpacity,
+  Icon,
+} from 'react-native-ui-lib';
 import ViewMedia from '../../components/ViewMedia';
 import MainButton from '../../components/MainButton';
 import PostPager from './PostPager';
@@ -11,6 +20,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../redux/store';
 import {setShowSelectColor} from '../../redux/slice/guide.slice';
 import {t} from '../../languages/i18n';
+import {navigationTo} from '../../navigation/HomeNavigation';
+import {nav} from '../../navigation/navName';
 
 interface Props {
   selectedMedia: any;
@@ -57,6 +68,10 @@ const PostForm: React.FC<Props> = ({
 
   const handelNotShowAgainSelectColor = () => {
     dispatch(setShowSelectColor(false));
+  };
+
+  const handlePressCamera = () => {
+    navigationTo(nav.camera);
   };
 
   // const handleNotShowAgainSelectSpotify = () => {
@@ -128,12 +143,25 @@ const PostForm: React.FC<Props> = ({
         )}
       </Button>
 
-      <View center>
+      <View
+        centerV
+        row
+        style={{
+          justifyContent: 'space-around',
+        }}>
+        <View width={36} height={36} />
         <MainButton
           label={t('select_friends')}
           onPress={onSelectFriend}
           onLongPress={onLongPress}
         />
+        <TouchableOpacity
+          padding-8
+          backgroundColor={Colors.grey20}
+          br30
+          onPress={handlePressCamera}>
+          <Icon assetName="ic_camera" size={24} tintColor={Colors.primary} />
+        </TouchableOpacity>
       </View>
       <GuideDialog
         visible={showSelectColor}

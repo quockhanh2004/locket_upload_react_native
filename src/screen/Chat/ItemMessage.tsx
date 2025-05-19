@@ -118,8 +118,6 @@ const ItemMessage: React.FC<ItemMessageProps> = ({
           maxWidth: '80%',
           minWidth: '5%',
           ...getBorderRadius(),
-
-          textAlign: sendByMe ? 'right' : 'left',
         }}>
         {parsedParts.map((part, idx) => {
           if (part.type === 'link') {
@@ -130,7 +128,7 @@ const ItemMessage: React.FC<ItemMessageProps> = ({
             return (
               <Text
                 key={idx}
-                style={{textDecorationLine: 'underline', color: '#2980b9'}}
+                style={{textDecorationLine: 'underline', color: '#63e3ff'}}
                 onPress={() => handlePress(link)}>
                 {display}
               </Text>

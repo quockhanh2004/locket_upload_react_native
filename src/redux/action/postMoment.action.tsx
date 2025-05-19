@@ -105,7 +105,6 @@ export const uploadImageToFirebaseStorage = createAsyncThunk(
         ),
         thunkApi.signal,
       );
-      console.log(JSON.stringify(response.data));
 
       // Kiểm tra phản hồi từ server
       if (!response.data.result || response.data.result.status >= 400) {

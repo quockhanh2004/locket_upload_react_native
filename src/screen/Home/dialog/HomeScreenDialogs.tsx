@@ -1,42 +1,42 @@
 import React from 'react';
-import SelectMediaDialog from '../../../Dialog/SelectMediaDialog';
+// import SelectMediaDialog from '../../../Dialog/SelectMediaDialog';
 import SelectFriendDialog from '../../../Dialog/SelectFriendDialog';
 import SelectColorDialog from '../../../Dialog/SelectColorSwatchDialog';
 import {PostStyle} from '../../../models/setting.model';
 
 interface Props {
-  visibleSelectMedia: boolean;
+  // visibleSelectMedia: boolean;
   visibleSelectFriend: boolean;
   visibleSelectColor: boolean;
   valueColors: PostStyle;
-  setVisibleSelectMedia: (val: boolean) => void;
+  // setVisibleSelectMedia: (val: boolean) => void;
   setVisibleSelectFriend: (val: boolean) => void;
   setVisibleSelectColor: (val: boolean) => void;
   onSelectColor: (color: PostStyle) => void;
-  onSelectMedia: (type: 'camera' | 'gallery') => void;
+  // onSelectMedia: (type: 'camera' | 'gallery') => void;
 }
 
 const HomeScreenDialogs = ({
-  visibleSelectMedia,
+  // visibleSelectMedia,
   visibleSelectFriend,
   visibleSelectColor,
-  setVisibleSelectMedia,
+  // setVisibleSelectMedia,
   setVisibleSelectFriend,
   setVisibleSelectColor,
   valueColors,
   onSelectColor,
-  onSelectMedia,
-}: Props) => {
+}: // onSelectMedia,
+Props) => {
   return (
     <>
-      <SelectMediaDialog
+      {/* <SelectMediaDialog
         visible={visibleSelectMedia}
         onDismiss={() => setVisibleSelectMedia(false)}
         onConfirm={type => {
           setVisibleSelectMedia(false);
           onSelectMedia(type);
         }}
-      />
+      /> */}
       <SelectFriendDialog
         visible={visibleSelectFriend}
         onDismiss={() => setVisibleSelectFriend(false)}

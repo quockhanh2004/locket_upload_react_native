@@ -103,7 +103,7 @@ const PostScreen: React.FC<PostScreenProps> = ({
     );
   }, [listPostByFilter, selectedIndexInModal]);
 
-  useGlobalMusicPlayer(activeUrl, true);
+  useGlobalMusicPlayer(activeUrl, isViewerVisible);
   const openViewer = (index: number) => {
     setIndexToView(index);
     setIsViewerVisible(true);
