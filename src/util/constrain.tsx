@@ -25,4 +25,4 @@ export const loginHeader = {
 export const MY_SERVER_URL = 'https://locket.quockhanh020924.id.vn';
 // export const MY_SERVER_URL = 'http://192.168.1.25:3001';
 export const REDIRECT_URI = 'locketupload.spotify://oauth';
-export const VERSION_SKIP_CODEPUSH = 64;
+export const VERSION_SKIP_CODEPUSH = 66;

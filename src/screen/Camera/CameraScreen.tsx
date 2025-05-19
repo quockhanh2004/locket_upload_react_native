@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useRef, useEffect, useCallback} from 'react';
 import {View, Text, Colors, Icon} from 'react-native-ui-lib';

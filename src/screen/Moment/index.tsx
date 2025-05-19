@@ -264,6 +264,7 @@ const PostScreen: React.FC<PostScreenProps> = ({
               listPostByFilter={listPostByFilter}
               handleRefresh={() => {
                 setIsViewerVisible(false);
+                handleRefresh();
               }}
               handleLoadMore={handleLoadMore}
               selectedIndexInModal={selectedIndexInModal}

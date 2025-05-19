@@ -174,7 +174,7 @@ const HomeScreen = () => {
       dispatch(getOldPosts({userId: user.localId, token: user.idToken}));
       deleteAllMp4Files(RNFS.DocumentDirectoryPath);
     }
-  }, [postMoment, dispatch, user]);
+  }, [postMoment, dispatch, user?.localId, user?.idToken]);
 
   // Effect xử lý kết quả trả về từ hook cắt video
   useEffect(() => {
@@ -343,7 +343,7 @@ const HomeScreen = () => {
             }
           />
         </View>
-        <View height={cropHeight} center>
+        <View height={screenHeight * 0.87} center>
           <View
             height={4}
             width={80}
