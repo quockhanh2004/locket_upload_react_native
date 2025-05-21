@@ -33,6 +33,12 @@ const HomeScreenHeader = ({
   onViewPost,
 }: Props) => {
   const {friends} = useSelector((state: RootState) => state.friends);
+  const {listChat} = useSelector((state: RootState) => state.chat);
+
+  //tính số lượng tin nhắn chưa đọc
+  const unreadMessages = Object.values(listChat)?.filter(
+    message => message.is_read === false,
+  );
   return (
     <View row spread centerV padding-12>
       {userInfo?.photoUrl ? (
@@ -86,6 +92,25 @@ const HomeScreenHeader = ({
             size={24}
             tintColor={Colors.grey40}
           />
+
+          {unreadMessages?.length > 0 ? (
+            <View
+              style={{
+                position: 'absolute',
+                top: -5,
+                right: -5,
+                backgroundColor: Colors.red30,
+                width: 16,
+                height: 16,
+                borderRadius: 8,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text white text90>
+                {unreadMessages.length}
+              </Text>
+            </View>
+          ) : null}
         </View>
       </TouchableOpacity>
     </View>

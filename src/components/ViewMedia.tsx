@@ -77,19 +77,24 @@ const ViewMedia: React.FC<ViewMediaProps> = ({
             </View>
           )
         ) : localLoading ? (
-          <ActivityIndicator
-            size={64}
-            style={{margin: 100}}
-            color={Colors.primary}
-          />
+          <View
+            center
+            width={screenWidth * cropWidth}
+            height={screenWidth * cropWidth}>
+            <ActivityIndicator size={64} color={Colors.primary} />
+          </View>
         ) : (
-          <Icon
-            assetGroup="icons"
-            assetName="ic_gallery"
-            tintColor={Colors.grey40}
-            size={64}
-            margin-100
-          />
+          <View
+            center
+            width={screenWidth * cropWidth}
+            height={screenWidth * cropWidth}>
+            <Icon
+              assetGroup="icons"
+              assetName="ic_gallery"
+              tintColor={Colors.grey40}
+              size={64}
+            />
+          </View>
         )}
       </TouchableOpacity>
     </View>

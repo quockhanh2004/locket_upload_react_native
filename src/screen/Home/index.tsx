@@ -40,11 +40,7 @@ import {deleteAllMp4Files} from '../../util/uploadVideo';
 import useTrimVideo from '../../hooks/useTrimVideo';
 import {DefaultOverlayCreate, OverLayCreate} from '../../util/bodyMoment';
 import {t} from 'i18next';
-import {
-  navigationTo,
-  clearNavigation,
-  setNavigation,
-} from '../../navigation/HomeNavigation';
+import {navigationTo, setNavigation} from '../../navigation/HomeNavigation';
 import {hapticFeedback} from '../../util/haptic';
 import {onPostMoment} from './functions/PostMoment';
 import PostScreen from '../Moment';
@@ -57,12 +53,12 @@ import HomeScreenDialogs from './dialog/HomeScreenDialogs';
 interface RouteParams {
   from?: string;
   uri?: string;
-  camera?: Asset; // Giữ nguyên kiểu 'any' nếu bạn chắc chắn, nhưng Asset có vẻ phù hợp hơn
+  camera?: Asset;
 }
 
 interface MediaType {
   uri: string;
-  type?: 'video' | 'image' | string; // Thêm gợi ý type
+  type?: 'video' | 'image' | string;
 }
 const screenHeight = Dimensions.get('window').height;
 const cropHeight = screenHeight * 0.8;
@@ -98,7 +94,6 @@ const HomeScreen = () => {
     postStyle: postStyle,
   });
   const [isVideo, setIsVideo] = useState(false);
-  // const [visibleSelectMedia, setVisibleSelectMedia] = useState(false);
   const [visibleSelectFriend, setVisibleSelectFriend] = useState(false);
   const [visibleSelectColor, setVisibleSelectColor] = useState(false);
   const [localLoading, setLocalLoading] = useState(false);
@@ -115,12 +110,10 @@ const HomeScreen = () => {
   useEffect(() => {
     const unsubscribe = componentNavigation.addListener('focus', () => {
       const {params} = route;
-      let processed = false;
 
       if (params?.from === nav.crop && params?.uri) {
         setSelectedMedia({uri: params.uri, type: 'image'});
         setIsVideo(false);
-        processed = true;
       } else if (params?.from === nav.camera && params?.camera) {
         if (params.camera.type?.startsWith('video')) {
           compressMedia(params.camera);
@@ -128,16 +121,15 @@ const HomeScreen = () => {
           setSelectedMedia({uri: params.camera.uri ?? '', type: 'image'});
           setIsVideo(false);
         }
-        processed = true;
       }
-
-      if (processed || params?.from) {
-        clearNavigation();
-      }
+      componentNavigation.setParams({
+        from: undefined,
+        uri: undefined,
+      });
     });
 
     return unsubscribe;
-  }, [route]); // Chỉ phụ thuộc route vì navigation được cập nhật vào biến module-level
+  }, [componentNavigation, route]);
 
   // Effect chạy mỗi khi màn hình được focus: Lấy bài đăng cũ hơn
   useFocusEffect(
@@ -207,11 +199,6 @@ const HomeScreen = () => {
 
   const handleSelectMedia = async () => {
     await handleConfirmSelectMedia('gallery');
-    // if (useCamera) {
-    //   setVisibleSelectMedia(true);
-    // } else {
-    // await handleConfirmSelectMedia('gallery');
-    // }
   };
 
   const handleRemoveMedia = () => {
@@ -363,17 +350,14 @@ const HomeScreen = () => {
 
       {/* Dialogs */}
       <HomeScreenDialogs
-        // visibleSelectMedia={visibleSelectMedia}
         visibleSelectFriend={visibleSelectFriend}
         visibleSelectColor={visibleSelectColor}
         valueColors={overlay.postStyle}
-        // setVisibleSelectMedia={setVisibleSelectMedia}
         setVisibleSelectFriend={setVisibleSelectFriend}
         setVisibleSelectColor={setVisibleSelectColor}
         onSelectColor={val => {
           dispatch(setPostStyle(val));
         }}
-        // onSelectMedia={handleConfirmSelectMedia}
       />
     </View>
   );
