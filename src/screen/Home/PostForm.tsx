@@ -15,10 +15,8 @@ import ViewMedia from '../../components/ViewMedia';
 import MainButton from '../../components/MainButton';
 import PostPager from './PostPager';
 import {OverLayCreate, OverlayType} from '../../util/bodyMoment';
-import GuideDialog from '../../Dialog/GuideDialog';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../../redux/store';
-import {setShowSelectColor} from '../../redux/slice/guide.slice';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../redux/store';
 import {t} from '../../languages/i18n';
 import {navigationTo} from '../../navigation/HomeNavigation';
 import {nav} from '../../navigation/navName';
@@ -58,19 +56,19 @@ const PostForm: React.FC<Props> = ({
   onLongPress,
   setOverlay,
 }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const {
-    showSelectColor,
-    // guideSpotify
-  } = useSelector((state: RootState) => state.guide);
+  // const dispatch = useDispatch<AppDispatch>();
+  // const {
+  //   showSelectColor,
+  //   // guideSpotify
+  // } = useSelector((state: RootState) => state.guide);
   const {currentPlay} = useSelector((state: RootState) => state.spotify);
 
   const [type, setType] = useState(OverlayType.standard);
   const [textOverlay, setTextOverlay] = useState('');
 
-  const handelNotShowAgainSelectColor = () => {
-    dispatch(setShowSelectColor(false));
-  };
+  // const handelNotShowAgainSelectColor = () => {
+  //   dispatch(setShowSelectColor(false));
+  // };
 
   const handlePressCamera = async () => {
     hapticFeedback();
@@ -153,12 +151,18 @@ const PostForm: React.FC<Props> = ({
         style={{
           justifyContent: 'space-around',
         }}>
-        <View width={36} height={36} />
-        <MainButton
-          label={t('select_friends')}
-          onPress={onSelectFriend}
-          onLongPress={onLongPress}
-        />
+        <TouchableOpacity
+          padding-8
+          onPress={onLongPress}
+          backgroundColor={Colors.grey20}
+          br30>
+          <Icon
+            assetName="ic_fill_color"
+            size={24}
+            tintColor={Colors.primary}
+          />
+        </TouchableOpacity>
+        <MainButton label={t('select_friends')} onPress={onSelectFriend} />
         <TouchableOpacity
           padding-8
           backgroundColor={Colors.grey20}
@@ -167,7 +171,7 @@ const PostForm: React.FC<Props> = ({
           <Icon assetName="ic_camera" size={24} tintColor={Colors.primary} />
         </TouchableOpacity>
       </View>
-      <GuideDialog
+      {/* <GuideDialog
         visible={showSelectColor}
         label={t('guied_open_select_colors')}
         decription={t('guied_open_select_colors_desc')}
@@ -175,7 +179,7 @@ const PostForm: React.FC<Props> = ({
           uri: 'https://quockhanh020924.id.vn/drive/videos/guide_select_colors.mp4',
         }}
         onDismiss={handelNotShowAgainSelectColor}
-      />
+      /> */}
       {/* <GuideDialog
         visible={guideSpotify}
         label={t('guied_open_select_music')}
