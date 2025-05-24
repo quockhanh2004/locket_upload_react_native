@@ -117,5 +117,11 @@
   "copy": "Copy",
   "delete": "Delete",
   "hide_donate": "Hide popup donate",
-  "how_to_hide_popup_donate": "You can go to app settings to hide this notification"
+  "how_to_hide_popup_donate": "You can go to app settings to hide this notification",
+  "active_key_required": "Currently, many people are taking this app and illegally reselling it for free, so I have to take stricter measures. I sincerely apologize for the inconvenience.\n\nPlease contact my page and I will provide you with a FREE activation key!\n\nPham Ngoc Quoc Khanh",
+  "active": "Activate",
+  "email_login": "The email you use to log in",
+  "active_key": "Activation Key",
+  "active_key_description": "Enter the activation code for your email",
+  "get_acitve_key": "Get Activation Key"
 }

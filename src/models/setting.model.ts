@@ -19,6 +19,8 @@ export interface SettingState {
   usingSpotifyMod: boolean;
   postStyle: PostStyle;
   showDonate: boolean;
+  loadingGetKey: boolean;
+  responseGetKey: any;
   activeKey: {
     [key: string]: ActiveKey;
   };

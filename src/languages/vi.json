@@ -122,5 +122,6 @@
   "active": "Kích hoạt",
   "email_login": "Email bạn dùng để đăng nhập",
   "active_key": "Khóa kích hoạt",
-  "active_key_description": "Nhập mã kích hoạt cho email"
+  "active_key_description": "Nhập mã kích hoạt cho email",
+  "get_acitve_key": "Nhận khóa kích hoạt"
 }

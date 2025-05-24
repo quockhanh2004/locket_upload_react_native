@@ -19,8 +19,8 @@ export const instanceFirebase = axios.create({
   timeout: 30000,
 });
 
-export const MY_SERVER_URL = 'https://locket.quockhanh020924.id.vn';
-// export const MY_SERVER_URL = 'http://192.168.1.25:3001';
+// export const MY_SERVER_URL = 'https://locket.quockhanh020924.id.vn';
+export const MY_SERVER_URL = 'http://192.168.1.25:3001';
 export const instanceMyServer = axios.create({
   baseURL: MY_SERVER_URL,
   httpAgent: 'http',

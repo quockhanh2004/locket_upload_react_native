@@ -25,3 +25,27 @@ export const activeKey = createAsyncThunk(
     }
   },
 );
+
+export const getActiveKey = createAsyncThunk(
+  'getActiveKey',
+  async (email: string, thunkApi) => {
+    try {
+      const response = await instanceMyServer.get(
+        `/users/client-gen-key/${email}`,
+      );
+      console.log(response.data);
+
+      return response.data;
+    } catch (error: any) {
+      console.log(error.response?.data);
+
+      thunkApi.dispatch(
+        setMessage({
+          message: `${JSON.stringify(error?.response?.data) || error.message}`,
+          type: 'error',
+        }),
+      );
+      return thunkApi.rejectWithValue(error.message);
+    }
+  },
+);

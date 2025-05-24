@@ -5,7 +5,7 @@ import {
   SettingState,
 } from '../../models/setting.model';
 import {ColorDefault} from '../../util/colors';
-import {activeKey} from '../action/setting.action';
+import {activeKey, getActiveKey} from '../action/setting.action';
 
 const initialState: SettingState = {
   cameraSettings: {
@@ -20,6 +20,8 @@ const initialState: SettingState = {
   usingSpotifyMod: false,
   postStyle: ColorDefault,
   showDonate: true,
+  loadingGetKey: false,
+  responseGetKey: null,
   activeKey: {},
 };
 
@@ -78,10 +80,22 @@ const settingSlice = createSlice({
     },
   },
   extraReducers: builder => {
-    builder.addCase(activeKey.fulfilled, (state, action) => {
-      const {key, email} = action.payload;
-      state.activeKey[email] = {key, email};
-    });
+    builder
+      .addCase(activeKey.fulfilled, (state, action) => {
+        const {key, email} = action.payload;
+        state.activeKey[email] = {key, email};
+      })
+
+      .addCase(getActiveKey.pending, state => {
+        state.loadingGetKey = true;
+      })
+      .addCase(getActiveKey.fulfilled, (state, action) => {
+        state.loadingGetKey = false;
+        state.responseGetKey = action.payload;
+      })
+      .addCase(getActiveKey.rejected, state => {
+        state.loadingGetKey = false;
+      });
   },
 });
 
