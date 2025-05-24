@@ -6,7 +6,7 @@ import {RootState} from '../../redux/store';
 import {useSelector} from 'react-redux';
 import CustomAvatar from '../../components/Avatar';
 import {t} from '../../languages/i18n';
-import {timeDiffFromNow} from '../../util/convertTime';
+import {timeDiffFromNow} from '../../util/convert';
 
 interface ItemListChatProps {
   itemChat: ListChatType;

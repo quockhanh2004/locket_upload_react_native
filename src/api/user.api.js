@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {loginHeader} from '../util/constrain';
-import instance from '../util/axios_locketcamera';
+import instance from '../util/axios_instance';
 
 export const login = async data => {
   try {

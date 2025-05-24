@@ -22,6 +22,7 @@ import ListChat from '../screen/Chat/ListChatScreen';
 import {OnOpenAppService} from '../services/OnOpenApp';
 import DonateDialog from '../Dialog/DonateDialog';
 import LocalNoti from '../services/LocalNoti';
+import ActiveAppDialog from '../screen/ActiveAppScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -59,13 +60,31 @@ const HomeNavigator = () => {
   );
 };
 
+const ActiveKeyNavigator = () => {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name={nav.activeApp} component={ActiveAppDialog} />
+    </Stack.Navigator>
+  );
+};
+
 const RootNavigation = () => {
   const isLoggedIn = useSelector((state: RootState) => state.user);
-
+  const userEmail = isLoggedIn.user?.email || 'notfound';
+  const {activeKey} = useSelector((state: RootState) => state.setting);
+  const isActiveApp = activeKey[userEmail];
   return (
     <>
       <NavigationContainer>
-        {isLoggedIn.user ? <HomeNavigator /> : <AuthNavigator />}
+        {isLoggedIn.user ? (
+          !isActiveApp ? (
+            <ActiveKeyNavigator />
+          ) : (
+            <HomeNavigator />
+          )
+        ) : (
+          <AuthNavigator />
+        )}
       </NavigationContainer>
       <MessageDialog />
       <DonateDialog />

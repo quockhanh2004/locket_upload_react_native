@@ -4,7 +4,7 @@ import {Dimensions} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {View, Text, Colors} from 'react-native-ui-lib';
 import {PostStyle} from '../../../models/setting.model';
-import {getCurrentTime} from '../../../util/convertTime';
+import {getCurrentTime} from '../../../util/convert';
 
 const width = Dimensions.get('window').width;
 

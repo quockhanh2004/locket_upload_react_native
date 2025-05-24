@@ -117,5 +117,10 @@
   "copy": "Sao chép",
   "delete": "Xóa",
   "hide_donate": "Ẩn thông báo quyên góp",
-  "how_to_hide_popup_donate": "Bạn có thể vào cài đặt app ẩn thông báo này"
+  "how_to_hide_popup_donate": "Bạn có thể vào cài đặt app ẩn thông báo này",
+  "active_key_required": "Hiện tại có nhiều người lấy app này của mình làm MIỄN PHÍ bán lại nên buộc mình phải mạnh tay. Rất xin lỗi các bạn vì sự bất tiện này.\n\nHãy liên hệ page của mình để mình cung cấp khóa kích hoạt MIỄN PHÍ nhé!\n\nPhạm Ngọc Quốc Khánh",
+  "active": "Kích hoạt",
+  "email_login": "Email bạn dùng để đăng nhập",
+  "active_key": "Khóa kích hoạt",
+  "active_key_description": "Nhập mã kích hoạt cho email"
 }

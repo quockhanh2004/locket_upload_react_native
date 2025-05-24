@@ -9,7 +9,7 @@ import {
   Icon,
   LoaderScreen,
 } from 'react-native-ui-lib';
-import {converTime} from '../util/convertTime';
+import {converTime} from '../util/convert';
 import {t} from '../languages/i18n';
 import {User} from '../models/user.model';
 

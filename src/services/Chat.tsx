@@ -1,5 +1,5 @@
 import {io, Socket} from 'socket.io-client';
-import {MY_SERVER_URL} from '../util/constrain';
+import {MY_SERVER_URL} from '../util/axios_instance';
 
 let socket: Socket | null = null;
 let localToken: string | null = null;

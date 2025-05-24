@@ -2,7 +2,7 @@
 import React, {useRef, useState, useCallback, useEffect} from 'react';
 import {FlatList, ViewToken} from 'react-native';
 import {Colors, View} from 'react-native-ui-lib';
-import {getCurrentTime} from '../../util/convertTime';
+import {getCurrentTime} from '../../util/convert';
 import {OverlayType} from '../../util/bodyMoment';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../../redux/store';

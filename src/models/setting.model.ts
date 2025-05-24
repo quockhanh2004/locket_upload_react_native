@@ -11,7 +11,6 @@ export interface PostStyle {
 }
 
 export interface SettingState {
-  useCamera: boolean;
   cameraSettings: CameraSetting;
   appVersion: string;
   optionFriend: boolean;
@@ -20,4 +19,12 @@ export interface SettingState {
   usingSpotifyMod: boolean;
   postStyle: PostStyle;
   showDonate: boolean;
+  activeKey: {
+    [key: string]: ActiveKey;
+  };
+}
+
+export interface ActiveKey {
+  key: string;
+  email: string;
 }

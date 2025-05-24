@@ -1,9 +1,13 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {CameraSetting, SettingState} from '../../models/setting.model';
+import {
+  ActiveKey,
+  CameraSetting,
+  SettingState,
+} from '../../models/setting.model';
 import {ColorDefault} from '../../util/colors';
+import {activeKey} from '../action/setting.action';
 
 const initialState: SettingState = {
-  useCamera: false,
   cameraSettings: {
     cameraId: '0',
     format: 0,
@@ -16,16 +20,13 @@ const initialState: SettingState = {
   usingSpotifyMod: false,
   postStyle: ColorDefault,
   showDonate: true,
+  activeKey: {},
 };
 
 const settingSlice = createSlice({
   name: 'setting',
   initialState,
   reducers: {
-    setUseCameraSetting(state, action: PayloadAction<boolean>) {
-      state.useCamera = action.payload;
-    },
-
     setCameraSettings(state, action: PayloadAction<CameraSetting>) {
       state.cameraSettings = {
         ...state.cameraSettings,
@@ -63,15 +64,28 @@ const settingSlice = createSlice({
 
     setSetting(state, action) {
       const data = JSON.parse(action.payload);
-      state.useCamera = data.useCamera;
       state.cameraSettings = data.cameraSettings;
       state.appVersion = data.appVersion;
     },
+
+    setActiveKey(state, action: PayloadAction<ActiveKey | null>) {
+      if (action.payload) {
+        const {key, email} = action.payload;
+        state.activeKey[email] = {key, email};
+      } else {
+        state.activeKey = {};
+      }
+    },
+  },
+  extraReducers: builder => {
+    builder.addCase(activeKey.fulfilled, (state, action) => {
+      const {key, email} = action.payload;
+      state.activeKey[email] = {key, email};
+    });
   },
 });
 
 export const {
-  setUseCameraSetting,
   setCameraSettings,
   setCurrentVersion,
   setOptionFriend,
@@ -81,6 +95,7 @@ export const {
   setSetting,
   setShowDonate,
   setUsingSpotifyMod,
+  setActiveKey,
 } = settingSlice.actions;
 
 export default settingSlice.reducer;

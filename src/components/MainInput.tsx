@@ -8,6 +8,8 @@ interface MainInputProps {
   onChangeText: (text: string) => void;
   placeholder?: string;
   placeholderTextColor?: string;
+  keyboardType?: 'default' | 'numeric' | 'email-address' | 'phone-pad';
+  onFocus?: (val: boolean) => void;
 }
 
 const MainInput = ({
@@ -15,6 +17,8 @@ const MainInput = ({
   onChangeText,
   placeholder,
   placeholderTextColor,
+  keyboardType = 'default',
+  onFocus,
 }: MainInputProps) => {
   return (
     <InputView
@@ -26,9 +30,20 @@ const MainInput = ({
       borderColor={Colors.grey40}
       borderWidth={1}
       placeholder={placeholder}
+      keyboardType={keyboardType}
       placeholderTextColor={placeholderTextColor}
       inputStyle={{color: Colors.grey40, ...Typography.text70BL}}
       style={{paddingLeft: 10}}
+      onFocus={() => {
+        if (onFocus) {
+          onFocus(true);
+        }
+      }}
+      onBlur={() => {
+        if (onFocus) {
+          onFocus(false);
+        }
+      }}
     />
   );
 };

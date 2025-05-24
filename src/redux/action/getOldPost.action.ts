@@ -1,6 +1,5 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {setMessage} from '../slice/message.slice';
-import axios from 'axios';
 import {
   loadPostsFromStorage,
   savePostsToStorage,
@@ -9,7 +8,8 @@ import {setOldPosts} from '../slice/oldPosts.slice';
 import {t} from '../../languages/i18n';
 import {Post} from '../../models/post.model';
 import {cleanObject} from '../../util/cleanObject';
-import {MY_SERVER_URL} from '../../util/constrain';
+import {instanceMyServer} from '../../util/axios_instance';
+import {setActiveKey} from '../slice/setting.slice';
 
 interface DataParam {
   token: string;
@@ -26,10 +26,7 @@ export const getOldPosts = createAsyncThunk(
       console.log('running getOldPosts', data.userId);
       const oldPosts = await loadPostsFromStorage('posts_' + data.userId);
       thunkApi.dispatch(setOldPosts(oldPosts));
-      const response = await axios.post(
-        `${MY_SERVER_URL}/posts`,
-        cleanObject(data),
-      );
+      const response = await instanceMyServer.post('/posts', cleanObject(data));
       const listOldPosts = response.data.post;
       return {
         post: listOldPosts,
@@ -39,10 +36,12 @@ export const getOldPosts = createAsyncThunk(
         byUserId: data?.byUserId,
       };
     } catch (error: any) {
-      console.error('Error fetching list old posts', error);
+      if (error?.response?.status === 401) {
+        thunkApi.dispatch(setActiveKey(null));
+      }
       thunkApi.dispatch(
         setMessage({
-          message: `${error.message}`,
+          message: `${JSON.stringify(error?.response?.data) || error.message}`,
           type: t('error'),
         }),
       );
@@ -69,8 +68,8 @@ export const getReaction = createAsyncThunk(
   'getReaction',
   async (data: {momentId: string; token: string}, thunkApi) => {
     try {
-      const response = await axios.post(
-        `${MY_SERVER_URL}/posts/${data.momentId}`,
+      const response = await instanceMyServer.post(
+        `/posts/${data.momentId}`,
         {
           token: data.token,
         },
@@ -85,10 +84,9 @@ export const getReaction = createAsyncThunk(
         reactions: response.data.reactions,
       };
     } catch (error: any) {
-      console.error('Error fetching reaction', error);
       thunkApi.dispatch(
         setMessage({
-          message: `${error.message}`,
+          message: `${JSON.stringify(error?.response?.data) || error.message}`,
           type: t('error'),
         }),
       );

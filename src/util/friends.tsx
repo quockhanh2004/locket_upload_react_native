@@ -1,13 +1,12 @@
 /* eslint-disable no-async-promise-executor */
-import axios from 'axios';
 import {fetchUser} from '../api/user.api';
 import {Friend} from '../models/friend.model';
-import {MY_SERVER_URL} from './constrain';
 import {t} from '../languages/i18n';
 import {User} from '../models/user.model';
+import {instanceMyServer} from './axios_instance';
 
 export const getListIdFriend = async (token: string) => {
-  const response = await axios.post(`${MY_SERVER_URL}/listen`, {
+  const response = await instanceMyServer.post('/listen', {
     token,
   });
   return response.data.users;
@@ -67,4 +66,13 @@ export const filterFriends = (
     };
   }
   return find ? find : null;
+};
+
+export const shouldRefreshToken = (
+  timeExpires: number,
+  bufferMinutes = 5,
+): boolean => {
+  const now = Date.now() + 15 * 60 * 1000; // add 15 minutes drift
+  const expires = timeExpires || 0;
+  return expires < now + bufferMinutes * 60 * 1000;
 };

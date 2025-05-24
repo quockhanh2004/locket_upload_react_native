@@ -69,7 +69,7 @@ const InputView = forwardRef<TextInput, InputViewProps>(
       placeholderTextColor = Colors.gray,
       style,
       radius = 10,
-      onFocus,
+      onFocus = () => {},
       onPressIn,
       onSubmitEditing,
       inputStyle,
@@ -94,7 +94,7 @@ const InputView = forwardRef<TextInput, InputViewProps>(
       letterSpacing,
       description,
       defaultValue = '',
-      onBlur,
+      onBlur = () => {},
       textContentType,
       disabled = false,
       title = '',
@@ -195,6 +195,11 @@ const InputView = forwardRef<TextInput, InputViewProps>(
             secureTextEntry={showPassword}
             returnKeyType={returnKeyType}
             onKeyPress={onKeyPress}
+            onFocus={() => onFocus(true)}
+            onBlur={() => {
+              onFocus(false);
+              onBlur();
+            }}
           />
           {showClear && !!value && (
             <Pressable onPress={onClear} style={styleIcon}>

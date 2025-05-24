@@ -1,9 +1,9 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {setMessage} from '../slice/message.slice';
-import axios from 'axios';
 import {t} from '../../languages/i18n';
 import {generateUUIDv4} from '../../util/chat';
-import {loginHeader, MY_SERVER_URL} from '../../util/constrain';
+import {loginHeader} from '../../util/constrain';
+import {instanceLocket, instanceMyServer} from '../../util/axios_instance';
 
 interface DataParam {
   idToken: string;
@@ -27,16 +27,12 @@ export const sendMessage = createAsyncThunk(
           from_memory: true,
         },
       };
-      const response = await axios.post(
-        'https://api.locketcamera.com/sendChatMessageV2',
-        body,
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-            ...loginHeader,
-          },
+      const response = await instanceLocket.post('sendChatMessageV2', body, {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          ...loginHeader,
         },
-      );
+      });
       return response.data;
     } catch (error: any) {
       thunkApi.dispatch(
@@ -45,6 +41,7 @@ export const sendMessage = createAsyncThunk(
           type: t('error'),
         }),
       );
+
       return thunkApi.rejectWithValue(
         error?.response?.data?.error || error.message,
       );
@@ -59,15 +56,24 @@ export const getMessage = createAsyncThunk(
       const body = {
         token,
       };
-      const response = await axios.post(`${MY_SERVER_URL}/message`, body);
+      const response = await instanceMyServer.post('/message', body);
       return response.data;
     } catch (error: any) {
-      thunkApi.dispatch(
+      if (error.response) {
         setMessage({
-          message: `${JSON.stringify(error?.response?.data) || error.message}`,
+          message: error.response.data,
           type: t('error'),
-        }),
-      );
+        });
+      } else {
+        thunkApi.dispatch(
+          setMessage({
+            message: `${
+              JSON.stringify(error?.response?.data) || error.message
+            }`,
+            type: t('error'),
+          }),
+        );
+      }
       return thunkApi.rejectWithValue(
         error?.response?.data?.error || error.message,
       );
@@ -89,8 +95,8 @@ export const getMessageWith = createAsyncThunk(
         token: data.token,
         timestamp: data?.timestamp,
       };
-      const response = await axios.post(
-        `${MY_SERVER_URL}/message/${data.conversation_uid}`,
+      const response = await instanceMyServer.post(
+        `/message/${data.conversation_uid}`,
         body,
       );
       return {
@@ -99,8 +105,6 @@ export const getMessageWith = createAsyncThunk(
         isLoadMore: data.timestamp ? true : false,
       };
     } catch (error: any) {
-      console.log(error.response.data);
-
       thunkApi.dispatch(
         setMessage({
           message: `${JSON.stringify(error?.response?.data) || error.message}`,
@@ -124,16 +128,12 @@ export const markReadMessage = createAsyncThunk(
           conversation_uid,
         },
       };
-      const response = await axios.post(
-        'https://api.locketcamera.com/markAsRead',
-        body,
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-            ...loginHeader,
-          },
+      const response = await instanceLocket.post('markAsRead', body, {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          ...loginHeader,
         },
-      );
+      });
       return response.data;
     } catch (error: any) {
       thunkApi.dispatch(

@@ -4,7 +4,7 @@ import axios from 'axios';
 import {parseSpotifyTrack} from '../../services/Spotify';
 import {clearTokenData} from '../slice/spotify.slice';
 import {t} from '../../languages/i18n';
-import {MY_SERVER_URL} from '../../util/constrain';
+import {instanceMyServer} from '../../util/axios_instance';
 
 interface DataParam {
   code?: string | null;
@@ -15,12 +15,9 @@ export const getAccessToken = createAsyncThunk(
   async (data: DataParam, thunkApi) => {
     try {
       const {code} = data;
-      const response = await axios.post(
-        `${MY_SERVER_URL}/spotify/exchange-code`,
-        {
-          code,
-        },
-      );
+      const response = await instanceMyServer.post('/spotify/exchange-code', {
+        code,
+      });
       return response.data;
     } catch (error: any) {
       console.error('Error Authorization spotify', error);
@@ -44,7 +41,7 @@ export const refreshAccessToken = createAsyncThunk(
   async (data: RefreshTokenParam, thunkApi) => {
     try {
       const {refreshToken} = data;
-      const response = await axios.post(`${MY_SERVER_URL}/spotify/refresh`, {
+      const response = await instanceMyServer.post('/spotify/refresh', {
         refresh_token: refreshToken,
       });
       return response.data;

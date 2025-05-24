@@ -2,7 +2,7 @@
 import React from 'react';
 import {View, Text, Avatar} from 'react-native-ui-lib';
 import {Friend} from '../../../models/friend.model';
-import {timeDiffFromNow} from '../../../util/convertTime';
+import {timeDiffFromNow} from '../../../util/convert';
 
 interface UserInfoBarProps {
   user?: Friend | null;

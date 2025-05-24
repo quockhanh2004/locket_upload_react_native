@@ -8,7 +8,6 @@ import Header from '../../components/Header';
 import MainButton from '../../components/MainButton';
 import {deleteAllMp4Files} from '../../util/uploadVideo';
 import {
-  setUseCameraSetting,
   setOptionFriend,
   setUnlimitedTrimVideo,
   setTrySoftwareEncode,
@@ -37,20 +36,10 @@ const SettingScreen = () => {
 
   const {language} = useSelector((state: RootState) => state.language);
   const {tokenData} = useSelector((state: RootState) => state.spotify);
-  const {
-    useCamera,
-    optionFriend,
-    unlimitedTrimVideo,
-    trySoftwareEncode,
-    showDonate,
-  } = useSelector((state: RootState) => state.setting);
+  const {optionFriend, unlimitedTrimVideo, trySoftwareEncode, showDonate} =
+    useSelector((state: RootState) => state.setting);
 
   const settingOptions: ItemSettingModel[] = [
-    {
-      title: t('use_camera'),
-      value: useCamera,
-      action: setUseCameraSetting,
-    },
     {
       title: t('multi_option_friend'),
       value: optionFriend,

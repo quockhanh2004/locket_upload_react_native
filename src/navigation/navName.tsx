@@ -10,4 +10,5 @@ export const nav = {
   selectIcon: 'selectIcon',
   chatList: 'chatList',
   chat: 'chat',
+  activeApp: 'activeApp',
 };

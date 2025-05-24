@@ -13,6 +13,7 @@ import {oldPostsReducer} from './slice/oldPosts.slice';
 import {guideReducer} from './slice/guide.slice';
 import {spotifyReducer} from './slice/spotify.slice';
 import {chatReducer} from './slice/chat.slice';
+import apiMiddleware from './middleware/apiMiddleware';
 
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;
@@ -77,8 +78,7 @@ export const store = configureStore({
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: false,
-      immutableCheck: false,
-    }),
+    }).concat(apiMiddleware),
 });
 
 // Tạo persistor
