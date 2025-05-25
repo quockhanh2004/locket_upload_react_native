@@ -123,5 +123,6 @@
   "email_login": "The email you use to log in",
   "active_key": "Activation Key",
   "active_key_description": "Enter the activation code for your email",
-  "get_acitve_key": "Get Activation Key"
+  "get_acitve_key": "Get Activation Key",
+  "password": "Password"
 }

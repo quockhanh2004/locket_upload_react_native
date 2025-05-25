@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../redux/store';
 import {Colors, Icon, Text, TouchableOpacity, View} from 'react-native-ui-lib';
@@ -9,6 +9,7 @@ import MainButton from '../components/MainButton';
 import {hapticFeedback} from '../util/haptic';
 import {Linking, ScrollView} from 'react-native';
 import {activeKey, getActiveKey} from '../redux/action/setting.action';
+import {setActiveKey as sliceActiveKey} from '../redux/slice/setting.slice';
 import {logout} from '../redux/slice/user.slice';
 
 interface ActiveAppScreenProps {}
@@ -22,6 +23,20 @@ const ActiveAppScreen: React.FC<ActiveAppScreenProps> = () => {
   //timeout để gửi lại mail là 30s
   const [timeoutSend, setTimeoutSend] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!userEmail) {
+      return;
+    }
+    if (userEmail === process.env.EMAIL_DEMO) {
+      dispatch(
+        sliceActiveKey({
+          email: userEmail,
+          key: process.env.KEY_DEMO || '',
+        }),
+      );
+    }
+  }, [dispatch, userEmail]);
 
   const handlePressFacebook = useCallback(() => {
     hapticFeedback();
@@ -103,15 +118,17 @@ const ActiveAppScreen: React.FC<ActiveAppScreenProps> = () => {
           </View>
           <View flex spread>
             <View gap-8>
-              <MainButton
-                label={
-                  timeoutSend > 0
-                    ? `${t('get_acitve_key')} (${timeoutSend / 1000})`
-                    : t('get_acitve_key')
-                }
-                onPress={handleGetKey}
-                disabled={timeoutSend > 0}
-              />
+              {!isFocus && (
+                <MainButton
+                  label={
+                    timeoutSend > 0
+                      ? `${t('get_acitve_key')} (${timeoutSend / 1000})`
+                      : t('get_acitve_key')
+                  }
+                  onPress={handleGetKey}
+                  disabled={timeoutSend > 0}
+                />
+              )}
               <MainButton
                 onPress={handleActive}
                 label={t('active')}

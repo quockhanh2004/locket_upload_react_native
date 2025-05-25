@@ -24,6 +24,8 @@ import {t} from 'i18next';
 import {Linking} from 'react-native';
 import {TextSwitch} from '../components/TextSwitch';
 import {hapticFeedback} from '../util/haptic';
+import {setLanguage} from '../redux/slice/language.slice';
+import {Language} from '../models/language.model';
 
 const LoginScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,6 +33,7 @@ const LoginScreen = () => {
   const {isLoading, resetPasswordLoading} = useSelector(
     (state: RootState) => state.user,
   );
+  const {language} = useSelector((state: RootState) => state.language);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -117,12 +120,23 @@ const LoginScreen = () => {
       </Text>
       <View gap-40>
         <View gap-8>
-          <View width={'40%'}>
-            <TextSwitch
-              value={loginOption}
-              option={['Email', 'Phone']}
-              onChange={handleSwitchLoginOption}
-            />
+          <View row spread centerV>
+            <View width={'40%'}>
+              <TextSwitch
+                value={loginOption}
+                option={['Email', 'Phone']}
+                onChange={handleSwitchLoginOption}
+              />
+            </View>
+            <View width={'40%'}>
+              <TextSwitch
+                onChange={(val: string) => {
+                  dispatch(setLanguage(val as Language));
+                }}
+                option={[Language.EN, Language.VI]}
+                value={language}
+              />
+            </View>
           </View>
           <View gap-8>
             <TextField
@@ -171,10 +185,10 @@ const LoginScreen = () => {
                 borderWidth: 2,
                 borderRadius: 10,
               }}
-              label="Password"
+              label={t('password')}
               labelColor={Colors.white}
               labelStyle={{...Typography.text70BL}}
-              placeholder="Password"
+              placeholder={t('password')}
               placeholderTextColor={Colors.grey40}
               color={Colors.grey60}
               showClear={password.length > 0}
